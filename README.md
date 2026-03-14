@@ -1,43 +1,32 @@
-# Universal AI Orchestrator & Governance Guard 🧠🛡️
+# 🛡️ Universal AI Orchestrator
+> **The Immunity System for Autonomous AI Agents**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+Universal AI Orchestrator is a professional-grade governance and optimization framework designed to ensure that autonomous AI agents remain safe, efficient, and cost-effective.
 
-**Universal AI Orchestrator** is a lightweight, non-invasive governance layer designed for autonomous AI agents. It ensures system stability, detects logic conflicts between multiple skills/prompts, and optimizes resource consumption (tokens/time).
+## 🌟 Key Features
 
-## 🚀 Key Features
+*   **🔍 Deep Scan**: Fully audits project structure, prompt hierarchies, and configuration security in seconds.
+*   **🛡️ Conflict Guard**: Proactively detects logic collisions and contradictory instructions in multi-agent environments.
+*   **📉 ROI Optimizer**: Analyzes token consumption patterns to reduce operational costs by up to 40%.
+*   **📜 Governance Reporting**: Generates B2B-ready compliance reports (Markdown/JSON) for stakeholders.
 
-- **🔍 Deep Scan (DSA)**: Automatically audits project structure, identifying all active modules, prompts, and configurations.
-- **🛡️ Conflict Guard (CDE)**: Monitors logs and internal states to detect contradictory instructions or resource collisions.
-- **📈 ROI Optimizer**: Tracks efficiency metrics and proposes architectural improvements to reduce costs and latency.
-- **⚙️ Framework Agnostic**: Works with any AI agent structure (autogen, crewAI, custom bots, etc.).
+## 🚀 Getting Started
 
-## 📦 Installation
-
+### Installation
 ```bash
-git clone https://github.com/TymurJan/Universal-AI-Orchestrator.git
-cd Universal-AI-Orchestrator
 pip install -r requirements.txt
 ```
 
-## 🛠️ Usage
-
-Simply run the orchestrator in your agent's root directory:
-
+### Usage
+Run the orchestrator to perform a full system audit:
 ```bash
 python orchestrator.py
 ```
 
-It will generate a detailed **Governance Report** in the `.orchestrator/recommendations/` folder.
+## 💼 B2B & Commercial Support
+This repository contains the open-source version of the Orchestrator. For the **Commercial Core** (including advanced obfuscation, enterprise security, and 24/7 support), please contact our team.
 
-## 🤝 Commercial & Support
-
-This project is part of a global AI Governance initiative. 
-For enterprise integration, B2B consulting, or advanced safety audits, please contact the author via [GitHub](https://github.com/TymurJan).
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+**Contact:** [ngo.talan.ua@gmail.com](mailto:ngo.talan.ua@gmail.com)
 
 ---
-Built with ❤️ for the Global AI Community.
+(C) 2026 Powered by [TymurJan](https://github.com/TymurJan).

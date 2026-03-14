@@ -79,4 +79,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error occurred: {e}")
         sys.exit(1)
- Greenland

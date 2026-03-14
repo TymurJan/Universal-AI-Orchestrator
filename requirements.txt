@@ -1,6 +1,3 @@
-# Python dependencies
-# Universal AI Orchestrator
-
-pathlib
+requests
+openai
 python-dotenv
-json
