@@ -1,0 +1,6 @@
+# Python dependencies
+# Universal AI Orchestrator
+
+pathlib
+python-dotenv
+json
