@@ -1,107 +1,218 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Universal AI Orchestrator — автономна система управління та аудиту для AI-агентів. Виявлення конфліктів, Deep Scan та ROI оптимізація.">
-    <title>Universal AI Orchestrator | Safety & Efficiency</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Universal AI Orchestrator — автономна система управління та аудиту для AI-агентів.">
+    <title>Universal AI Orchestrator | Elite AI Governance</title>
+    
+    <!-- Tailwind v4 & daisyUI v5 CDN (Simulated for this environment) -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0-beta.1/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              fontFamily: {
+                orbitron: ['Orbitron', 'sans-serif'],
+                inter: ['Inter', 'sans-serif'],
+              },
+              colors: {
+                // daisyUI will handle semantic colors, but we can add specifics
+              }
+            }
+          }
+        }
+    </script>
+    
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+        .glass-premium {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #00f2ff, #7000ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo">AI<span>ORCHESTRATOR</span></div>
-                <ul>
-                    <li><a href="#features">Функції</a></li>
-                    <li><a href="#impact">Соціальний Внесок</a></li>
-                    <li><a href="#github">GitHub</a></li>
-                    <li><a href="#contact" class="btn-sm">Замовити Аудит</a></li>
+<body class="font-inter bg-base-300 text-base-content selection:bg-primary selection:text-primary-content">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full glass-premium">
+        <div class="navbar container mx-auto px-4 md:px-8">
+            <div class="flex-1">
+                <a class="text-xl font-orbitron font-bold tracking-widest leading-none">
+                    AI<span class="text-primary italic">ORCHESTRATOR</span>
+                </a>
+            </div>
+            <div class="flex-none hidden lg:block">
+                <ul class="menu menu-horizontal px-1 gap-2">
+                    <li><a href="#features" class="hover:text-primary transition-colors">Функції</a></li>
+                    <li><a href="#impact" class="hover:text-secondary transition-colors">Соціальний Внесок</a></li>
+                    <li><a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="hover:text-accent transition-colors">GitHub</a></li>
                 </ul>
-            </nav>
+            </div>
+            <div class="flex-none px-2 lg:px-4">
+                <a href="#contact" class="btn btn-primary btn-outline btn-sm lg:btn-md rounded-lg shadow-lg shadow-primary/20">
+                    Замовити Аудит
+                </a>
+            </div>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Ваш AI-агент у безпеці?</h1>
-                <p>Universal AI Orchestrator — це імунітет для вашої AI-інфраструктури. Глибокий аудит логіки, виявлення конфліктів та оптимізація витрат за 60 секунд.</p>
-                <div class="cta-group">
-                    <a href="#contact" class="btn-primary">Замовити B2B Аудит</a>
-                    <a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="btn-secondary">Переглянути на GitHub</a>
+    <!-- Hero Section -->
+    <main>
+        <div class="hero min-h-screen bg-base-300 relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 blur-[120px] rounded-full"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 blur-[120px] rounded-full"></div>
+            
+            <div class="hero-content flex-col lg:flex-row-reverse gap-12 container mx-auto px-4">
+                <div class="lg:w-1/2 flex justify-center">
+                    <img src="hero.png" class="max-w-full rounded-2xl shadow-2xl shadow-primary/10 border border-white/5 animate-float" />
                 </div>
-            </div>
-            <div class="hero-image">
-                <img src="../ai_orchestrator_hero_1773450683770.png" alt="AI Orchestrator Grid">
-            </div>
-        </div>
-    </section>
-
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Чому обирають нас</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="icon">🔍</div>
-                    <h3>Deep Scan</h3>
-                    <p>Повний аналіз структури проекту, промтів та навичок в один клік.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🛡️</div>
-                    <h3>Conflict Guard</h3>
-                    <p>Виявлення логічних суперечностей, які призводять до галюцинацій та помилок.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">📉</div>
-                    <h3>ROI Optimizer</h3>
-                    <p>Економія до 40% на токенах через видалення надлишкових запитів.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="impact" class="social-impact">
-        <div class="container border-gradient">
-            <div class="impact-content">
-                <div class="badge">Соціальна Відповідальність</div>
-                <h2>Цифрове Серце Проєкту</h2>
-                <p>Ми будуємо майбутнє, де технології мають душу. <strong>10% прибутку</strong> від кожного комерційного аудиту ми спрямовуємо на підтримку проєкту <strong>«аШрам»</strong> — простору реінтеграції для ветеранів та ветеранок.</p>
-                <div class="impact-stats">
-                    <div class="stat-item">
-                        <span class="stat-val">10%</span>
-                        <span class="stat-lab">на статутну діяльність ГО</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-val">аШрам</span>
-                        <span class="stat-lab">підтримка спільноти</span>
+                <div class="lg:w-1/2 text-center lg:text-left">
+                    <div class="badge badge-outline badge-primary mb-6 py-4 px-6 text-sm font-semibold tracking-wider uppercase">v1.0.0 Commercial Core</div>
+                    <h1 class="text-5xl md:text-7xl font-orbitron font-bold leading-tight mb-8">
+                        Ваш AI-агент у <span class="text-gradient">безпеці?</span>
+                    </h1>
+                    <p class="text-xl text-base-content/70 mb-10 max-w-xl mx-auto lg:mx-0">
+                        Universal AI Orchestrator — це імунітет для вашої AI-інфраструктури. Глибокий аудит логіки, виявлення конфліктів та ROI оптимізація за 60 секунд.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#contact" class="btn btn-primary btn-lg shadow-xl shadow-primary/30">Замовити B2B Аудит</a>
+                        <a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="btn btn-ghost btn-lg border border-white/10 hover:bg-white/5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                            GitHub
+                        </a>
                     </div>
                 </div>
-                <div class="benefactors-teaser">
-                    <p>✨ <em>Скоро: Запуск «Спільноти Благодійників» для підтримки ветеранів.</em></p>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <section id="features" class="py-24 bg-base-200">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-orbitron font-bold mb-4">Чому обирають нас</h2>
+                    <div class="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Card 1 -->
+                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
+                        <div class="card-body">
+                            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center text-3xl mb-4">🔍</div>
+                            <h3 class="card-title text-2xl mb-2">Deep Scan</h3>
+                            <p class="text-base-content/70">Повний аналіз структури проекту, промтів та навичок в один клік для максимальної прозорості.</p>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
+                        <div class="card-body">
+                            <div class="w-16 h-16 bg-secondary/10 rounded-xl flex items-center justify-center text-3xl mb-4">🛡️</div>
+                            <h3 class="card-title text-2xl mb-2">Conflict Guard</h3>
+                            <p class="text-base-content/70">Виявлення логічних суперечностей в інструкціях, які призводять до галюцинацій та помилок агента.</p>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
+                        <div class="card-body">
+                            <div class="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center text-3xl mb-4">📉</div>
+                            <h3 class="card-title text-2xl mb-2">ROI Optimizer</h3>
+                            <p class="text-base-content/70">Економія до 40% на токенах через видалення надлишкових запитів та оптимізацію контекстного вікна.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="impact-image">
-                <img src="../social_impact_concept_image_1773503960148.png" alt="Digital Heart Social Impact">
+        </section>
+
+        <!-- Social Impact -->
+        <section id="impact" class="py-24 bg-base-300 overflow-hidden relative">
+            <div class="container mx-auto px-4">
+                <div class="card lg:card-side glass-premium shadow-2xl overflow-hidden border border-white/10 group">
+                    <figure class="lg:w-1/2 relative">
+                        <img src="heart.png" alt="Digital Heart" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 animate-float" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-base-300/80 to-transparent lg:hidden"></div>
+                    </figure>
+                    <div class="card-body lg:w-1/2 p-10 md:p-16">
+                        <div class="badge badge-secondary badge-outline mb-6">Соціальна Відповідальність</div>
+                        <h2 class="card-title text-4xl font-orbitron font-bold mb-6 text-gradient">Цифрове Серце Проєкту</h2>
+                        <p class="text-lg text-base-content/80 mb-10 leading-relaxed">
+                            Ми будуємо майбутнє, де технології мають душу. <strong>10% прибутку</strong> від кожного комерційного аудиту ми спрямовуємо на підтримку проєкту <strong class="text-primary italic">«аШрам»</strong> — простору реінтеграції для ветеранів та ветеранок.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-10 text-center sm:text-left">
+                            <div class="stat p-0">
+                                <div class="stat-value text-primary font-orbitron">10%</div>
+                                <div class="stat-desc text-base-content/60 text-sm mt-1 uppercase tracking-tighter">На статутну діяльність</div>
+                            </div>
+                            <div class="stat p-0">
+                                <div class="stat-value text-secondary font-orbitron">аШрам</div>
+                                <div class="stat-desc text-base-content/60 text-sm mt-1 uppercase tracking-tighter">Підтримка спільноти</div>
+                            </div>
+                        </div>
+
+                        <div class="alert bg-primary/5 border-primary/20 py-4 rounded-xl">
+                            <span class="text-sm font-medium italic">✨ Скоро: Запуск «Спільноти Благодійників» для підтримки ветеранів.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="contact-box">
-                <h2>Готові до професійного аудиту?</h2>
-                <p>Наші B2B рішення допомагають компаніям будувати надійні AI-системи без ризиків.</p>
-                <a href="mailto:ngo.talan.ua@gmail.com" class="btn-primary">Написати нам</a>
+        <!-- Contact/CTA -->
+        <section id="contact" class="py-24 bg-base-200">
+            <div class="container mx-auto px-4 text-center">
+                <div class="max-w-3xl mx-auto glass-premium p-12 md:p-20 rounded-[3rem] border-white/10 shadow-2xl">
+                    <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-6">Готові до професійного аудиту?</h2>
+                    <p class="text-xl text-base-content/70 mb-12">
+                        Наші B2B рішення допомагають компаніям будувати надійні, безпечні та економічно вигідні AI-системи.
+                    </p>
+                    <div class="flex flex-col items-center gap-6">
+                        <a href="mailto:ngo.talan.ua@gmail.com" class="btn btn-primary btn-lg btn-wide rounded-full text-lg shadow-xl shadow-primary/20">
+                            Написати нам
+                        </a>
+                        <p class="text-sm text-base-content/50 uppercase tracking-widest leading-none">ngo.talan.ua@gmail.com</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Powered by <a href="https://github.com/TymurJan">TymurJan</a>. Universal AI Orchestrator.</p>
-        </div>
+    <!-- Footer -->
+    <footer class="footer footer-center p-10 bg-base-300 text-base-content border-t border-white/5">
+        <aside>
+            <div class="font-orbitron font-bold text-2xl mb-4 tracking-widest leading-none">
+                AI<span class="text-primary">ORCHESTRATOR</span>
+            </div>
+            <p class="text-base-content/60 max-w-md mx-auto">
+                Перша в світі автономна система управління та аудиту для автономних AI-інфраструктур.
+            </p>
+            <p class="mt-8 text-sm opacity-40">
+                &copy; 2026 Powered by <a href="https://github.com/TymurJan" class="link link-hover">TymurJan</a>. Universal AI Orchestrator.
+            </p>
+            <p class="mt-2 font-semibold italic text-xs tracking-widest text-primary/50 uppercase leading-none">
+                Штучна душа • аШрам • ГО ТАЛАН ЮА
+            </p>
+        </aside>
     </footer>
+
 </body>
 </html>
