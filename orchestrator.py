@@ -62,11 +62,15 @@ class AIOrchestrator:
         security_results = self.engine.security_audit()
         conflicts = self.engine.detect_logic_collisions(self.base_dir)
         
+        # Simulate social impact for a standard audit (e.g. $500 value)
+        impact_results = self.engine.calculate_social_impact(500.0)
+        
         full_results = {
             "timestamp": datetime.now().isoformat(),
             "roi": roi_results,
             "security": security_results,
-            "conflicts": conflicts
+            "conflicts": conflicts,
+            "impact": impact_results
         }
         
         report_name = f"governance_report_{datetime.now().strftime('%Y%m%d_%H%M')}.md"

@@ -95,6 +95,7 @@ h1 {
     margin-bottom: 25px;
     background: linear-gradient(to right, #fff, var(--primary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -146,6 +147,7 @@ h1 {
     border-radius: 20px;
     box-shadow: 0 0 50px rgba(112, 0, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: float 8s ease-in-out infinite;
 }
 
 /* Features */
@@ -193,6 +195,134 @@ h1 {
 .feature-card p {
     color: var(--gray);
     font-size: 0.95rem;
+}
+
+/* Social Impact Section */
+.social-impact {
+    padding: 100px 0;
+}
+
+.border-gradient {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    background: var(--surface);
+    padding: 60px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.border-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--secondary), var(--primary));
+}
+
+.impact-content {
+    flex: 1.2;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 15px;
+    background: rgba(112, 0, 255, 0.1);
+    border: 1px solid var(--secondary);
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+}
+
+.impact-content h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+    color: white;
+}
+
+.impact-content p {
+    font-size: 1.1rem;
+    color: var(--gray);
+    margin-bottom: 40px;
+}
+
+.impact-stats {
+    display: flex;
+    gap: 40px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+.stat-lab {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.benefactors-teaser {
+    margin-top: 30px;
+    padding: 10px 20px;
+    border-left: 2px solid var(--primary);
+    background: rgba(0, 242, 255, 0.05);
+    display: inline-block;
+    border-radius: 0 10px 10px 0;
+}
+
+.benefactors-teaser p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.impact-image {
+    flex: 1;
+}
+
+.impact-image img {
+    width: 100%;
+    border-radius: 20px;
+    filter: drop-shadow(0 0 30px rgba(112, 0, 255, 0.3));
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@media (max-width: 968px) {
+    .border-gradient {
+        flex-direction: column;
+        padding: 40px;
+        text-align: center;
+    }
+    .impact-stats {
+        justify-content: center;
+    }
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    .hero .container {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Contact */
