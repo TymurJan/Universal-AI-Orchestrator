@@ -56,19 +56,6 @@ class GovernanceEngine:
         # Logic to compare multiple system prompts and find contradictory rules
         return collisions
 
-    def calculate_social_impact(self, contract_value):
-        """
-        Calculates the 10% statutory contribution for Talan UA NGO.
-        This is part of the Social Entrepreneurship module.
-        """
-        contribution = contract_value * 0.10
-        return {
-            "amount": contribution,
-            "beneficiary": "NGO Talan UA",
-            "project": "аШрам",
-            "purpose": "благодійний внесок на статутну діяльність"
-        }
-
     def ui_ux_audit(self):
         """
         Audits UI files (HTML/CSS) against "The Ultimate UI" skill rules.
@@ -145,15 +132,3 @@ def generate_governance_report(results, output_path):
             else:
                 f.write("- **Findings:** No critical accessibility issues detected. Interface is WCAG compliant.\n")
             f.write("\n")
-
-        # --- New Social Impact Section ---
-        impact = results.get('impact')
-        if impact:
-            f.write("## 🤝 Social Impact Contribution\n")
-            f.write("> **Certificate of Statutory Recognition**\n\n")
-            f.write(f"This audit contributes to the **{impact.get('beneficiary')}** and the **«{impact.get('project')}»** project.\n")
-            f.write(f"- **Impact Amount:** {impact.get('amount')} (10% of audit value)\n")
-            f.write(f"- **Purpose:** {impact.get('purpose')}\n")
-            f.write("- **Status:** Automatically allocated to the official NGO account.\n\n")
-            f.write("---\n")
-            f.write("*Your business efficiency directly supports veteran reintegration and social stability.*")
