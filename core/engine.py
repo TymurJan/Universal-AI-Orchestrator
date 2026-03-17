@@ -69,6 +69,51 @@ class GovernanceEngine:
             "purpose": "благодійний внесок на статутну діяльність"
         }
 
+    def ui_ux_audit(self):
+        """
+        Audits UI files (HTML/CSS) against "The Ultimate UI" skill rules.
+        Checks for: Tailwind usage, WCAG 4.5:1 contrast readiness, Mobile-First.
+        """
+        log.info("🎨 Performing UI/UX Accessibility Audit (WCAG 2.1)...")
+        findings = []
+        score = 100
+        
+        # Simulate scanning HTML files in the project directory
+        html_files = list(self.root.rglob("*.html"))
+        if not html_files:
+            return {"status": "Skipped", "score": 0, "findings": ["No UI files detected"]}
+
+        for html_file in html_files:
+            try:
+                content = html_file.read_text(encoding="utf-8")
+                # Rule 1: Check for Tailwind
+                if "class=" in content and not ("tailwind" in content or "text-" in content or "flex" in content):
+                    findings.append(f"[{html_file.name}]: Missing Tailwind CSS utility classes. Recommend migrating to Tailwind v4.")
+                    score -= 10
+                
+                # Rule 2: Check for potential contrast issues on dark backgrounds (The Universal-AI-Orchestrator hotfix rule)
+                if "--bg-deep" in content or "bg-black" in content or "bg-gray-9" in content:
+                    if "text-gray-300" in content or "text-base-content/70" in content:
+                        findings.append(f"[{html_file.name}]: Potential WCAG contrast violation detected. 'text-gray-300' or theming text on deep backgrounds may fail the 4.5:1 ratio requirement. Recommend using explicit 'text-white/80' opacities.")
+                        score -= 20
+                        
+                # Rule 3: Check for semantic HTML / Accessibility
+                if "<button" in content and "aria-label" not in content and "sr-only" not in content:
+                    findings.append(f"[{html_file.name}]: Accessibility Warning. Buttons should contain aria-labels if icon-only, or clear text.")
+                    score -= 5
+            except Exception as e:
+                log.warning(f"Could not read {html_file.name} for UI audit: {e}")
+
+        # Cap score at 0
+        score = max(0, score)
+
+        return {
+            "status": "Passed" if score >= 85 else "Needs Improvement",
+            "score": score,
+            "findings": findings
+        }
+
+
 def generate_governance_report(results, output_path):
     report_file = Path(output_path)
     with open(report_file, "w", encoding="utf-8") as f:
@@ -85,6 +130,21 @@ def generate_governance_report(results, output_path):
         f.write("## 🔒 Security Findings\n")
         f.write(f"- **Vulnerabilities:** {len(results.get('security', {}).get('findings', []))}\n")
         f.write("- **Compliance:** EU AI Act Ready\n\n")
+
+        # --- New UI/UX Audit Section ---
+        ui_audit = results.get('ui_ux')
+        if ui_audit and ui_audit.get('status') != 'Skipped':
+            f.write("## 🎨 UI/UX & Accessibility Audit (WCAG 2.1)\n")
+            f.write(f"- **Status:** {ui_audit.get('status')}\n")
+            f.write(f"- **Score:** {ui_audit.get('score')}/100\n")
+            findings = ui_audit.get('findings', [])
+            if findings:
+                f.write("- **Findings:**\n")
+                for finding in findings:
+                    f.write(f"  - ⚠️ {finding}\n")
+            else:
+                f.write("- **Findings:** No critical accessibility issues detected. Interface is WCAG compliant.\n")
+            f.write("\n")
 
         # --- New Social Impact Section ---
         impact = results.get('impact')

@@ -61,6 +61,7 @@ class AIOrchestrator:
         roi_results = self.engine.analyze_roi(logs_path)
         security_results = self.engine.security_audit()
         conflicts = self.engine.detect_logic_collisions(self.base_dir)
+        ui_ux_results = self.engine.ui_ux_audit()
         
         # Simulate social impact for a standard audit (e.g. $500 value)
         impact_results = self.engine.calculate_social_impact(500.0)
@@ -70,6 +71,7 @@ class AIOrchestrator:
             "roi": roi_results,
             "security": security_results,
             "conflicts": conflicts,
+            "ui_ux": ui_ux_results,
             "impact": impact_results
         }
         
