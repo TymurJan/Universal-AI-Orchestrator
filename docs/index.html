@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Universal AI Orchestrator — автономна система управління та аудиту для AI-агентів.">
-    <title>Universal AI Orchestrator | Elite AI Governance</title>
+    <meta name="description" content="Universal AI Orchestrator — Елітна система управління та автоматизації для AI-агентів.">
+    <title>Universal AI Orchestrator | The Master Conductor</title>
     
-    <!-- Tailwind v4 & daisyUI v5 CDN (Simulated for this environment) -->
+    <!-- Tailwind v4 & daisyUI v5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0-beta.1/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
           theme: {
             extend: {
               fontFamily: {
-                orbitron: ['Orbitron', 'sans-serif'],
+                outfit: ['Outfit', 'sans-serif'],
                 inter: ['Inter', 'sans-serif'],
               },
               colors: {
-                // daisyUI will handle semantic colors, but we can add specifics
+                primary: "#00f2ff",
+                secondary: "#7000ff",
+                accent: "#ff007a",
+                neutral: "#111111",
               }
             }
           }
@@ -30,116 +33,328 @@
     
     <style>
         :root {
-            --bg-deep: #050505; /* Глибокий обсидіан */
+            --bg-deep: #030303;
+            --glass-bg: rgba(10, 10, 15, 0.7);
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-20px) rotate(1deg); }
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(0, 242, 255, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(112, 0, 255, 0.03) 0%, transparent 40%);
+        }
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.4s ease;
+        }
+        .gradient-border::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 1rem;
+            padding: 1px;
+            background: linear-gradient(45deg, #00f2ff, #7000ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.2;
+            transition: opacity 0.4s ease;
+        }
+        .gradient-border:hover::before {
+            opacity: 1;
         }
         .animate-float {
-            animation: float 8s ease-in-out infinite;
+            animation: float 10s ease-in-out infinite;
         }
-        .glass-premium {
-            background: rgba(15, 15, 20, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
-        .text-gradient {
-            background: linear-gradient(to right, #00f2ff, #7000ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .animate-pulse-slow {
+            animation: pulse-slow 4s ease-in-out infinite;
         }
-        html {
-            scroll-behavior: smooth;
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .animate-heartbeat {
+            animation: heartbeat 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+            transform-origin: center;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); filter: brightness(1); }
+            10% { transform: scale(1.15); filter: brightness(1.3); }
+            20% { transform: scale(1); filter: brightness(1); }
+            30% { transform: scale(1.1); filter: brightness(1.2); }
+            45% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1); }
+        }
+        .animate-shield-fly {
+            animation: shield-fly 8s ease-in-out infinite;
+        }
+        @keyframes shield-fly {
+            0% { transform: scale(0.6) rotate(-5deg); opacity: 0; filter: blur(20px) brightness(2); }
+            10% { transform: scale(1.05) rotate(0deg); opacity: 1; filter: blur(0) brightness(1.5); }
+            20% { transform: scale(1); opacity: 0.7; filter: brightness(1); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(0, 242, 255, 0.6)); }
+            80% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1) rotate(5deg); opacity: 0.7; }
+        }
+        .scan-line {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 242, 255, 0.2), transparent);
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 200%; }
         }
     </style>
 </head>
-<body class="font-inter text-white selection:bg-primary selection:text-primary-content" style="background-color: var(--bg-deep);">
+<body class="font-inter text-gray-200 antialiased overflow-x-hidden">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 w-full glass-premium">
-        <div class="navbar container mx-auto px-4 md:px-8">
-            <div class="flex-1">
-                <a class="text-xl font-orbitron font-bold tracking-widest leading-none">
-                    AI<span class="text-primary italic">ORCHESTRATOR</span>
-                </a>
+    <!-- Floating Navbar -->
+    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-6xl">
+        <nav class="glass-panel px-6 py-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3 group cursor-pointer">
+                <div class="w-10 h-10 bg-gradient-to-tr from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">A</div>
+                <span class="font-outfit font-bold text-xl tracking-wider text-white">ORCHESTRATOR</span>
             </div>
-            <div class="flex-none hidden lg:block">
-                <ul class="menu menu-horizontal px-1 gap-2">
-                    <li><a href="#features" class="hover:text-primary transition-colors">Функції</a></li>
-                    <li><a href="#impact" class="hover:text-secondary transition-colors">Соціальний Внесок</a></li>
-                    <li><a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="hover:text-accent transition-colors">GitHub</a></li>
-                </ul>
+            
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#hero" class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" data-i18n="nav.home">Головна</a>
+                <a href="#why" class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" data-i18n="nav.why">Можливості</a>
+                <a href="#cases" class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest text-glow text-primary" data-i18n="nav.cases">Кейси</a>
+                <a href="#impact" class="text-sm font-medium hover:text-secondary transition-colors uppercase tracking-widest" data-i18n="nav.impact">Місія</a>
+                
+                <!-- Language Switcher -->
+                <div class="flex items-center gap-2 border-l border-white/10 pl-4">
+                    <button onclick="setLanguage('ua')" class="lang-btn text-xs font-bold transition-opacity" id="lang-ua">UA</button>
+                    <span class="text-white/20">/</span>
+                    <button onclick="setLanguage('en')" class="lang-btn text-xs font-bold transition-opacity" id="lang-en">EN</button>
+                </div>
             </div>
-            <div class="flex-none px-2 lg:px-4">
-                <a href="#contact" class="btn btn-primary btn-outline btn-sm lg:btn-md rounded-lg shadow-lg shadow-primary/20">
-                    Замовити Аудит
-                </a>
+
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="btn btn-ghost btn-sm text-gray-400 hover:text-white hidden sm:flex">GitHub</a>
+                <a href="https://secure.wayforpay.com/button/badcceef62648" target="_blank" class="btn btn-primary btn-sm rounded-lg px-6 font-bold hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20" data-i18n="nav.get">Ліцензія</a>
             </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- Hero Section -->
     <main>
-        <div class="hero min-h-screen relative overflow-hidden" style="background-color: var(--bg-deep);">
-            <!-- Background Glow -->
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 blur-[120px] rounded-full"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/20 blur-[120px] rounded-full"></div>
-            
-            <div class="hero-content flex-col lg:flex-row-reverse gap-12 container mx-auto px-4">
-                <div class="lg:w-1/2 flex justify-center">
-                    <img src="hero.png" class="max-w-full rounded-2xl shadow-2xl shadow-primary/10 border border-white/5 animate-float" />
-                </div>
-                <div class="lg:w-1/2 text-center lg:text-left">
-                    <div class="badge badge-outline badge-primary mb-6 py-4 px-6 text-sm font-semibold tracking-wider uppercase">v1.0.0 Commercial Core</div>
-                    <h1 class="text-5xl md:text-7xl font-orbitron font-bold leading-tight mb-8">
-                        Ваш AI-агент у <span class="text-gradient">безпеці?</span>
-                    </h1>
-                    <p class="text-xl text-gray-300 mb-10 max-w-xl mx-auto lg:mx-0">
-                        Universal AI Orchestrator — це імунітет для вашої AI-інфраструктури. Глибокий аудит логіки, виявлення конфліктів та ROI оптимізація за 60 секунд.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="#contact" class="btn btn-primary btn-lg shadow-xl shadow-primary/30">Замовити B2B Аудит</a>
-                        <a href="https://github.com/TymurJan/Universal-AI-Orchestrator" class="btn btn-ghost btn-lg border border-white/10 hover:bg-white/5">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="mr-2" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-                            GitHub
-                        </a>
+        <!-- Hero v2 -->
+        <section id="hero" class="min-h-screen pt-40 pb-20 flex items-center">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col lg:flex-row items-center gap-20">
+                    <div class="lg:w-1/2 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 blur-in">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                            <span class="text-xs font-bold uppercase tracking-[0.2em] text-primary/80" data-i18n="hero.badge">Mirror Law Guard v2.0 — Active</span>
+                        </div>
+                        <h1 class="font-outfit text-6xl md:text-8xl font-bold text-white leading-[1.1] mb-8 tracking-tight" data-i18n="hero.title">
+                            Оркеструйте <br/> 
+                            <span class="bg-gradient-to-r from-primary via-blue-400 to-secondary bg-clip-text text-transparent">майбутнє</span>, 
+                            а не код
+                        </h1>
+                        <p class="text-xl text-gray-400 mb-12 max-w-xl leading-relaxed lg:mx-0 mx-auto" data-i18n="hero.desc">
+                            Universal AI Orchestrator — це «диригент» для ваших нейромереж. Ми автоматично передаємо контекст, пам'ять та завдання між GPT-4, Claude та вашими базами даних.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
+                            <a href="#contact" class="btn btn-primary btn-lg rounded-xl px-10 shadow-2xl shadow-primary/30 group">
+                                <span data-i18n="hero.btn_main">Почати Трансформацію</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                            <a href="#why" class="btn btn-ghost btn-lg text-white/80 hover:bg-white/5 border border-white/10 rounded-xl px-10" data-i18n="hero.btn_sec">Переваги</a>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 relative group perspective-1000">
+                        <div class="absolute -inset-20 bg-gradient-to-tr from-primary/20 to-secondary/20 blur-[150px] opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                        
+                        <div class="relative overflow-hidden rounded-[3rem] border border-white/10 shadow-2xl">
+                            <!-- The Base Planet -->
+                            <img src="planet_base.png" class="w-full h-full object-cover opacity-90 scale-105" alt="Core Planet" />
+                            
+                            <!-- The Flying Shield Overlay -->
+                            <div class="absolute inset-0 z-10 flex items-center justify-center p-4">
+                                <!-- Cinematic Shield Video (Placeholder for AI Content) -->
+                                <video id="vfx-shield" class="w-full h-full object-contain mix-blend-screen opacity-0 transition-opacity duration-1000" muted loop playsinline poster="planet_shield.png">
+                                    <source src="shield_motion.webm" type="video/webm; codecs=vp9">
+                                    <source src="shield_motion.mp4" type="video/mp4">
+                                </video>
+                                <img id="vfx-shield-fallback" src="planet_shield.png" class="w-full h-full object-contain animate-shield-fly pointer-events-none mix-blend-screen" alt="Shield Protection Layer" />
+                                <div class="scan-line"></div>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            // Auto-show video if it loads successfully
+                            const shieldVid = document.getElementById('vfx-shield');
+                            const shieldImg = document.getElementById('vfx-shield-fallback');
+                            shieldVid.oncanplay = () => {
+                                shieldVid.classList.replace('opacity-0', 'opacity-100');
+                                shieldImg.style.display = 'none';
+                                shieldVid.play();
+                            };
+                        </script>
+                        
+                        <!-- Floating Glass Labels (Elevated) -->
+                        <div class="absolute -bottom-10 -left-6 glass-panel p-6 rounded-2xl hidden md:block border-primary/30 backdrop-blur-2xl z-30 transform hover:scale-110 transition-transform">
+                            <div class="text-primary font-bold text-3xl text-glow bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">40%</div>
+                            <div class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">ROI OPTIMIZER</div>
+                        </div>
+                        <div class="absolute -top-14 -right-6 glass-panel p-6 rounded-2xl hidden md:block border-secondary/30 backdrop-blur-2xl z-30 transform hover:scale-110 transition-transform">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_green]"></span>
+                                <div class="text-secondary font-bold text-2xl">ACTIVE</div>
+                            </div>
+                            <div class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold text-glow">GOVERNANCE GUARD</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Features -->
-        <section id="features" class="py-24" style="background-color: #0a0a0a;">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-orbitron font-bold mb-4">Чому обирають нас</h2>
-                    <div class="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+        <!-- Problem/Solution Bento Grid -->
+        <section id="why" class="py-32 relative">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-24">
+                    <h2 class="font-outfit text-4xl md:text-5xl font-bold text-white mb-6" data-i18n="why.title">Хвороба vs Імунітет</h2>
+                    <p class="text-gray-500" data-i18n="why.subtitle">Чому звичайні ШІ-рішення програють системному підходу</p>
                 </div>
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Card 1 -->
-                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
-                        <div class="card-body">
-                            <div class="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center text-3xl mb-4">🔍</div>
-                            <h3 class="card-title text-2xl mb-2">Deep Scan</h3>
-                            <p class="text-white/80">Повний аналіз структури проекту, промтів та навичок в один клік для максимальної прозорості.</p>
+                    <div class="md:col-span-2 glass-panel p-10 rounded-3xl group gradient-border">
+                        <div class="flex flex-col md:flex-row gap-10 items-center">
+                            <div class="md:w-1/2">
+                                <h3 class="text-2xl font-bold text-white mb-6" data-i18n="why.problem_title">Втрата Контексту</h3>
+                                <p class="text-gray-400 leading-relaxed mb-6" data-i18n="why.problem_desc">Чат-боти «забувають» деталі на другому кроці. Це веде до фінансових втрат та помилок, які бізнес не може дозволити.</p>
+                                <div class="badge badge-error badge-outline" data-i18n="why.problem_badge">Проблема #1</div>
+                            </div>
+                            <div class="md:w-1/2 bg-black/40 rounded-2xl p-6 border border-red-500/10">
+                                <div class="text-red-400 font-mono text-sm" data-i18n="why.error_msg">Error 529: Logic Collision detected. Context buffer overflow.</div>
+                            </div>
                         </div>
                     </div>
-                    <!-- Card 2 -->
-                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
-                        <div class="card-body">
-                            <div class="w-16 h-16 bg-secondary/10 rounded-xl flex items-center justify-center text-3xl mb-4">🛡️</div>
-                            <h3 class="card-title text-2xl mb-2">Conflict Guard</h3>
-                            <p class="text-white/80">Виявлення логічних суперечностей в інструкціях, які призводять до галюцинацій та помилок агента.</p>
+                    
+                    <div class="glass-panel p-10 rounded-3xl gradient-border hover:translate-y-[-10px] transition-all">
+                        <h3 class="text-xl font-bold text-white mb-4" data-i18n="why.vendor_lock_title">Vendor Lock-in</h3>
+                        <p class="text-gray-400 text-sm" data-i18n="why.vendor_lock_desc">Залежність від одного провайдера (тільки OpenAI) робить ваш бізнес вразливим.</p>
+                        <div class="mt-8 text-primary font-bold" data-i18n="why.vendor_lock_cta">Міксуйте моделі вільно.</div>
+                    </div>
+
+                    <div class="glass-panel p-10 rounded-3xl border-primary/20 bg-primary/5">
+                        <h3 class="text-xl font-bold text-primary mb-4" data-i18n="why.sol_title">Orchestrator Solution</h3>
+                        <p class="text-gray-300 text-sm" data-i18n="why.sol_desc">Ми автоматично зберігаємо State (пам'ять) і передаємо її найдешевшій або найрозумнішій моделі в залежності від задачі.</p>
+                        <div class="mt-8 flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                            <div class="w-2 h-2 rounded-full bg-primary animate-pulse delay-75"></div>
+                            <div class="w-2 h-2 rounded-full bg-primary animate-pulse delay-150"></div>
                         </div>
                     </div>
-                    <!-- Card 3 -->
-                    <div class="card bg-base-100 shadow-xl hover:-translate-y-2 transition-transform duration-300 border border-white/5">
-                        <div class="card-body">
-                            <div class="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center text-3xl mb-4">📉</div>
-                            <h3 class="card-title text-2xl mb-2">ROI Optimizer</h3>
-                            <p class="text-white/80">Економія до 40% на токенах через видалення надлишкових запитів та оптимізацію контекстного вікна.</p>
+
+                    <div class="md:col-span-2 glass-panel p-10 rounded-3xl gradient-border">
+                        <div class="flex flex-col md:flex-row gap-10 items-center">
+                            <div class="md:w-1/3">
+                                <div class="text-4xl mb-4">🛡️</div>
+                                <h3 class="text-xl font-bold text-white mb-2" data-i18n="why.gov_title">Governance Guard</h3>
+                                <p class="text-xs text-gray-500 uppercase tracking-widest" data-i18n="why.gov_badge">Digital Safe</p>
+                            </div>
+                            <div class="md:w-2/3">
+                                <p class="text-gray-300" data-i18n="why.gov_desc">Ми не просто «з'єднуємо» — ми аудіюємо. Кожен крок перевіряється на логічні конфлікти та безпеку ще до виконання.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New: Mirror Law Guard -->
+                    <div class="glass-panel p-10 rounded-3xl border-secondary/20 bg-secondary/5 hover:translate-y-[-10px] transition-all">
+                        <div class="text-3xl mb-4">🪞</div>
+                        <h3 class="text-xl font-bold text-secondary mb-4" data-i18n="why.mirror_title">Mirror Law Guard</h3>
+                        <p class="text-gray-400 text-sm" data-i18n="why.mirror_desc">Маніфест можливостей автоматично перевіряє синхронізацію між агентом і ядром продукту. Незгода = CRITICAL Alert.</p>
+                        <div class="mt-6 font-mono text-xs text-secondary/70">capabilities.json ✓ synced</div>
+                    </div>
+
+                    <!-- New: Skill Conflict Resolver -->
+                    <div class="glass-panel p-10 rounded-3xl border-accent/20 bg-accent/5 hover:translate-y-[-10px] transition-all">
+                        <div class="text-3xl mb-4">🧩</div>
+                        <h3 class="text-xl font-bold text-accent mb-4" data-i18n="why.conflict_title">Skill Conflict Resolver</h3>
+                        <p class="text-gray-400 text-sm" data-i18n="why.conflict_desc">Виявляє перетини між скілами за 6 функціональними доменами. Рекомендує: MERGE (схожі) або KEEP BEST (різні).</p>
+                        <div class="mt-6 text-xs text-accent/70 font-mono">design · security · legal · ai-model</div>
+                    </div>
+
+                    <!-- New: Free Bonus Skill -->
+                    <div class="glass-panel p-10 rounded-3xl border-yellow-500/20 bg-yellow-500/5 hover:translate-y-[-10px] transition-all">
+                        <div class="text-3xl mb-4">🎁</div>
+                        <h3 class="text-xl font-bold text-yellow-400 mb-4" data-i18n="why.bonus_title">Free Bonus Skill</h3>
+                        <p class="text-gray-400 text-sm" data-i18n="why.bonus_desc">При першому запуску система виявляє відсутні експертні скіли та пропонує завантажити «The Ultimate UI» абсолютно безкоштовно.</p>
+                        <div class="mt-6 text-xs text-yellow-400/70 font-mono">github.com/TymurJan ↓ free</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases (Interactive) -->
+        <section id="cases" class="py-32 bg-black/40">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                    <div class="max-w-xl">
+                        <h2 class="font-outfit text-4xl md:text-5xl font-bold text-white mb-6" data-i18n="cases.header">Від теорії до <span class="text-primary italic">експлуатації</span></h2>
+                        <p class="text-gray-500 leading-relaxed text-lg" data-i18n="cases.subtitle">Виберіть свій бізнес-кейс і подивіться, як автоматизація виглядає на практиці.</p>
+                    </div>
+                    <a href="#contact" class="btn btn-outline btn-primary rounded-xl px-10" data-i18n="cases.btn_all">Всі Сценарії</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Case 1 -->
+                    <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
+                        <div class="card-body p-10 bg-gradient-to-br from-primary/5 to-transparent">
+                            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-primary/20 transition-colors">🤖</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.smm_title">Content Dept</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.smm_desc">Агент-аналітик знаходить тренд → Копірайтер пише пост → Коректор видає фінал. Повна автоматизація SMM без копіпасту.</p>
+                            <div class="card-actions justify-end mt-4">
+                                <span class="text-primary text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform" data-i18n="cases.btn_learn">Дізнатись більше →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Case 2 -->
+                    <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
+                        <div class="card-body p-10 bg-gradient-to-br from-secondary/5 to-transparent">
+                            <div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-secondary/20 transition-colors">📊</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.analyst_title">Smart Analyst</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.analyst_desc">Завантажте 100 PDF-звітів. Система витягне дані, порівняє їх і побудує фінальні висновки в одному діалозі.</p>
+                            <div class="card-actions justify-end mt-4">
+                                <span class="text-secondary text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform" data-i18n="cases.btn_learn">Дізнатись більше →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Case 3 -->
+                    <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
+                        <div class="card-body p-10 bg-gradient-to-br from-accent/5 to-transparent">
+                            <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-accent/20 transition-colors">🛠️</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.support_title">Support 24/7</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.support_desc">Розуміння емоцій, доступ до CRM та автоматичне формування відповіді за 5 секунд. Ідеальна підтримка клієнтів.</p>
+                            <div class="card-actions justify-end mt-4">
+                                <span class="text-accent text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform" data-i18n="cases.btn_learn">Дізнатись більше →</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -147,75 +362,234 @@
         </section>
 
         <!-- Social Impact -->
-        <section id="impact" class="py-24 overflow-hidden relative" style="background-color: var(--bg-deep);">
-            <div class="container mx-auto px-4">
-                <div class="card lg:card-side glass-premium shadow-2xl overflow-hidden border border-white/10 group">
-                    <figure class="lg:w-1/2 relative">
-                        <img src="heart.png" alt="Digital Heart" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 animate-float" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-base-300/80 to-transparent lg:hidden"></div>
-                    </figure>
-                    <div class="card-body lg:w-1/2 p-10 md:p-16">
-                        <div class="badge badge-secondary badge-outline mb-6">Соціальна Відповідальність</div>
-                        <h2 class="card-title text-4xl font-orbitron font-bold mb-6 text-gradient">Цифрове Серце Проєкту</h2>
-                        <p class="text-lg text-white/80 mb-10 leading-relaxed">
-                            Ми будуємо майбутнє, де технології мають душу. <strong>20% прибутку</strong> від кожного комерційного аудиту ми спрямовуємо на підтримку проєкту <strong class="text-primary italic">«аШрам»</strong> — простору реінтеграції для ветеранів та ветеранок.
-                        </p>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-10 text-center sm:text-left">
-                            <div class="stat p-0">
-                                <div class="stat-value text-primary font-orbitron">20%</div>
-                                <div class="stat-desc text-white/60 text-sm mt-1 uppercase tracking-tighter">На статутну діяльність</div>
-                            </div>
-                            <div class="stat p-0">
-                                <div class="stat-value text-secondary font-orbitron">аШрам</div>
-                                <div class="stat-desc text-white/60 text-sm mt-1 uppercase tracking-tighter">Підтримка спільноти</div>
-                            </div>
+        <section id="impact" class="py-32 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-secondary/5 blur-[150px] rounded-full -z-10"></div>
+            <div class="container mx-auto px-6 text-center">
+                <div class="max-w-5xl mx-auto glass-panel p-16 md:p-24 rounded-[4rem] border-white/10 relative group bg-black/60">
+                    
+                    <!-- The Beating Heart (Cinematic Video Support) -->
+                    <div class="absolute -top-24 right-0 w-96 h-96 pointer-events-none z-10 overflow-visible">
+                        <div class="w-full h-full flex items-center justify-center p-10">
+                            <video id="vfx-heart" class="w-full h-full object-contain opacity-0 transition-opacity duration-1000" muted loop playsinline poster="heart_live.png">
+                                <source src="heart_motion.webm" type="video/webm; codecs=vp9">
+                                <source src="heart_motion.mp4" type="video/mp4">
+                            </video>
+                            <img id="vfx-heart-fallback" src="heart_live.png" class="w-full h-full object-contain animate-heartbeat opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000 filter drop-shadow-[0_0_30px_rgba(255,0,122,0.3)]" alt="Live Digital Heart" />
                         </div>
+                    </div>
 
-                        <div class="alert bg-primary/5 border-primary/20 py-4 rounded-xl">
-                            <span class="text-sm font-medium italic">✨ Скоро: Запуск «Спільноти Благодійників» для підтримки ветеранів.</span>
+                    <script>
+                        const heartVid = document.getElementById('vfx-heart');
+                        const heartImg = document.getElementById('vfx-heart-fallback');
+                        heartVid.oncanplay = () => {
+                            heartVid.classList.replace('opacity-0', 'opacity-100');
+                            heartImg.style.display = 'none';
+                            heartVid.play();
+                        };
+                    </script>
+                    
+                    <div class="badge badge-secondary badge-outline mb-10 py-4 px-8 text-sm font-bold tracking-widest uppercase relative z-20" data-i18n="impact.badge">Соціальна Місія</div>
+                    <h2 class="font-outfit text-5xl md:text-7xl font-bold bg-gradient-to-r from-secondary via-accent to-red-500 bg-clip-text text-transparent mb-10 tracking-tight relative z-20" data-i18n="impact.title">Цифрове Серце</h2>
+                    <p class="text-2xl text-gray-300 leading-relaxed mb-12 max-w-2xl mx-auto relative z-20" id="impact-desc">
+                        Ми будуємо ШІ з українською душею. <strong class="text-white">20% прибутку</strong> ми спрямовуємо на підтримку проєкту <strong class="text-secondary italic">«Ашрам»</strong> — простору реінтеграції для наших ветеранів та ветеранок.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-8 justify-center items-center">
+                        <div class="text-center">
+                            <div class="text-5xl font-outfit font-bold text-white mb-2">20%</div>
+                            <div class="text-xs uppercase tracking-widest text-gray-500" data-i18n="impact.stat_desc">На статутну діяльність</div>
                         </div>
+                        <div class="h-10 w-px bg-white/10 hidden sm:block"></div>
+                        <div class="text-center">
+                            <div class="text-2xl font-outfit font-bold text-secondary mb-2 uppercase tracking-widest leading-none">Ашрам</div>
+                            <div class="text-xs uppercase tracking-widest text-gray-500" data-i18n="impact.stat_support">Система Підтримки</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-16 text-center">
+                        <a href="https://secure.wayforpay.com/button/bc73d6e3a3dd7" target="_blank" class="btn btn-secondary btn-lg rounded-full px-12 shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:scale-105 transition-transform border-none text-white whitespace-nowrap" data-i18n="impact.donate_btn">Підтримати проєкт «Ашрам»</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact/CTA -->
-        <section id="contact" class="py-24" style="background-color: #0a0a0a;">
-            <div class="container mx-auto px-4 text-center">
-                <div class="max-w-3xl mx-auto glass-premium p-12 md:p-20 rounded-[3rem] border-white/10 shadow-2xl">
-                    <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-6">Готові до професійного аудиту?</h2>
-                    <p class="text-xl text-white/80 mb-12">
-                        Наші B2B рішення допомагають компаніям будувати надійні, безпечні та економічно вигідні AI-системи.
-                    </p>
-                    <div class="flex flex-col items-center gap-6">
-                        <a href="mailto:ngo.talan.ua@gmail.com" class="btn btn-primary btn-lg btn-wide rounded-full text-lg shadow-xl shadow-primary/20">
-                            Написати нам
-                        </a>
-                        <p class="text-sm text-white/50 uppercase tracking-widest leading-none">ngo.talan.ua@gmail.com</p>
-                    </div>
+        <!-- Final CTA -->
+        <section id="contact" class="py-40">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="font-outfit text-5xl md:text-7xl font-bold text-white mb-10 tracking-tight" data-i18n="cta.title">Готові до <span class="text-primary italic">досконалості?</span></h2>
+                <p class="text-gray-400 text-xl mb-16 max-w-2xl mx-auto" data-i18n="cta.desc">Зробіть вашу ШІ-інфраструктуру професійною, безпечною та прибутковою вже сьогодні.</p>
+                <div class="flex flex-col items-center gap-8">
+                    <a href="https://secure.wayforpay.com/button/badcceef62648" target="_blank" class="btn btn-primary btn-xl rounded-full px-16 text-xl shadow-2xl shadow-primary/40 hover:scale-105 transition-transform" data-i18n="cta.btn">Придбати за $399</a>
+                    <div class="text-gray-600 font-mono text-sm tracking-widest uppercase leading-none">ngo.talan.ua@gmail.com</div>
                 </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="footer footer-center p-10 text-base-content border-t border-white/5" style="background-color: var(--bg-deep);">
-        <aside>
-            <div class="font-orbitron font-bold text-2xl mb-4 tracking-widest leading-none">
-                AI<span class="text-primary">ORCHESTRATOR</span>
+    <footer class="py-20 border-t border-white/5" style="background-color: var(--bg-deep);">
+        <div class="container mx-auto px-6 flex flex-col items-center">
+            <div class="font-outfit font-bold text-3xl tracking-widest text-white mb-8 leading-none">AI<span class="text-primary">ORCHESTRATOR</span></div>
+            <p class="text-gray-600 text-sm max-w-lg text-center mb-12" data-i18n="footer.desc">Перша в світі елітна система управління, аудиту та оркестрації для автономних AI-інфраструктур.</p>
+            <div class="flex gap-10 text-xs uppercase tracking-[0.3em] font-medium text-gray-500 mb-12">
+                <a href="#hero" class="hover:text-primary transition-colors" data-i18n="nav.home">Home</a>
+                <a href="#why" class="hover:text-primary transition-colors" data-i18n="why.gov_title">Safe</a>
+                <a href="#impact" class="hover:text-primary transition-colors" data-i18n="nav.impact">Soul</a>
             </div>
-            <p class="text-white/60 max-w-md mx-auto">
-                Перша в світі автономна система управління та аудиту для автономних AI-інфраструктур.
-            </p>
-            <p class="mt-8 text-sm opacity-40">
-                &copy; 2026 Powered by <a href="https://github.com/TymurJan" class="link link-hover">TymurJan</a>. Universal AI Orchestrator.
-            </p>
-            <p class="mt-2 font-semibold italic text-xs tracking-widest text-primary/50 uppercase leading-none">
-                Штучна душа • аШрам • ГО ТАЛАН ЮА
-            </p>
-        </aside>
+            <div class="text-[10px] text-gray-700 uppercase tracking-widest text-center">
+                &copy; 2026 Powered by <a href="https://github.com/TymurJan" class="hover:text-white transition-colors">TymurJan</a> • ГО ТАЛАН ЮА • Ашрам
+            </div>
+        </div>
     </footer>
 
+    <script>
+        const translations = {
+            ua: {
+                "nav.home": "Головна",
+                "nav.why": "Можливості",
+                "nav.cases": "Кейси",
+                "nav.impact": "Місія",
+                "nav.get": "Ліцензія",
+                "hero.badge": "Mirror Law Guard v2.0 — Активний",
+                "hero.title": "Оркеструйте <br/> <span class=\"bg-gradient-to-r from-primary via-blue-400 to-secondary bg-clip-text text-transparent\">майбутнє</span>, а не код",
+                "hero.desc": "Universal AI Orchestrator — це «диригент» для ваших нейромереж. Ми автоматично передаємо контекст, пам'ять та завдання між GPT-4, Claude та вашими базами даних.",
+                "hero.btn_main": "Отримати Ліцензію ($399)",
+                "hero.btn_sec": "Переваги",
+                "why.title": "Хвороба vs Імунітет",
+                "why.subtitle": "Чому звичайні ШІ-рішення програють системному подходу",
+                "why.problem_title": "Втрата Контексту",
+                "why.problem_desc": "Чат-боти «забувань» деталі на другому кроці. Це веде до фінансових втрат та помилок, які бізнес не може дозволити.",
+                "why.problem_badge": "Проблема #1",
+                "why.error_msg": "Error 529: Logic Collision detected. Context buffer overflow.",
+                "why.vendor_lock_title": "Vendor Lock-in",
+                "why.vendor_lock_desc": "Залежність від одного провайдера (тільки OpenAI) робить ваш бізнес вразливим.",
+                "why.vendor_lock_cta": "Міксуйте моделі вільно.",
+                "why.sol_title": "Orchestrator Solution",
+                "why.sol_desc": "Ми автоматично зберігаємо State (пам'ять) і передаємо її найдешевшій або найрозумнішій моделі в залежності від задачі.",
+                "why.gov_title": "Governance Guard",
+                "why.gov_badge": "Digital Safe",
+                "why.gov_desc": "Ми не просто «з'єднуємо» — ми аудіюємо. Кожен крок перевіряється на логічні конфлікти та безпеку ще до виконання. Stop-кран блокує дії без дозволу.",
+                "why.mirror_title": "Mirror Law Guard",
+                "why.mirror_desc": "Маніфест можливостей автоматично перевіряє синхронізацію між агентом і ядром продукту. Будь-яка невідповідність — CRITICAL Alert.",
+                "why.conflict_title": "Skill Conflict Resolver",
+                "why.conflict_desc": "Виявляє перетини між скілами за 6 функціональними доменами. Рекомендує: MERGE (схожі) або KEEP BEST (різні).",
+                "why.bonus_title": "Безкоштовний Бонус-Скіл",
+                "why.bonus_desc": "При першому запуску система виявляє відсутні скіли та пропонує «The Ultimate UI» від офіційного реєстру абсолютно безкоштовно.",
+                "cases.header": "Від теорії до <span class=\"text-primary italic\">експлуатації</span>",
+                "cases.subtitle": "Виберіть свій бізнес-кейс і подивіться, як автоматизація виглядає на практиці.",
+                "cases.btn_all": "Перейти до оплати",
+                "cases.smm_title": "Content Dept",
+                "cases.smm_desc": "Агент-аналітик знаходить тренд → Копірайтер пише пост → Коректор видає фінал. Повна автоматизація SMM без копіпасту.",
+                "cases.analyst_title": "Smart Analyst",
+                "cases.analyst_desc": "Завантажте 100 PDF-звітів. Система витягне дані, порівняє їх і побудує фінальні висновки в одному діалозі.",
+                "cases.support_title": "Support 24/7",
+                "cases.support_desc": "Розуміння емоцій, доступ до CRM та автоматичне формування відповіді за 5 секунд. Ідеальна підтримка клієнтів.",
+                "cases.resolver_title": "Skill Resolver",
+                "cases.resolver_desc": "Завантажили два схожих AI-скіли? Система автоматично порівняє їх і порекомендує: об'єднати чи залишити кращий.",
+                "cases.btn_learn": "Дізнатись більше →",
+                "impact.badge": "Соціальна Місія",
+                "impact.title": "Цифрове Серце",
+                "impact.desc": "Ми будуємо ШІ з українською душею. <strong class=\"text-white\">20% прибутку</strong> ми спрямовуємо на підтримку проєкту <strong class=\"text-secondary italic\">«Ашрам»</strong> — простору реінтеграції для наших ветеранів та ветеранок.",
+                "impact.stat_desc": "На статутну діяльність",
+                "impact.stat_support": "Система Підтримки",
+                "impact.donate_btn": "Підтримати проєкт «Ашрам»",
+                "cta.title": "Готові до <span class=\"text-primary italic\">досконалості?</span>",
+                "cta.desc": "Зробіть вашу ШІ-інфраструктуру професійною, безпечною та прибутковою вже сьогодні.",
+                "cta.btn": "Придбати за $399",
+                "footer.desc": "Перша в світі елітна система управління, аудиту та оркестрації для автономних AI-інфраструктур."
+            },
+            en: {
+                "nav.home": "Home",
+                "nav.why": "Capabilities",
+                "nav.cases": "Cases",
+                "nav.impact": "Mission",
+                "nav.get": "License",
+                "hero.badge": "Mirror Law Guard v2.0 — Active",
+                "hero.title": "Orchestrate <br/> <span class=\"bg-gradient-to-r from-primary via-blue-400 to-secondary bg-clip-text text-transparent\">the future</span>, not code",
+                "hero.desc": "Universal AI Orchestrator is a 'conductor' for your neural networks. We automatically pass context, memory, and tasks between GPT-4, Claude, and your databases.",
+                "hero.btn_main": "Get License ($399)",
+                "hero.btn_sec": "Benefits",
+                "why.title": "Disease vs Immunity",
+                "why.subtitle": "Why standard AI solutions fail without a systemic approach",
+                "why.problem_title": "Context Loss",
+                "why.problem_desc": "Chatbots 'forget' details on the second step. This leads to financial losses and errors that businesses cannot afford.",
+                "why.problem_badge": "Problem #1",
+                "why.error_msg": "Error 529: Logic Collision detected. Context buffer overflow.",
+                "why.vendor_lock_title": "Vendor Lock-in",
+                "why.vendor_lock_desc": "Dependence on a single provider (OpenAI only) makes your business vulnerable.",
+                "why.vendor_lock_cta": "Mix models freely.",
+                "why.sol_title": "Orchestrator Solution",
+                "why.sol_desc": "We automatically save State (memory) and pass it to the cheapest or smartest model depending on the task.",
+                "why.gov_title": "Governance Guard",
+                "why.gov_badge": "Digital Safe",
+                "why.gov_desc": "We don't just 'connect' — we audit. Every step is verified for logical conflicts and security before execution. Stop-Valve blocks actions without user approval.",
+                "why.mirror_title": "Mirror Law Guard",
+                "why.mirror_desc": "The capabilities manifest automatically validates synchronization between the agent and product core. Any mismatch triggers a CRITICAL Alert.",
+                "why.conflict_title": "Skill Conflict Resolver",
+                "why.conflict_desc": "Detects overlapping skills across 6 functional domains. Recommends: MERGE (similar depth) or KEEP BEST (different coverage).",
+                "why.bonus_title": "Free Bonus Skill",
+                "why.bonus_desc": "On first launch, the system detects missing expert skills and offers 'The Ultimate UI' from the official registry — completely free.",
+                "cases.header": "From theory to <span class=\"text-primary italic\">operation</span>",
+                "cases.subtitle": "Choose your business case and see how automation looks in practice.",
+                "cases.btn_all": "Proceed to Checkout",
+                "cases.smm_title": "Content Dept",
+                "cases.smm_desc": "Analyst Agent finds trend → Copywriter writes post → Corrector issues final. Full SMM automation without copy-pasting.",
+                "cases.analyst_title": "Smart Analyst",
+                "cases.analyst_desc": "Upload 100 PDF reports. System extracts data, compares it, and builds final conclusions in one dialogue.",
+                "cases.support_title": "Support 24/7",
+                "cases.support_desc": "Emotional understanding, CRM access, and automatic response in 5 seconds. Perfect customer support.",
+                "cases.resolver_title": "Skill Resolver",
+                "cases.resolver_desc": "Downloaded two similar AI skills? The system automatically compares them and recommends: merge or keep the best one.",
+                "cases.btn_learn": "Learn more →",
+                "impact.badge": "Social Mission",
+                "impact.title": "Digital Heart",
+                "impact.desc": "We build AI with a Ukrainian soul. <strong class='text-white'>20% of profit</strong> goes to support <strong class='text-secondary italic'>'Ashram'</strong> — a reintegration space for our veterans.",
+                "impact.stat_desc": "For statutory activities",
+                "impact.stat_support": "Support System",
+                "impact.donate_btn": "Support 'Ashram' Project",
+                "cta.title": "Ready for <span class=\"text-primary italic\">excellence?</span>",
+                "cta.desc": "Make your AI infrastructure professional, secure, and profitable today.",
+                "cta.btn": "Purchase for $399",
+                "footer.desc": "The world's first elite management, audit, and orchestration system for autonomous AI infrastructures."
+            }
+        };
+
+        function setLanguage(lang) {
+            localStorage.setItem('preferred_lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Special case for impact desc (if it has HTML)
+            const impactDesc = document.getElementById('impact-desc');
+            if (impactDesc) impactDesc.innerHTML = translations[lang]["impact.desc"];
+
+            // Update buttons style
+            const uaBtn = document.getElementById('lang-ua');
+            const enBtn = document.getElementById('lang-en');
+            
+            if (uaBtn && enBtn) {
+                uaBtn.className = lang === 'ua' ? 'lang-btn text-xs font-bold text-primary cursor-pointer' : 'lang-btn text-xs font-bold text-white/40 hover:text-white cursor-pointer';
+                enBtn.className = lang === 'en' ? 'lang-btn text-xs font-bold text-primary cursor-pointer' : 'lang-btn text-xs font-bold text-white/40 hover:text-white cursor-pointer';
+            }
+        }
+
+        // Initialize from storage or default to UA
+        const savedLang = localStorage.getItem('preferred_lang') || 'ua';
+        setLanguage(savedLang);
+
+        window.addEventListener('scroll', () => {
+             const header = document.querySelector('header');
+             if (window.scrollY > 50) {
+                 header.classList.add('bg-black/80', 'backdrop-blur-xl', 'py-4');
+                 header.classList.remove('bg-transparent', 'py-8');
+             } else {
+                 header.classList.remove('bg-black/80', 'backdrop-blur-xl', 'py-4');
+                 header.classList.add('bg-transparent', 'py-8');
+             }
+        });
+    </script>
 </body>
 </html>
