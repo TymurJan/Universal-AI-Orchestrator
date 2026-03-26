@@ -107,13 +107,12 @@ class GovernanceEngine:
         return findings
 
     def audit_skill_conflicts(self) -> List[Dict[str, Any]]:
-        """Scan installed agent skills for domain overlaps and potential conflicts."""
+        """Scan installed agent skills for domain overlaps and recommend resolution."""
         findings = []
         skills_path = self.project_path / ".agents" / "skills"
         if not skills_path.exists():
             return []
 
-        # Domain keyword groups — 2+ skills in the same group = potential conflict
         domain_groups: Dict[str, List[str]] = {
             "design": ["ui", "ux", "design", "frontend", "css", "tailwind", "figma", "wcag", "interface", "visual"],
             "security": ["security", "auth", "vault", "pentest", "access", "credential", "vulnerability"],
@@ -123,34 +122,94 @@ class GovernanceEngine:
             "ai-model": ["gpt", "claude", "llm", "model", "inference", "openai", "anthropic"],
         }
 
-        # Parse each installed skill's SKILL.md for domain keywords
-        skill_map: Dict[str, List[str]] = {}
+        # Parse each skill: content, size, domain keyword density
+        skill_data: Dict[str, Dict] = {}
         for skill_dir in skills_path.iterdir():
             if not skill_dir.is_dir():
                 continue
             skill_md = skill_dir / "SKILL.md"
             if not skill_md.exists():
                 continue
-            content = skill_md.read_text(errors="ignore").lower()
-            matched = [domain for domain, kws in domain_groups.items() if any(kw in content for kw in kws)]
+            content = skill_md.read_text(errors="ignore")
+            lower = content.lower()
+            matched = [domain for domain, kws in domain_groups.items() if any(kw in lower for kw in kws)]
             if matched:
-                skill_map[skill_dir.name] = matched
+                skill_data[skill_dir.name] = {
+                    "domains": matched,
+                    "lines": len(content.splitlines()),
+                    "density": {d: sum(1 for kw in kws if kw in lower) for d, kws in domain_groups.items() if d in matched}
+                }
 
-        # Find overlaps: 2+ skills sharing the same domain
+        # Find overlaps and compare skills in same domain
         domain_to_skills: Dict[str, List[str]] = {}
-        for skill_name, domains in skill_map.items():
-            for domain in domains:
+        for skill_name, data in skill_data.items():
+            for domain in data["domains"]:
                 domain_to_skills.setdefault(domain, []).append(skill_name)
 
         for domain, skills in domain_to_skills.items():
-            if len(skills) > 1:
+            if len(skills) < 2:
+                continue
+
+            # Compare by line count (richness) + keyword density in this domain
+            scored = sorted(
+                skills,
+                key=lambda s: skill_data[s]["lines"] + skill_data[s]["density"].get(domain, 0) * 10,
+                reverse=True
+            )
+            winner = scored[0]
+            losers = scored[1:]
+
+            # Determine if they are very close (merge candidate) or clearly different
+            winner_score = skill_data[winner]["lines"] + skill_data[winner]["density"].get(domain, 0) * 10
+            loser_score = skill_data[losers[0]]["lines"] + skill_data[losers[0]]["density"].get(domain, 0) * 10 if losers else 0
+            ratio = loser_score / winner_score if winner_score > 0 else 0
+
+            if ratio > 0.75:
+                resolution = f"MERGE recommended: '{winner}' and '{losers[0]}' are similar in depth. Consider combining them into one comprehensive skill."
+            else:
+                resolution = f"KEEP '{winner}' (richer), REMOVE '{', '.join(losers)}': significantly less coverage."
+
+            findings.append({
+                "type": "Skill Conflict",
+                "severity": "HIGH",
+                "item": f"Domain overlap: '{domain}'",
+                "file": ".agents/skills/",
+                "line": 0,
+                "desc": f"Conflict in '{domain}' domain between {skills}. RESOLUTION: {resolution}"
+            })
+        return findings
+
+    def check_mirror_law_compliance(self) -> List[Dict[str, Any]]:
+        """Check if all capabilities in capabilities.json are marked as synced (Mirror Law Guard)."""
+        import json
+        findings = []
+        manifest_path = self.project_path / ".orchestrator" / "capabilities.json"
+        if not manifest_path.exists():
+            findings.append({
+                "type": "Mirror Law",
+                "severity": "CRITICAL",
+                "item": "capabilities.json missing",
+                "file": str(manifest_path),
+                "line": 0,
+                "desc": "Mirror Law manifest not found. Cannot verify Agent ↔ Product sync. Create .orchestrator/capabilities.json"
+            })
+            return findings
+
+        try:
+            data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            findings.append({"type": "Mirror Law", "severity": "CRITICAL", "item": "Parse error", "file": str(manifest_path), "line": 0, "desc": str(e)})
+            return findings
+
+        for cap in data.get("capabilities", []):
+            if cap.get("status") != "synced":
                 findings.append({
-                    "type": "Skill Conflict",
-                    "severity": "HIGH",
-                    "item": f"Domain overlap: '{domain}'",
-                    "file": ".agents/skills/",
+                    "type": "Mirror Law Violation",
+                    "severity": "CRITICAL",
+                    "item": cap.get("name", "Unknown"),
+                    "file": str(manifest_path),
                     "line": 0,
-                    "desc": f"Skills {skills} cover domain '{domain}'. Risk of contradictory AI instructions."
+                    "desc": f"Capability '{cap['id']}' is NOT synced between Agent ('{cap['agent_section']}') and Product ('{cap['product_function']}')."
                 })
         return findings
 
@@ -159,6 +218,7 @@ class GovernanceEngine:
         console.print("[bold cyan]🛡️ Universal AI Orchestrator: Starting Deep Scan...[/bold cyan]")
         
         all_findings = []
+        all_findings.extend(self.check_mirror_law_compliance())
         all_findings.extend(self.scan_for_secrets())
         all_findings.extend(self.audit_logic_collisions())
         all_findings.extend(self.audit_ui_accessibility())

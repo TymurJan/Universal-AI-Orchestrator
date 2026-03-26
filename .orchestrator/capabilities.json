@@ -1,0 +1,62 @@
+{
+  "_comment": "Mirror Law Compliance Manifest. Lists all capabilities that MUST exist in BOTH the Agent Skill (SKILL.md) and the Product Engine (engine.py). Any new feature added to one MUST be reflected in the other.",
+  "version": "1.0.0",
+  "capabilities": [
+    {
+      "id": "secret-scan",
+      "name": "Security: Secret Scanner",
+      "agent_section": "1.4 Security & Compliance",
+      "product_function": "scan_for_secrets",
+      "status": "synced"
+    },
+    {
+      "id": "logic-collision",
+      "name": "Logic: Collision Detector",
+      "agent_section": "1.1 Conflict Detection",
+      "product_function": "audit_logic_collisions",
+      "status": "synced"
+    },
+    {
+      "id": "ui-accessibility",
+      "name": "UI/UX: Accessibility Audit",
+      "agent_section": "1.2 UI/UX Overview",
+      "product_function": "audit_ui_accessibility",
+      "status": "synced"
+    },
+    {
+      "id": "skill-conflict",
+      "name": "Skills: 6-Domain Conflict Detector",
+      "agent_section": "1.1 Conflict Detection (6-domain table)",
+      "product_function": "audit_skill_conflicts",
+      "status": "synced"
+    },
+    {
+      "id": "skill-resolution",
+      "name": "Skills: Conflict Resolution Recommender",
+      "agent_section": "1.1 Conflict Detection (resolution logic)",
+      "product_function": "audit_skill_conflicts (resolution block)",
+      "status": "synced"
+    },
+    {
+      "id": "manager-stop-valve",
+      "name": "Manager: Stop-Valve on Final Actions",
+      "agent_section": "1.6 Global Manager Function",
+      "product_function": "Agent.execute (is_manager check)",
+      "status": "synced"
+    },
+    {
+      "id": "token-policy",
+      "name": "Manager: Token Policy Control",
+      "agent_section": "1.6 Global Manager Function",
+      "product_function": "Orchestra.run_sequence (token policy check)",
+      "status": "synced"
+    },
+    {
+      "id": "skill-manager",
+      "name": "Skills: Free Bonus Skill Downloader",
+      "agent_section": "1.6 Global Manager Function (Update Hunter)",
+      "product_function": "SkillManager.offer_bonus_skills",
+      "status": "synced"
+    }
+  ]
+}
