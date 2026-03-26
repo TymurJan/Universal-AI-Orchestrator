@@ -14,7 +14,7 @@ console = Console()
 
 def main():
     console.print("[bold cyan]🚀 Universal AI Orchestrator v1.0.0[/bold cyan]")
-    console.print("[dim]Powered by GO Talan UA[/dim]\n")
+    console.print("[dim]Agnostic Multi-Agent Governance Core[/dim]\n")
 
     # Step 0: User Agreement Prompt (TERMS OF USE)
     console.print("[bold yellow]Перед початком роботи ви маєте погодитись з TERMS_OF_USE.md[/bold yellow]")
