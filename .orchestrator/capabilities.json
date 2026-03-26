@@ -57,6 +57,13 @@
       "agent_section": "1.6 Global Manager Function (Update Hunter)",
       "product_function": "SkillManager.offer_bonus_skills",
       "status": "synced"
+    },
+    {
+      "id": "ui-spatial-integrity",
+      "name": "UI/UX: Spatial & Event Integrity Monitor",
+      "agent_section": "1.2 UI/UX Overview (Overlap & Bubbling)",
+      "product_function": "audit_ui_rendering_overlap",
+      "status": "pending"
     }
   ]
 }
