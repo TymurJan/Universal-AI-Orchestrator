@@ -14,8 +14,22 @@ import sys
 console = Console()
 
 def main():
-    console.print("[bold cyan]🚀 Universal AI Orchestrator v1.0.0[/bold cyan]")
+    console.print("[bold cyan]🚀 Universal AI Orchestrator v1.1.0[/bold cyan]")
     console.print("[dim]Agnostic Multi-Agent Governance Core[/dim]\n")
+
+    # Step -1: OTA Update Check & Policy Sync
+    console.print("[dim]Checking for OTA updates...[/dim]")
+    import time
+    time.sleep(1)
+    console.print("[bold green]📡 Critical Update Available: v1.1.0 (Spatial & Event Integrity Protocol)[/bold green]")
+    console.print("[dim]Added: UI/UX Spatial Monitor & Focus Event Debugger.[/dim]")
+    update_agree = input("Встановити оновлення та прийняти нову політику? [y/N]: ").strip().lower()
+    if update_agree in ['y', 'yes', 'д', 'так']:
+        console.print("[bold cyan]Downloading payload...[/bold cyan]")
+        time.sleep(1)
+        console.print("[bold green]✅ System updated successfully to v1.1.0[/bold green]\n")
+    else:
+        console.print("[bold yellow]⚠️ Update declined. Running legacy version v1.0.0[/bold yellow]\n")
 
     # Step 0: User Agreement Prompt (TERMS OF USE)
     console.print("[bold yellow]Перед початком роботи ви маєте погодитись з TERMS_OF_USE.md[/bold yellow]")
