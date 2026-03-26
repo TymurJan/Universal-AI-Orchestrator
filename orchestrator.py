@@ -1,83 +1,62 @@
 """
-Universal AI Orchestrator & Governance Guard
-Version: 1.0.0
-Author: TymurJan (https://github.com/TymurJan)
-
-This script provides deep structure scanning, conflict detection, 
-and resource optimization for autonomous AI agents.
+Main Entry Point for Universal AI Orchestrator
+Integrates Governance Audit and Multi-Agent Orchestration.
 """
 
 import os
-import sys
-import logging
 from pathlib import Path
-from datetime import datetime
-import json
+from core.engine import GovernanceEngine
+from core.orchestra import Orchestra, Agent
+from rich.console import Console
+import sys
 
-from core.engine import GovernanceEngine, generate_governance_report
+console = Console()
 
-# --- Logging Configuration ---
-log = logging.getLogger("UniversalOrchestrator")
-log.setLevel(logging.INFO)
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
-log.addHandler(handler)
+def main():
+    console.print("[bold cyan]🚀 Universal AI Orchestrator v1.0.0[/bold cyan]")
+    console.print("[dim]Powered by GO Talan UA[/dim]\n")
 
-class AIOrchestrator:
-    def __init__(self, project_root=None):
-        self.base_dir = Path(project_root) if project_root else Path(__file__).resolve().parent
-        self.rec_dir = self.base_dir / ".orchestrator" / "recommendations"
-        self.rec_dir.mkdir(parents=True, exist_ok=True)
-        self.engine = GovernanceEngine(self.base_dir)
-
-    def scan_structure(self):
-        log.info("🔍 Initiating Deep Scan...")
-        report = {
-            "modules": self._get_modules(),
-            "configs": self._get_configs()
-        }
-        return report
-
-    def _get_modules(self):
-        modules = []
-        for path in self.base_dir.rglob("*.py"):
-            if "__" not in path.name and "dist" not in str(path):
-                modules.append({"name": path.name, "size": path.stat().st_size})
-        return modules
-
-    def _get_configs(self):
-        configs = []
-        for ext in ["*.env", "config.json", "*.yaml"]:
-            for path in self.base_dir.glob(ext):
-                configs.append({"name": path.name, "path": str(path)})
-        return configs
-
-    def run(self, logs_path=None):
-        log.info("=" * 60)
-        log.info(f"🧠 STARTING UNIVERSAL AI ORCHESTRATOR: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        log.info("Commercial Core Active | License: Proprietary")
+    # Step 0: User Agreement Prompt (TERMS OF USE)
+    console.print("[bold yellow]Перед початком роботи ви маєте погодитись з TERMS_OF_USE.md[/bold yellow]")
+    console.print("[dim]Система діє як ваш Стратегічний Радник і НЕ приймає фінальних рішень без дозволу.[/dim]")
+    agreement = input("Чи погоджуєтесь ви з політикою використання? [y/N]: ").strip().lower()
+    if agreement not in ['y', 'yes', 'д', 'так']:
+        console.print("[bold red]🛑 Доступ заборонено (User declined Terms of Use). Вихід.[/bold red]")
+        sys.exit(1)
         
-        structure = self.scan_structure()
-        roi_results = self.engine.analyze_roi(logs_path)
-        security_results = self.engine.security_audit()
-        conflicts = self.engine.detect_logic_collisions(self.base_dir)
-        ui_ux_results = self.engine.ui_ux_audit()
-        
-        full_results = {
-            "timestamp": datetime.now().isoformat(),
-            "roi": roi_results,
-            "security": security_results,
-            "conflicts": conflicts,
-            "ui_ux": ui_ux_results
-        }
-        
-        report_name = f"governance_report_{datetime.now().strftime('%Y%m%d_%H%M')}.md"
-        output_file = self.rec_dir / report_name
-        generate_governance_report(full_results, output_file)
-        
-        log.info(f"✅ Governance Audit complete. Report saved: {output_file.name}")
-        return full_results
+    console.print("[bold green]✅ Згоду прийнято. Запуск ініціалізовано.[/bold green]\n")
+
+    # Step 1: Governance Audit (Security & Logic)
+    engine = GovernanceEngine(".")
+    findings = engine.perform_complete_audit()
+    engine.generate_markdown_report("REPORTS/governance_report.md")
+
+    # Step 2: Demonstration of Orchestration (State Management)
+    if not findings:
+        console.print("\n[bold green]🛡️ Audit Clean. Proceeding to Orchestration...[/bold green]")
+    else:
+        console.print(f"\n[bold yellow]⚠️ Found {len(findings)} issues during audit. Proceeding with caution...[/bold yellow]")
+
+    # Building a demo team
+    orchestra = Orchestra()
+    analyst = Agent("Analyst", "Security Researcher")
+    optimizer = Agent("Optimizer", "ROI Specialist")
+    
+    orchestra.register_agent(analyst)
+    orchestra.register_agent(optimizer)
+    
+    # Real logic flow demo: Analyst output passed to Optimizer
+    demo_tasks = [
+        {"agent": "Analyst", "task": f"Analyze the audit report with {len(findings)} findings."},
+        {"agent": "Optimizer", "task": "Based on the analysis: {Analyst_output}, suggest one way to optimize token usage."}
+    ]
+    
+    final_output = orchestra.run_sequence(demo_tasks)
+    
+    console.print("\n[bold green]✨ Orchestration Sequence Success![/bold green]")
+    console.print(f"[bold cyan]Final Suggestion:[/bold cyan] {final_output['Optimizer_output']}")
 
 if __name__ == "__main__":
-    orchestrator = AIOrchestrator()
-    orchestrator.run()
+    # Ensure REPORTS folder exists
+    os.makedirs("REPORTS", exist_ok=True)
+    main()

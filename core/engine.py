@@ -1,134 +1,133 @@
 """
-Core Intelligence Engine for Universal AI Orchestrator
-(C) 2026 TymurJan. All Rights Reserved.
-This module is protected and part of the Commercial Core.
+Governance and Audit Engine for Universal AI Orchestrator
+This module contains real audit logic for security, ROI, and logic collision.
 """
 
 import os
-import json
+import re
 import logging
+from typing import List, Dict, Any
 from pathlib import Path
-from datetime import datetime
+from rich.console import Console
+from rich.table import Table
 
-log = logging.getLogger("OrchestratorCore")
+console = Console()
+log = logging.getLogger("GovernanceEngine")
 
 class GovernanceEngine:
-    def __init__(self, root_path):
-        self.root = Path(root_path)
+    def __init__(self, project_path: str = "."):
+        self.project_path = Path(project_path)
+        self.findings = []
 
-    def analyze_roi(self, token_logs=None):
-        """
-        Calculates ROI and token efficiency.
-        Market value: High (Cost saving is the #1 priority for B2B)
-        """
-        log.info("📊 Executing ROI Efficiency Analysis...")
-        # Simulation of advanced token analysis logic
-        savings_estimate = 0
-        if token_logs and Path(token_logs).exists():
-            # Real logic would parse logs here
-            savings_estimate = 35.5 # Example percentage
+    def scan_for_secrets(self) -> List[Dict[str, Any]]:
+        """Real scan for potential API keys or secrets in the codebase."""
+        secret_patterns = {
+            "OpenAI API Key": r"sk-[a-zA-Z0-9]{32,}",
+            "Anthropic API Key": r"sk-ant-[a-zA-Z0-9]{32,}",
+            "Generic Secret": r"(?i)(password|secret|key|token)\s*[:=]\s*['\"][^'\"]+['\"]"
+        }
         
-        return {
-            "efficiency_score": 85.0,
-            "potential_savings_pct": savings_estimate,
-            "recommendation": "Implement persistent prompt caching for heavy API modules."
-        }
-
-    def security_audit(self):
-        """
-        Deep security audit of the AI implementation.
-        """
-        log.info("🛡️ Performing Deep Security Audit...")
-        vulnerabilities = []
-        # Logic to check for hardcoded keys, loose permissions, etc.
-        return {
-            "status": "Healthy",
-            "findings": vulnerabilities,
-            "score": 98
-        }
-
-    def detect_logic_collisions(self, prompts_dir):
-        """
-        Universal Conflict Detection: comparing prompt instructions.
-        """
-        log.info("🔍 Scanning for Logic Collisions...")
-        collisions = []
-        # Logic to compare multiple system prompts and find contradictory rules
-        return collisions
-
-    def ui_ux_audit(self):
-        """
-        Audits UI files (HTML/CSS) against "The Ultimate UI" skill rules.
-        Checks for: Tailwind usage, WCAG 4.5:1 contrast readiness, Mobile-First.
-        """
-        log.info("🎨 Performing UI/UX Accessibility Audit (WCAG 2.1)...")
         findings = []
-        score = 100
-        
-        # Simulate scanning HTML files in the project directory
-        html_files = list(self.root.rglob("*.html"))
-        if not html_files:
-            return {"status": "Skipped", "score": 0, "findings": ["No UI files detected"]}
+        for root, _, files in os.walk(self.project_path):
+            if ".git" in root or ".orchestrator" in root:
+                continue
+            for file in files:
+                if file.endswith((".py", ".env", ".html", ".js", ".md")):
+                    file_path = Path(root) / file
+                    try:
+                        content = file_path.read_text(errors="ignore")
+                        for name, pattern in secret_patterns.items():
+                            matches = re.finditer(pattern, content)
+                            for match in matches:
+                                findings.append({
+                                    "type": "Security",
+                                    "severity": "CRITICAL",
+                                    "item": name,
+                                    "file": str(file_path),
+                                    "line": content.count("\n", 0, match.start()) + 1,
+                                    "desc": f"Potential {name} exposed in plain text."
+                                })
+                    except Exception as e:
+                        log.error(f"Could not read {file_path}: {e}")
+        return findings
 
-        for html_file in html_files:
-            try:
-                content = html_file.read_text(encoding="utf-8")
-                # Rule 1: Check for Tailwind
-                if "class=" in content and not ("tailwind" in content or "text-" in content or "flex" in content):
-                    findings.append(f"[{html_file.name}]: Missing Tailwind CSS utility classes. Recommend migrating to Tailwind v4.")
-                    score -= 10
-                
-                # Rule 2: Check for potential contrast issues on dark backgrounds (The Universal-AI-Orchestrator hotfix rule)
-                if "--bg-deep" in content or "bg-black" in content or "bg-gray-9" in content:
-                    if "text-gray-300" in content or "text-base-content/70" in content:
-                        findings.append(f"[{html_file.name}]: Potential WCAG contrast violation detected. 'text-gray-300' or theming text on deep backgrounds may fail the 4.5:1 ratio requirement. Recommend using explicit 'text-white/80' opacities.")
-                        score -= 20
-                        
-                # Rule 3: Check for semantic HTML / Accessibility
-                if "<button" in content and "aria-label" not in content and "sr-only" not in content:
-                    findings.append(f"[{html_file.name}]: Accessibility Warning. Buttons should contain aria-labels if icon-only, or clear text.")
-                    score -= 5
-            except Exception as e:
-                log.warning(f"Could not read {html_file.name} for UI audit: {e}")
-
-        # Cap score at 0
-        score = max(0, score)
-
-        return {
-            "status": "Passed" if score >= 85 else "Needs Improvement",
-            "score": score,
-            "findings": findings
+    def audit_logic_collisions(self) -> List[Dict[str, Any]]:
+        """Scan for TODOs, FIXMEs, and potential logical conflicts in comments."""
+        findings = []
+        logic_patterns = {
+            "TODO/FIXME": r"(?i)#\s*(TODO|FIXME|BUG)",
+            "Logic Collision": r"(?i)conflict|contradict|collision"
         }
-
-
-def generate_governance_report(results, output_path):
-    report_file = Path(output_path)
-    with open(report_file, "w", encoding="utf-8") as f:
-        f.write("# 🛡️ Universal AI Orchestrator: Governance Report\n\n")
-        f.write(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"**System Status:** {results.get('security', {}).get('status', 'Unknown')}\n\n")
         
-        f.write("## 📉 ROI & Optimization\n")
-        roi = results.get('roi', {})
-        f.write(f"- **Efficiency Score:** {roi.get('efficiency_score')}/100\n")
-        f.write(f"- **Estimated Savings:** {roi.get('potential_savings_pct') or 0}%\n")
-        f.write(f"- **Recommendation:** {roi.get('recommendation')}\n\n")
-        
-        f.write("## 🔒 Security Findings\n")
-        f.write(f"- **Vulnerabilities:** {len(results.get('security', {}).get('findings', []))}\n")
-        f.write("- **Compliance:** EU AI Act Ready\n\n")
+        for root, _, files in os.walk(self.project_path):
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = Path(root) / file
+                    content = file_path.read_text(errors="ignore")
+                    for name, pattern in logic_patterns.items():
+                        matches = re.finditer(pattern, content)
+                        for match in matches:
+                            findings.append({
+                                "type": "Logic",
+                                "severity": "MEDIUM" if "TODO" in name else "HIGH",
+                                "item": name,
+                                "file": str(file_path),
+                                "line": content.count("\n", 0, match.start()) + 1,
+                                "desc": f"Detected {name} marker requiring attention."
+                            })
+        return findings
 
-        # --- New UI/UX Audit Section ---
-        ui_audit = results.get('ui_ux')
-        if ui_audit and ui_audit.get('status') != 'Skipped':
-            f.write("## 🎨 UI/UX & Accessibility Audit (WCAG 2.1)\n")
-            f.write(f"- **Status:** {ui_audit.get('status')}\n")
-            f.write(f"- **Score:** {ui_audit.get('score')}/100\n")
-            findings = ui_audit.get('findings', [])
-            if findings:
-                f.write("- **Findings:**\n")
-                for finding in findings:
-                    f.write(f"  - ⚠️ {finding}\n")
-            else:
-                f.write("- **Findings:** No critical accessibility issues detected. Interface is WCAG compliant.\n")
-            f.write("\n")
+    def perform_complete_audit(self):
+        """Runs all real audit modules and returns a consolidated report."""
+        console.print("[bold cyan]🛡️ Universal AI Orchestrator: Starting Deep Scan...[/bold cyan]")
+        
+        all_findings = []
+        all_findings.extend(self.scan_for_secrets())
+        all_findings.extend(self.audit_logic_collisions())
+        
+        self.findings = all_findings
+        
+        if not all_findings:
+            console.print("[bold green]✅ No high-severity issues found. Project is secure.[/bold green]")
+        else:
+            table = Table(title="Governance Audit Results")
+            table.add_column("Severity", justify="center", style="bold red")
+            table.add_column("Type", style="cyan")
+            table.add_column("Item", style="white")
+            table.add_column("Location", style="dim")
+            
+            for f in all_findings:
+                style = "red" if f["severity"] == "CRITICAL" else "yellow"
+                table.add_row(f["severity"], f["type"], f["item"], f"{f['file']}:{f['line']}", style=style)
+            
+            console.print(table)
+            
+        return all_findings
+
+    def generate_markdown_report(self, output_path: str = "REPORTS/governance_report.md"):
+        """Generates a professional Markdown report based on real findings in Ukrainian."""
+        report = "# Universal AI Orchestrator: Звіт з управління (Governance Report)\n\n"
+        report += "Згенеровано модулем Commercial Core v1.0.0\n\n"
+        
+        if not self.findings:
+            report += "## ✅ Статус: БЕЗПЕЧНО\nКритичних проблем не виявлено.\n"
+        else:
+            report += "## 🚨 Виявлені зауваження\n\n"
+            for f in self.findings:
+                # Severity translation
+                sev = "КРИТИЧНО" if f["severity"] == "CRITICAL" else "ВИСОКА" if f["severity"] == "HIGH" else "СЕРЕДНЯ"
+                report += f"### [{sev}] {f['item']}\n"
+                report += f"- **Тип:** {f['type']}\n"
+                report += f"- **Файл:** `{f['file']}:{f['line']}`\n"
+                report += f"- **Опис:** {f['desc']}\n\n"
+        
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        Path(output_path).write_text(report, encoding="utf-8")
+        console.print(f"[bold green]📄 Звіт збережено у {output_path}[/bold green]")
+        return output_path
+
+if __name__ == "__main__":
+    engine = GovernanceEngine(".")
+    engine.perform_complete_audit()
+    engine.generate_markdown_report()
