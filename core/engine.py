@@ -77,6 +77,35 @@ class GovernanceEngine:
                             })
         return findings
 
+    def audit_ui_accessibility(self) -> List[Dict[str, Any]]:
+        """Scan for basic UI/UX formatting and WCAG compliance issues."""
+        findings = []
+        ui_patterns = {
+            "Missing ALT tag": r"(?i)<img(?![^>]*\balt=)[^>]*>",
+            "Missing HTML Lang": r"(?i)<html(?![^>]*\blang=)[^>]*>",
+            "Hardcoded Contrast Risk": r"(?i)color:\s*(#F00|#FF0000|red|blue|#00F|#0000FF)"
+        }
+        
+        for root, _, files in os.walk(self.project_path):
+            if ".git" in root or ".orchestrator" in root:
+                continue
+            for file in files:
+                if file.endswith((".html", ".css", ".jsx", ".tsx", ".js")):
+                    file_path = Path(root) / file
+                    content = file_path.read_text(errors="ignore")
+                    for name, pattern in ui_patterns.items():
+                        matches = re.finditer(pattern, content)
+                        for match in matches:
+                            findings.append({
+                                "type": "UI/UX",
+                                "severity": "MEDIUM",
+                                "item": name,
+                                "file": str(file_path),
+                                "line": content.count("\n", 0, match.start()) + 1,
+                                "desc": f"UI Accessibility Issue: {name} detected."
+                            })
+        return findings
+
     def perform_complete_audit(self):
         """Runs all real audit modules and returns a consolidated report."""
         console.print("[bold cyan]🛡️ Universal AI Orchestrator: Starting Deep Scan...[/bold cyan]")
@@ -84,6 +113,7 @@ class GovernanceEngine:
         all_findings = []
         all_findings.extend(self.scan_for_secrets())
         all_findings.extend(self.audit_logic_collisions())
+        all_findings.extend(self.audit_ui_accessibility())
         
         self.findings = all_findings
         
