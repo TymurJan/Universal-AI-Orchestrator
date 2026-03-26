@@ -130,8 +130,8 @@
 <body class="font-inter text-gray-200 antialiased overflow-x-hidden">
 
     <!-- Floating Navbar -->
-    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-6xl">
-        <nav class="glass-panel px-6 py-4 rounded-2xl flex items-center justify-between">
+    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-6xl transition-all duration-300 ease-in-out">
+        <nav class="glass-panel px-6 py-4 rounded-2xl flex items-center justify-between transition-all duration-300 ease-in-out">
             <div class="flex items-center gap-3 group cursor-pointer">
                 <div class="w-10 h-10 bg-gradient-to-tr from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold group-hover:rotate-12 transition-transform shadow-lg shadow-primary/20">A</div>
                 <span class="font-outfit font-bold text-xl tracking-wider text-white">ORCHESTRATOR</span>
@@ -324,40 +324,102 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <!-- Case 1 -->
+                    <!-- Case 1: Audit -->
                     <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
                         <div class="card-body p-10 bg-gradient-to-br from-primary/5 to-transparent">
-                            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-primary/20 transition-colors">🤖</div>
-                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.smm_title">Content Dept</h3>
-                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.smm_desc">Агент-аналітик знаходить тренд → Копірайтер пише пост → Коректор видає фінал. Повна автоматизація SMM без копіпасту.</p>
-                            <div class="card-actions justify-end mt-4">
-                                <a href="#contact" class="text-primary text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform cursor-pointer inline-block" data-i18n="cases.btn_learn">Дізнатись більше →</a>
+                            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-primary/20 transition-colors">🔍</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.audit_title">AI-Аудит</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.audit_desc">Глибокий аналіз ваших бізнес-процесів для виявлення точок втрати грошей. Разовий консалтинг та RoadMap інтеграції.</p>
+                            <div class="card-actions justify-between items-center mt-4">
+                                <span class="text-white font-bold">$99</span>
+                                <button onclick="modal_audit.showModal()" class="text-primary text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer" data-i18n="cases.btn_learn">Деталі →</button>
                             </div>
                         </div>
                     </div>
-                    <!-- Case 2 -->
-                    <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
-                        <div class="card-body p-10 bg-gradient-to-br from-secondary/5 to-transparent">
-                            <div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-secondary/20 transition-colors">📊</div>
-                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.analyst_title">Smart Analyst</h3>
-                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.analyst_desc">Завантажте 100 PDF-звітів. Система витягне дані, порівняє їх і побудує фінальні висновки в одному діалозі.</p>
-                            <div class="card-actions justify-end mt-4">
-                                <a href="#contact" class="text-secondary text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform cursor-pointer inline-block" data-i18n="cases.btn_learn">Дізнатись більше →</a>
+                    <!-- Case 2: License -->
+                    <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-secondary/20 group overflow-hidden relative">
+                        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                        <div class="card-body p-10 bg-gradient-to-br from-secondary/10 to-transparent">
+                            <div class="w-16 h-16 rounded-2xl bg-secondary/20 flex items-center justify-center text-3xl mb-8 shadow-[0_0_20px_rgba(112,0,255,0.3)]">⚡</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.license_title">Ліцензія Core</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.license_desc">Повний доступ до платформи Universal AI Orchestrator. Усі базові навички, автоматизація пам'яті та Governance Guard.</p>
+                            <div class="card-actions justify-between items-center mt-4">
+                                <span class="text-white font-bold">$399</span>
+                                <button onclick="modal_license.showModal()" class="text-secondary text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer" data-i18n="cases.btn_learn">Деталі →</button>
                             </div>
                         </div>
                     </div>
-                    <!-- Case 3 -->
+                    <!-- Case 3: Enterprise -->
                     <div class="card glass shadow-xl hover:-translate-y-3 transition-all duration-500 border border-white/5 group overflow-hidden">
                         <div class="card-body p-10 bg-gradient-to-br from-accent/5 to-transparent">
-                            <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-accent/20 transition-colors">🛠️</div>
-                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.support_title">Support 24/7</h3>
-                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.support_desc">Розуміння емоцій, доступ до CRM та автоматичне формування відповіді за 5 секунд. Ідеальна підтримка клієнтів.</p>
-                            <div class="card-actions justify-end mt-4">
-                                <a href="#contact" class="text-accent text-xs font-bold uppercase tracking-widest group-hover:translate-x-2 transition-transform cursor-pointer inline-block" data-i18n="cases.btn_learn">Дізнатись більше →</a>
+                            <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center text-3xl mb-8 group-hover:bg-accent/20 transition-colors">🏢</div>
+                            <h3 class="card-title text-2xl font-bold text-white mb-4" data-i18n="cases.enterprise_title">Ентерпрайз</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6" data-i18n="cases.enterprise_desc">Кастомна розробка AI-агентів під ключ. Навчання на ваших базах даних, інтеграція з закритою CRM та повний супровід.</p>
+                            <div class="card-actions justify-between items-center mt-4">
+                                <span class="text-white font-bold">Custom</span>
+                                <button onclick="modal_enterprise.showModal()" class="text-accent text-xs font-bold uppercase tracking-widest hover:text-white transition-colors cursor-pointer" data-i18n="cases.btn_learn">Деталі →</button>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Modals -->
+                <dialog id="modal_audit" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box bg-neutral border border-primary/20 shadow-[0_0_50px_rgba(0,242,255,0.1)]">
+                    <form method="dialog">
+                      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-400">✕</button>
+                    </form>
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl mb-6">🔍</div>
+                    <h3 class="font-bold text-2xl text-white mb-2" data-i18n="modal.audit_title">AI-Аудит Систем</h3>
+                    <p class="py-4 text-gray-400 text-sm leading-relaxed" data-i18n="modal.audit_body">Разова послуга для бізнесу, який ще не знає, як впровадити штучний інтелект. Ми аналізуємо ваші відділи (продажі, маркетинг, підтримка) і складаємо покроковий план — де саме AI-агенти зекономлять вам найбільше грошей. Включає PDF-звіт та годинну консультацію.</p>
+                    <div class="flex justify-between items-center mt-6 pt-6 border-t border-white/10">
+                        <div class="text-2xl font-bold text-white">$99</div>
+                        <!-- Empty href for now, WayForPay link goes here later -->
+                        <a href="#" class="btn btn-primary rounded-lg px-8" data-i18n="modal.btn_buy">Замовити</a>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+
+                <dialog id="modal_license" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box bg-neutral border border-secondary/30 shadow-[0_0_50px_rgba(112,0,255,0.15)] relative overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+                    <form method="dialog">
+                      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-400">✕</button>
+                    </form>
+                    <div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center text-2xl mb-6">⚡</div>
+                    <h3 class="font-bold text-2xl text-white mb-2" data-i18n="modal.license_title">Core Orchestrator</h3>
+                    <p class="py-4 text-gray-400 text-sm leading-relaxed" data-i18n="modal.license_body">Основний продукт. Автономна оболонка, яка передає контекст між LLM, управляє вашими файлами та контролює виконання завдань (Governance Guard). Включає базовий набір скілів (UI/UX, SEO, Code) назавжди. Ідеально для розробників та агенцій.</p>
+                    <div class="flex justify-between items-center mt-6 pt-6 border-t border-white/10">
+                        <div class="text-2xl font-bold text-white">$399</div>
+                        <a href="https://secure.wayforpay.com/button/badcceef62648" target="_blank" class="btn btn-secondary rounded-lg px-8" data-i18n="modal.btn_buy">Купити Ліцензію</a>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+
+                <dialog id="modal_enterprise" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box bg-neutral border border-accent/20 shadow-[0_0_50px_rgba(255,0,122,0.1)]">
+                    <form method="dialog">
+                      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-gray-400">✕</button>
+                    </form>
+                    <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-2xl mb-6">🏢</div>
+                    <h3 class="font-bold text-2xl text-white mb-2" data-i18n="modal.enterprise_title">Інтеграція під Ключ</h3>
+                    <p class="py-4 text-gray-400 text-sm leading-relaxed" data-i18n="modal.enterprise_body">Повна автоматизація під ваші власні вимоги. Навчання локальної нейромережі на вашій конфіденційній базі знань. Інтеграція в корпоративну CRM, Telegram або Slack. Технічна підтримка 24/7 та розробка унікальних навичок (skills).</p>
+                    <div class="flex justify-between items-center mt-6 pt-6 border-t border-white/10">
+                        <div class="text-xl font-bold text-white">Від $1000</div>
+                        <a href="mailto:ngo.talan.ua@gmail.com" class="btn btn-outline btn-accent rounded-lg px-8" data-i18n="modal.btn_contact">Обговорити</a>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+
             </div>
         </section>
 
@@ -486,6 +548,20 @@
                 "cases.resolver_title": "Skill Resolver",
                 "cases.resolver_desc": "Завантажили два схожих AI-скіли? Система автоматично порівняє їх і порекомендує: об'єднати чи залишити кращий.",
                 "cases.btn_learn": "Дізнатись більше →",
+                "cases.audit_title": "AI-Аудит",
+                "cases.audit_desc": "Глибокий аналіз ваших бізнес-процесів для виявлення точок втрати грошей. Разовий консалтинг та RoadMap інтеграції.",
+                "cases.license_title": "Ліцензія Core",
+                "cases.license_desc": "Повний доступ до платформи Universal AI Orchestrator. Усі базові навички, автоматизація пам'яті та Governance Guard.",
+                "cases.enterprise_title": "Ентерпрайз",
+                "cases.enterprise_desc": "Кастомна розробка AI-агентів під ключ. Навчання на ваших базах даних, інтеграція з закритою CRM та повний супровід.",
+                "modal.audit_title": "AI-Аудит Систем",
+                "modal.audit_body": "Разова послуга для бізнесу, який ще не знає, як впровадити штучний інтелект. Ми аналізуємо ваші відділи (продажі, маркетинг, підтримка) і складаємо покроковий план — де саме AI-агенти зекономлять вам найбільше грошей. Включає PDF-звіт та годинну консультацію.",
+                "modal.btn_buy": "Замовити",
+                "modal.license_title": "Core Orchestrator",
+                "modal.license_body": "Основний продукт. Автономна оболонка, яка передає контекст між LLM, управляє вашими файлами та контролює виконання завдань (Governance Guard). Включає базовий набір скілів (UI/UX, SEO, Code) назавжди. Ідеально для розробників та агенцій.",
+                "modal.enterprise_title": "Інтеграція під Ключ",
+                "modal.enterprise_body": "Повна автоматизація під ваші власні вимоги. Навчання локальної нейромережі на вашій конфіденційній базі знань. Інтеграція в корпоративну CRM, Telegram або Slack. Технічна підтримка 24/7 та розробка унікальних навичок (skills).",
+                "modal.btn_contact": "Обговорити",\n
                 "impact.badge": "Соціальна Місія",
                 "impact.title": "Цифрове Серце",
                 "impact.desc": "Ми будуємо ШІ з українською душею. 100% надходжень йдуть на статутну діяльність ГО, з яких <strong class=\"text-white\">20%</strong> гарантовано спрямовується на фінансування проєкту <strong class=\"text-secondary italic\">«Ашрам»</strong>.",
@@ -540,6 +616,20 @@
                 "cases.resolver_title": "Skill Resolver",
                 "cases.resolver_desc": "Downloaded two similar AI skills? The system automatically compares them and recommends: merge or keep the best one.",
                 "cases.btn_learn": "Learn more →",
+                "cases.audit_title": "AI-Audit",
+                "cases.audit_desc": "Deep analysis of your business processes to find money leaks. One-time consulting and Integration RoadMap.",
+                "cases.license_title": "Core License",
+                "cases.license_desc": "Full access to the Universal AI Orchestrator platform. All basic skills, memory automation, and Governance Guard.",
+                "cases.enterprise_title": "Enterprise",
+                "cases.enterprise_desc": "Turnkey custom AI agent development. Training on your databases, integration with private CRM, and full support.",
+                "modal.audit_title": "AI Systems Audit",
+                "modal.audit_body": "A one-time service for businesses that don't know how to implement AI yet. We analyze your departments (sales, marketing, support) and create a step-by-step plan where AI agents will save you the most money. Includes a PDF report and a 1-hour consultation.",
+                "modal.btn_buy": "Order Now",
+                "modal.license_title": "Core Orchestrator",
+                "modal.license_body": "The main product. An autonomous shell that passes context between LLMs, manages your files, and controls task execution (Governance Guard). Includes a basic set of skills (UI/UX, SEO, Code) forever. Perfect for developers and agencies.",
+                "modal.enterprise_title": "Turnkey Integration",
+                "modal.enterprise_body": "Full automation tailored to your unique requirements. Training a local neural network on your confidential knowledge base. Corporate CRM, Telegram, or Slack integration. 24/7 tech support and custom skill development.",
+                "modal.btn_contact": "Discuss",\n
                 "impact.badge": "Social Mission",
                 "impact.title": "Digital Heart",
                 "impact.desc": "We build AI with a Ukrainian soul. 100% of funds support statutory NGO activities, of which <strong class='text-white'>20%</strong> is strictly allocated to the <strong class='text-secondary italic'>'Ashram'</strong> project — a reintegration space for our veterans.",
@@ -582,14 +672,21 @@
 
         window.addEventListener('scroll', () => {
              const header = document.querySelector('header');
+             const nav = header.querySelector('nav');
              if (window.scrollY > 50) {
-                 header.classList.add('bg-black/80', 'backdrop-blur-xl', 'py-4');
-                 header.classList.remove('bg-transparent', 'py-8');
+                 header.classList.replace('top-6', 'top-0');
+                 header.classList.replace('w-[95%]', 'w-full');
+                 header.classList.replace('max-w-6xl', 'max-w-none');
+                 nav.classList.add('bg-black/80', 'backdrop-blur-xl', 'py-2', 'border-x-0', 'border-t-0', 'rounded-none');
+                 nav.classList.remove('py-4', 'rounded-2xl', 'glass-panel');
              } else {
-                 header.classList.remove('bg-black/80', 'backdrop-blur-xl', 'py-4');
-                 header.classList.add('bg-transparent', 'py-8');
+                 header.classList.replace('top-0', 'top-6');
+                 header.classList.replace('w-full', 'w-[95%]');
+                 header.classList.replace('max-w-none', 'max-w-6xl');
+                 nav.classList.remove('bg-black/80', 'backdrop-blur-xl', 'py-2', 'border-x-0', 'border-t-0', 'rounded-none');
+                 nav.classList.add('py-4', 'rounded-2xl', 'glass-panel');
              }
-        });
+        });\n
     </script>
 </body>
 </html>
