@@ -106,6 +106,54 @@ class GovernanceEngine:
                             })
         return findings
 
+    def audit_skill_conflicts(self) -> List[Dict[str, Any]]:
+        """Scan installed agent skills for domain overlaps and potential conflicts."""
+        findings = []
+        skills_path = self.project_path / ".agents" / "skills"
+        if not skills_path.exists():
+            return []
+
+        # Domain keyword groups — 2+ skills in the same group = potential conflict
+        domain_groups: Dict[str, List[str]] = {
+            "design": ["ui", "ux", "design", "frontend", "css", "tailwind", "figma", "wcag", "interface", "visual"],
+            "security": ["security", "auth", "vault", "pentest", "access", "credential", "vulnerability"],
+            "management": ["manager", "orchestrat", "govern", "coordinator", "planner", "scheduler"],
+            "legal": ["legal", "contract", "law", "regulation", "compliance", "gdpr", "privacy"],
+            "grant": ["grant", "donor", "fund", "ngo", "proposal", "application"],
+            "ai-model": ["gpt", "claude", "llm", "model", "inference", "openai", "anthropic"],
+        }
+
+        # Parse each installed skill's SKILL.md for domain keywords
+        skill_map: Dict[str, List[str]] = {}
+        for skill_dir in skills_path.iterdir():
+            if not skill_dir.is_dir():
+                continue
+            skill_md = skill_dir / "SKILL.md"
+            if not skill_md.exists():
+                continue
+            content = skill_md.read_text(errors="ignore").lower()
+            matched = [domain for domain, kws in domain_groups.items() if any(kw in content for kw in kws)]
+            if matched:
+                skill_map[skill_dir.name] = matched
+
+        # Find overlaps: 2+ skills sharing the same domain
+        domain_to_skills: Dict[str, List[str]] = {}
+        for skill_name, domains in skill_map.items():
+            for domain in domains:
+                domain_to_skills.setdefault(domain, []).append(skill_name)
+
+        for domain, skills in domain_to_skills.items():
+            if len(skills) > 1:
+                findings.append({
+                    "type": "Skill Conflict",
+                    "severity": "HIGH",
+                    "item": f"Domain overlap: '{domain}'",
+                    "file": ".agents/skills/",
+                    "line": 0,
+                    "desc": f"Skills {skills} cover domain '{domain}'. Risk of contradictory AI instructions."
+                })
+        return findings
+
     def perform_complete_audit(self):
         """Runs all real audit modules and returns a consolidated report."""
         console.print("[bold cyan]🛡️ Universal AI Orchestrator: Starting Deep Scan...[/bold cyan]")
@@ -114,6 +162,7 @@ class GovernanceEngine:
         all_findings.extend(self.scan_for_secrets())
         all_findings.extend(self.audit_logic_collisions())
         all_findings.extend(self.audit_ui_accessibility())
+        all_findings.extend(self.audit_skill_conflicts())
         
         self.findings = all_findings
         
