@@ -104,12 +104,12 @@
             animation: shield-fly 8s ease-in-out infinite;
         }
         @keyframes shield-fly {
-            0% { transform: scale(0.6) rotate(-5deg); opacity: 0; filter: blur(20px) brightness(2); }
-            10% { transform: scale(1.05) rotate(0deg); opacity: 1; filter: blur(0) brightness(1.5); }
-            20% { transform: scale(1); opacity: 0.7; filter: brightness(1); }
-            50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(0, 242, 255, 0.6)); }
-            80% { transform: scale(1); opacity: 0.7; }
-            100% { transform: scale(1) rotate(5deg); opacity: 0.7; }
+            0% { opacity: 0; filter: blur(20px) brightness(2); }
+            10% { opacity: 1; filter: blur(0) brightness(1.5); }
+            20% { opacity: 0.7; filter: brightness(1); }
+            50% { opacity: 1; filter: brightness(1.3) drop-shadow(0 0 20px rgba(0, 242, 255, 0.6)); }
+            80% { opacity: 0.7; }
+            100% { opacity: 0.7; }
         }
         .scan-line {
             position: absolute;
@@ -190,18 +190,18 @@
                     <div class="lg:w-1/2 relative group perspective-1000">
                         <div class="absolute -inset-20 bg-gradient-to-tr from-primary/20 to-secondary/20 blur-[150px] opacity-30 group-hover:opacity-50 transition-opacity"></div>
                         
-                        <div class="relative overflow-hidden rounded-[3rem] border border-white/10 shadow-2xl">
+                        <div class="relative overflow-hidden rounded-[3rem] border border-white/10 shadow-2xl aspect-square">
                             <!-- The Base Planet -->
-                            <img src="planet_base.png" class="w-full h-full object-cover opacity-90 scale-105" alt="Core Planet" />
+                            <img src="planet_base.png" class="absolute inset-0 w-full h-full object-cover opacity-90" alt="Core Planet" />
                             
                             <!-- The Flying Shield Overlay -->
                             <div class="absolute inset-0 z-10 flex items-center justify-center p-4">
                                 <!-- Cinematic Shield Video (Placeholder for AI Content) -->
-                                <video id="vfx-shield" class="w-full h-full object-contain mix-blend-screen opacity-0 transition-opacity duration-1000" muted loop playsinline poster="planet_shield.png">
+                                <video id="vfx-shield" class="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-0 transition-opacity duration-1000" muted loop playsinline poster="planet_shield.png">
                                     <source src="shield_motion.webm" type="video/webm; codecs=vp9">
                                     <source src="shield_motion.mp4" type="video/mp4">
                                 </video>
-                                <img id="vfx-shield-fallback" src="planet_shield.png" class="w-full h-full object-contain animate-shield-fly pointer-events-none mix-blend-screen" alt="Shield Protection Layer" />
+                                <img id="vfx-shield-fallback" src="planet_shield.png" class="absolute inset-0 w-full h-full object-cover animate-shield-fly pointer-events-none mix-blend-screen" alt="Shield Protection Layer" />
                                 <div class="scan-line"></div>
                             </div>
                         </div>
