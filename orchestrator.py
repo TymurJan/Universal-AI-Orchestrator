@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from core.engine import GovernanceEngine
 from core.orchestra import Orchestra, Agent
+from core.skill_manager import SkillManager
 from rich.console import Console
 import sys
 
@@ -25,6 +26,10 @@ def main():
         sys.exit(1)
         
     console.print("[bold green]✅ Згоду прийнято. Запуск ініціалізовано.[/bold green]\n")
+
+    # Step 0.5: Skill Discovery (Bonus Skills from Official Registry)
+    skill_mgr = SkillManager(".")
+    skill_mgr.offer_bonus_skills()
 
     # Step 1: Governance Audit (Security & Logic)
     engine = GovernanceEngine(".")
