@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal AI Orchestrator | Цифровий Заступник</title>
+    
+    <!-- Шрифти -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Outfit:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Стилі -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="aurora-bg"></div>
+
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">ANTIGRAVITY AI</div>
+            <div class="lang-switcher">
+                <button onclick="changeLang('ua')">UA</button>
+                <button onclick="changeLang('en')">EN</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 🚀 Hero Section -->
+        <section class="hero container">
+            <div class="glass-card hero-content">
+                <div class="hero-visual">
+                    <img src="landing/assets/brain_resonance.png" alt="Antigravity AI Brain Resonance" class="hero-img">
+                </div>
+                <h1 id="hero-title" class="text-gradient"></h1>
+                <p id="hero-subtitle"></p>
+                <div class="onboarding-badge" id="hero-onboarding"></div>
+                <div class="hero-actions">
+                    <a href="#arsenal" class="btn-primary">Запустити автоматизацію</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ❤️ NGO Block -->
+        <section class="ngo container">
+            <div class="glass-card ngo-card">
+                <h2 id="ngo-tagline"></h2>
+            </div>
+        </section>
+
+        <!-- 🔧 Arsenal (Features) will be loaded here -->
+        <section id="arsenal" class="features-grid container">
+            <!-- Dynamic Content -->
+        </section>
+    </main>
+
+    <script>
+        let currentLang = 'ua';
+        let translations = {};
+
+        async function loadTranslations() {
+            const response = await fetch('translations.json');
+            translations = await response.json();
+            render();
+        }
+
+        function changeLang(lang) {
+            currentLang = lang;
+            render();
+        }
+
+        function render() {
+            const t = translations[currentLang];
+            if (!t) return;
+
+            // Hero
+            document.getElementById('hero-title').innerText = t.hero.title;
+            document.getElementById('hero-subtitle').innerText = t.hero.subtitle;
+            document.getElementById('hero-onboarding').innerText = t.hero.onboarding || "";
+
+            // NGO
+            document.getElementById('ngo-tagline').innerText = t.ngo.tagline;
+
+            // Features (Arsenal)
+            const grid = document.getElementById('arsenal');
+            grid.innerHTML = "";
+            
+            Object.keys(t.features).forEach(key => {
+                const f = t.features[key];
+                const card = document.createElement('div');
+                card.className = 'glass-card feature-card';
+                card.innerHTML = `
+                    <div class="feature-icon"></div>
+                    <h3>${f.title}</h3>
+                    <p>${f.desc}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        loadTranslations();
+    </script>
+</body>
+</html>

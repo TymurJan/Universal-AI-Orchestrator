@@ -1,0 +1,255 @@
+/* 🌌 Дизайн-система: Aurora Horizon & Tech Emerald */
+
+:root {
+    /* Кольорова палітра */
+    --tech-emerald: #00C9A7;
+    --talan-green: #2ECC71;
+    --space-deep: #0B0E14;
+    --space-light: #1A1F29;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0AEC0;
+    
+    /* Шрифти */
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--space-deep);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* 🖼️ Aurora Horizon Background */
+.aurora-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 50% -10%, #00c9a733, transparent),
+                radial-gradient(circle at 90% 80%, #2ecc7122, transparent),
+                var(--space-deep);
+}
+
+/* ✨ Glassmorphism Card Style */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: var(--tech-emerald);
+    box-shadow: 0 0 30px rgba(0, 201, 167, 0.2);
+    transform: translateY(-5px);
+}
+
+/* 🛠️ Layout Utilities */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+/* 🚀 Hero Section Styles */
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 4rem;
+}
+
+.hero-visual {
+    margin-bottom: 2rem;
+}
+
+.hero-img {
+    max-width: 300px;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(0, 201, 167, 0.4));
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.onboarding-badge {
+    display: inline-block;
+    background: rgba(0, 201, 167, 0.1);
+    color: var(--tech-emerald);
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0, 201, 167, 0.3);
+}
+
+/* ❤️ NGO Section Styles */
+.ngo {
+    margin: 4rem 0;
+}
+
+.ngo-card {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(0, 201, 167, 0.1));
+    border-color: var(--talan-green);
+    text-align: center;
+}
+
+.ngo-card h2 {
+    color: var(--talan-green);
+    font-style: italic;
+}
+
+/* 🔧 Features Grid (Arsenal) */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 4rem;
+}
+
+.feature-card h3 {
+    color: var(--tech-emerald);
+    margin-bottom: 1rem;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 201, 167, 0.1);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+/* 📊 ТЕХНІЧНИЙ РОЗДІЛ: ТАРИФИ (Data Sheet Style) */
+.pricing-section {
+    padding: 6rem 0;
+    background-color: #05070a;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.price-card {
+    background: #0D1117;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    border-radius: 4px; /* Мінімальне заокруглення */
+    padding: 2rem;
+    transition: none; /* Жодної м'якості */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.price-card:hover {
+    border-color: var(--tech-emerald);
+}
+
+.price-header h3 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 2rem !important;
+}
+
+.annual-price {
+    display: block;
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    font-size: 1.1rem; /* Мікро-кегль для бізнес-стилю */
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.setup-price {
+    display: block;
+    font-size: 0.75rem; /* Мікро-кегль */
+    font-family: monospace;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    opacity: 0.7;
+}
+
+.btn-step-4 {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--text-secondary);
+    border-radius: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding: 0.6rem;
+}
+
+.btn-step-4:hover {
+    border-color: var(--tech-emerald);
+    color: var(--tech-emerald);
+    background: rgba(0,201,167,0.05);
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+}
