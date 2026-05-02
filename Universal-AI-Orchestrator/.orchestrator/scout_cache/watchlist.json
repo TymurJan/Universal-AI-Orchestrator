@@ -1,0 +1,24 @@
+[
+  {
+    "id": "67e7e73e6cfa",
+    "name": "Законодавство НДО (Рада)",
+    "url": "https://zakon.rada.gov.ua/laws/main/index?q=%D0%B3%D1%80%D0%BE%D0%BC%D0%B0%D0%B4%D1%81%D1%8C%D0%BA%D1%96+%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D1%96%D0%B7%D0%B0%D1%86%D1%96%D1%97",
+    "directions": [
+      "Юридичні оновлення"
+    ],
+    "filters": "зміни в законах про ГО, благодійність, волонтерство",
+    "added": "2026-04-28T23:53:16.895568",
+    "last_status": null
+  },
+  {
+    "id": "a3d9d1d325bb",
+    "name": "LegalHub (NGO News)",
+    "url": "https://legalhub.online/category/nko/",
+    "directions": [
+      "Юридичні оновлення"
+    ],
+    "filters": "новини для НКО, волонтерів, ГО",
+    "added": "2026-04-28T23:53:24.579246",
+    "last_status": null
+  }
+]
