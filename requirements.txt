@@ -1,0 +1,7 @@
+pyTelegramBotAPI==4.20.0
+python-dotenv==1.0.1
+PyMuPDF==1.25.3
+pytesseract==0.3.13
+Pillow==11.0.0
+google-generativeai==0.8.3
+openai==1.55.3

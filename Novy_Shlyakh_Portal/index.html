@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новий Шлях — Координаційний центр реінтеграції ветеранів</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="ngo-badge">Проєкт ГО ТАЛАН ЮА</span>
+                <h1>НОВИЙ ШЛЯХ</h1>
+            </div>
+            <nav class="nav">
+                <a href="#marketplace">Спеціалісти</a>
+                <a href="#employers">Роботодавці</a>
+                <a href="#training">Навчання</a>
+                <a href="https://t.me/your_bot" class="btn-primary">Зв'язатися</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="outfit-font">Твій спокійний шлях <br> до реінтеграції</h2>
+                <p>Координаційний центр для захисників та їхніх родин. <br> Ми допоможемо знайти правильний напрямок у цивільному житті.</p>
+                <div class="hero-actions">
+                    <a href="#marketplace" class="btn-main">Знайти спеціаліста</a>
+                    <a href="#club" class="btn-secondary">Ветеранський Клуб</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="marketplace" class="marketplace">
+        <div class="container">
+            <h3 class="section-title">Маркетплейс Спеціалістів</h3>
+            <p class="section-subtitle">Оберіть перевіреного фахівця за рейтингом та відгуками побратимів</p>
+            
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="legal">⚖️ Юристи</button>
+                <button class="tab-btn" data-tab="psych">🧠 Психологи</button>
+                <button class="tab-btn" data-tab="physio">🦾 Реабілітологи</button>
+                <button class="tab-btn" data-tab="career">🚀 Кар'єра та Бізнес</button>
+                <button class="tab-btn" data-tab="social">🛰️ Соціальний супровід</button>
+            </div>
+
+            <div class="tab-content active" id="legal">
+                <div class="specialist-grid">
+                    <!-- Картка 1 -->
+                    <div class="spec-card">
+                        <div class="spec-img">
+                            <div class="spec-rating">⭐ 4.9</div>
+                        </div>
+                        <div class="spec-info">
+                            <h4>Олександр Ковальчук</h4>
+                            <p class="spec-tag">Провідний юрист</p>
+                            <p class="spec-power"><strong>Суперсила:</strong> Вирішення складних земельних питань та виплат.</p>
+                            <div class="spec-stats">
+                                <span>📂 42 успішні кейси</span>
+                                <span>💬 15 відгуків</span>
+                            </div>
+                            <button class="btn-card">Записатися</button>
+                        </div>
+                    </div>
+                    <!-- Картка 2 -->
+                    <div class="spec-card">
+                        <div class="spec-img placeholder-img">
+                            <div class="spec-rating">⭐ 4.7</div>
+                        </div>
+                        <div class="spec-info">
+                            <h4>Марина Петренко</h4>
+                            <p class="spec-tag">Адвокат з прав ветеранів</p>
+                            <p class="spec-power"><strong>Суперсила:</strong> Оскарження рішень ВЛК та супровід у судах.</p>
+                            <div class="spec-stats">
+                                <span>📂 28 успішних кейсів</span>
+                                <span>💬 9 відгуків</span>
+                            </div>
+                            <button class="btn-card">Записатися</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Інші таби будуть додані в main.js динамічно -->
+        </div>
+    </section>
+
+    <section id="employers" class="employers">
+        <div class="container">
+            <h3 class="section-title">Надавачі робочих місць</h3>
+            <p class="section-subtitle">Компанії Черкас, що пріоритетно працевлаштовують та адаптують ветеранів</p>
+            <div class="employer-list">
+                <div class="employer-item">
+                    <div class="emp-logo">АГРО-ЛІДЕР</div>
+                    <p>Підтримка ветеранів-аграріїв та навчання.</p>
+                </div>
+                <div class="employer-item">
+                    <div class="emp-logo">TECH-WAVE</div>
+                    <p>ІТ-курси та стажування для захисників.</p>
+                </div>
+                <div class="employer-item">
+                    <div class="emp-logo">БУД-ПЛЮС</div>
+                    <p>Менторство на будівництві об'єктів регіону.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Координаційний центр «НОВИЙ ШЛЯХ»</p>
+            <p>Проєкт Громадської Організації ТАЛАН ЮА | м. Черкаси</p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
