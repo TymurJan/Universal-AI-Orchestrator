@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talan UA | Кабінет Спеціаліста</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- Базові стилі бренду -->
+    <link rel="stylesheet" href="cabinet.css"> <!-- Специфічні стилі кабінету -->
+</head>
+<body>
+    
+    <!-- Екран 1: Логін -->
+    <div id="screen-login" class="cabinet-screen active">
+        <div class="login-box">
+            <h2 style="color: var(--primary-green); margin-bottom: 20px;">Авторизація</h2>
+            <p style="color: #888; margin-bottom: 30px; font-size: 14px;">Введіть ваш персональний токен доступу.</p>
+            <input type="password" id="tokenInput" placeholder="Access Token" class="cabinet-input">
+            <button id="btnLogin" class="btn-primary" style="width: 100%; border-radius: 8px;">Увійти</button>
+            <p id="loginError" style="color: #ff4444; font-size: 12px; margin-top: 15px; display: none;">Невірний токен.</p>
+        </div>
+    </div>
+
+    <!-- Екран 2: NDA (Юридичний Шлюз) -->
+    <div id="screen-nda" class="cabinet-screen">
+        <div class="nda-box">
+            <h2 style="color: white; margin-bottom: 20px;">Договір про нерозголошення (NDA)</h2>
+            <div class="nda-content">
+                <p><strong>УВАГА: Офіційне попередження</strong></p>
+                <p>Отримуючи доступ до системи, ви зобов'язуєтесь зберігати сувору конфіденційність щодо будь-яких персональних даних ветеранів, медичних діагнозів, соціальних статусів та деталей їхніх запитів (ЗУ "Про захист персональних даних").</p>
+                <p>Розголошення або несанкціонована передача цієї інформації третім особам тягне за собою кримінальну та адміністративну відповідальність.</p>
+            </div>
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <button id="btnSignDiia" class="btn-diia">Підписати через Дія.Підпис</button>
+                <button id="btnSignKep" class="btn-kep">Підписати КЕП (Вчасно)</button>
+            </div>
+            <p id="signatureStatus" style="color: var(--primary-green); margin-top: 15px; font-size: 14px; display: none;">Верифікація підпису...</p>
+        </div>
+    </div>
+
+    <!-- Екран 3: Дашборд -->
+    <div id="screen-dashboard" class="cabinet-screen">
+        <div class="dashboard-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3 style="color: var(--primary-green);">Talan UA</h3>
+                    <p style="color: #888; font-size: 12px;">Back-office</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="active">Запити</a>
+                    <a href="#">Мої кейси</a>
+                    <a href="#">Аналітика</a>
+                    <a href="index.html" style="color: #ff4444; margin-top: 50px;">Вихід</a>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="dash-header">
+                    <h2>Нові запити від ветеранів</h2>
+                    <div class="status-toggle">
+                        <span id="statusText" style="color: #888; font-size: 14px;">Статус: Не приймаю заявки</span>
+                        <label class="switch">
+                            <input type="checkbox" id="statusCheckbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </header>
+
+                <div class="table-container">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Напрямок</th>
+                                <th>Короткий опис</th>
+                                <th>Дата</th>
+                                <th>Дія</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <!-- Заповнюється через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="cabinet.js"></script>
+</body>
+</html>

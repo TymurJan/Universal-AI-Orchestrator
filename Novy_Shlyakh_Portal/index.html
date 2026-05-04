@@ -17,7 +17,7 @@
                 <h1>НОВИЙ ШЛЯХ</h1>
             </div>
             <nav class="nav">
-                <a href="#marketplace">Спеціалісти</a>
+                <a href="#specialists">Спеціалісти</a>
                 <a href="#employers">Роботодавці</a>
                 <a href="#training">Навчання</a>
                 <a href="https://t.me/your_bot" class="btn-primary">Зв'язатися</a>
@@ -29,66 +29,88 @@
         <div class="hero-overlay"></div>
         <div class="container">
             <div class="hero-content">
-                <h2 class="outfit-font">Твій спокійний шлях <br> до реінтеграції</h2>
-                <p>Координаційний центр для захисників та їхніх родин. <br> Ми допоможемо знайти правильний напрямок у цивільному житті.</p>
+                <h2 class="outfit-font">Твоя Безпечна Гавань <br> після повернення</h2>
+                <p>Координаційний центр реінтеграції ветеранів. <br> Юридична, психологічна та кар'єрна підтримка в одному місці.</p>
                 <div class="hero-actions">
-                    <a href="#marketplace" class="btn-main">Знайти спеціаліста</a>
-                    <a href="#club" class="btn-secondary">Ветеранський Клуб</a>
+                    <a href="https://t.me/Novy_Shlyakh_Bot" class="btn-main">Отримати допомогу (Intake)</a>
+                    <a href="#specialists" class="btn-secondary">Знайти спеціаліста</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="marketplace" class="marketplace">
+    <!-- БЛОК: AI-Пошук (як на Мінветі) -->
+    <section class="ai-search-section" style="padding: 60px 0; background: var(--glass-bg); border-bottom: 1px solid var(--glass-border);">
         <div class="container">
-            <h3 class="section-title">Маркетплейс Спеціалістів</h3>
-            <p class="section-subtitle">Оберіть перевіреного фахівця за рейтингом та відгуками побратимів</p>
-            
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="legal">⚖️ Юристи</button>
-                <button class="tab-btn" data-tab="psych">🧠 Психологи</button>
-                <button class="tab-btn" data-tab="physio">🦾 Реабілітологи</button>
-                <button class="tab-btn" data-tab="career">🚀 Кар'єра та Бізнес</button>
-                <button class="tab-btn" data-tab="social">🛰️ Соціальний супровід</button>
-            </div>
+            <div class="ai-search-container" style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h3 style="margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-green)" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2zm0 15a5 5 0 0 1-5-5V7a5 5 0 0 1 10 0v5a5 5 0 0 1-5 5z"/></svg>
+                    Розумний пошук по базі знань
+                </h3>
+                <p style="color: #ccc; margin-bottom: 25px;">Задайте своє питання простою мовою. ШІ проаналізує закони та підбере відповідну програму чи фахівця.</p>
+                
+                <div class="ai-search-box" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="aiSearchInput" placeholder="Наприклад: Як отримати грант на власну справу?" style="flex: 1; padding: 18px 25px; border-radius: 50px; border: 1px solid var(--primary-green); background: #111; color: white; font-size: 16px; outline: none;">
+                    <button id="aiSearchBtn" class="btn-primary" style="padding: 0 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 16px;">Запитати</button>
+                </div>
+                <span style="font-size: 11px; color: #888; display: block; font-style: italic;">Увага: AI-помічник має виключно інформаційний характер і не замінює консультацію реального фахівця.</span>
 
-            <div class="tab-content active" id="legal">
-                <div class="specialist-grid">
-                    <!-- Картка 1 -->
-                    <div class="spec-card">
-                        <div class="spec-img">
-                            <div class="spec-rating">⭐ 4.9</div>
-                        </div>
-                        <div class="spec-info">
-                            <h4>Олександр Ковальчук</h4>
-                            <p class="spec-tag">Провідний юрист</p>
-                            <p class="spec-power"><strong>Суперсила:</strong> Вирішення складних земельних питань та виплат.</p>
-                            <div class="spec-stats">
-                                <span>📂 42 успішні кейси</span>
-                                <span>💬 15 відгуків</span>
-                            </div>
-                            <button class="btn-card">Записатися</button>
-                        </div>
-                    </div>
-                    <!-- Картка 2 -->
-                    <div class="spec-card">
-                        <div class="spec-img placeholder-img">
-                            <div class="spec-rating">⭐ 4.7</div>
-                        </div>
-                        <div class="spec-info">
-                            <h4>Марина Петренко</h4>
-                            <p class="spec-tag">Адвокат з прав ветеранів</p>
-                            <p class="spec-power"><strong>Суперсила:</strong> Оскарження рішень ВЛК та супровід у судах.</p>
-                            <div class="spec-stats">
-                                <span>📂 28 успішних кейсів</span>
-                                <span>💬 9 відгуків</span>
-                            </div>
-                            <button class="btn-card">Записатися</button>
-                        </div>
-                    </div>
+                <div id="aiSearchResponse" class="ai-response-area" style="margin-top: 30px; text-align: left; background: #151715; border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; display: none;">
+                    <!-- Тут з'являтиметься відповідь -->
                 </div>
             </div>
-            <!-- Інші таби будуть додані в main.js динамічно -->
+        </div>
+    </section>
+
+    <!-- БЛОК: Як це працює -->
+    <section class="how-it-works" style="padding: 100px 0; background: #151715;">
+        <div class="container">
+            <h3 class="section-title">Три кроки до підтримки</h3>
+            <p class="section-subtitle">Простий алгоритм взаємодії для вашої зручності</p>
+            <div class="employer-list">
+                <div class="employer-item">
+                    <div class="emp-logo">01</div>
+                    <h4>Анкетування</h4>
+                    <p>Коротке опитування в нашому боті для визначення ваших потреб.</p>
+                </div>
+                <div class="employer-item">
+                    <div class="emp-logo">02</div>
+                    <h4>Верифікація</h4>
+                    <p>Координатор підбирає найкращого спеціаліста під ваш запит.</p>
+                </div>
+                <div class="employer-item">
+                    <div class="emp-logo">03</div>
+                    <h4>Допомога</h4>
+                    <p>Персональна консультація та супровід до вирішення питання.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="specialists" class="specialists">
+        <div class="container">
+            <h3 class="section-title">Наші Спеціалісти</h3>
+            <p class="section-subtitle">Оберіть перевіреного фахівця, що надає підтримку за пільговими умовами або Pro Bono</p>
+            
+            <div class="specialist-tabs" id="specTabs">
+                <button class="tab-btn active" data-category="all" id="btn-all">Всі</button>
+                <button class="tab-btn" data-category="legal" id="btn-legal">Юристи</button>
+                <button class="tab-btn" data-category="psychology" id="btn-psychology">Психологи</button>
+                <button class="tab-btn" data-category="career" id="btn-career">Кар'єра та Бізнес</button>
+                <button class="tab-btn" data-category="social" id="btn-social">Соціальний хаб</button>
+            </div>
+
+            <div class="specialist-grid" id="specialistGrid">
+                <!-- Картки спеціалістів будуть згенеровані через JS -->
+            </div>
+
+            <div class="specialist-cta">
+                <div class="cta-content">
+                    <h3>Ви фахівець і хочете допомогти?</h3>
+                    <p>Приєднуйтесь до нашої спільноти незалежних експертів Черкащини. Отримайте рекламний майданчик та потік клієнтів.</p>
+                    <button class="btn-primary" id="btn-join-specialist">Стати частиною спільноти</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -113,12 +135,37 @@
         </div>
     </section>
 
+    <!-- БЛОК: Місія Ашрам -->
+    <section id="mission" class="specialist-cta" style="margin: 100px 20px;">
+        <div class="cta-content" style="max-width: 800px; margin: 0 auto;">
+            <h3>Місія «Ашрам»</h3>
+            <p>«Новий Шлях» — це частина великої екосистеми ГО «Талан ЮА». Весь наш прибуток від IT-продуктів та внесків йде на будівництво Центру реінтеграції «Ашрам». Це місце відновлення через тишу, працю на землі та психоемоційне розвантаження для тих, хто пройшов крізь вогонь.</p>
+            <div style="margin-top: 30px;">
+                <button class="btn-primary" onclick="openCharityModal()" style="margin-right: 15px; border: none; font-size: 16px;">Стати благодійником</button>
+                <a href="https://talan.ua/ashram" class="btn-secondary" style="font-size: 14px; padding: 12px 30px;">Детальніше про проєкт</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- БЛОК: Локація та Партнери -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Координаційний центр «НОВИЙ ШЛЯХ»</p>
-            <p>Проєкт Громадської Організації ТАЛАН ЮА | м. Черкаси</p>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin-bottom: 40px; text-align: left;">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--soft-white); font-size: 18px; margin-bottom: 10px;">ГО «ТАЛАН ЮА»</h4>
+                    <p>Координаційний центр «НОВИЙ ШЛЯХ»</p>
+                    <p>м. Черкаси, вул. Центральна, 100 (Офлайн-хаб)</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--soft-white); font-size: 18px; margin-bottom: 10px;">Контакти</h4>
+                    <p>Тел: +38 (063) 656-89-99</p>
+                </div>
+            </div>
+            <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">&copy; 2026 Новий Шлях | Всі права захищені. Проєкт ГО «Талан ЮА»</p>
         </div>
     </footer>
+
+    <script src="main.js"></script>
 
     <script src="main.js"></script>
 </body>
