@@ -1275,7 +1275,7 @@ section {
   justify-content: center;
   z-index: 99999 !important;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.1s ease;
 }
 
 .modal.active {
@@ -1303,14 +1303,14 @@ section {
 
 /* Trigger Keyframe Animation */
 .modal.active .modal-content {
-  animation: safeBloom 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: safeBloom 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes safeBloom {
   0% {
     opacity: 0;
     transform: scale(1.05);
-    filter: blur(20px);
+    filter: blur(10px);
   }
   100% {
     opacity: 1;

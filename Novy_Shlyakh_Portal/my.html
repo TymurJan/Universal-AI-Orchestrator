@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій Профіль — Новий Шлях</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="my.css">
+    <link rel="stylesheet" href="accessibility.css">
+</head>
+<body>
+
+    <!-- Екран Авторизації / Реєстрації -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2>Єдиний Кабінет</h2>
+                <p>Оберіть ваш статус для входу в систему Новий Шлях.</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="tab-login">Ветеран (Вхід)</button>
+                <button class="tab-btn" id="tab-register">Реєстрація</button>
+                <button class="tab-btn" id="tab-specialist">Спеціаліст</button>
+            </div>
+
+            <!-- Форма Входу -->
+            <form id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <label for="login-email">Логін (Email або телефон)</label>
+                    <input type="text" id="login-email" placeholder="Введіть ваш логін" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary-auth">Увійти в кабінет</button>
+                <p class="auth-help">Забули пароль? <a href="#" id="forgot-password-link">Відновити через секретне питання</a></p>
+            </form>
+
+            <!-- Форма Реєстрації -->
+            <form id="register-form" class="auth-form">
+                <div class="input-group">
+                    <label for="reg-name">ПІБ</label>
+                    <input type="text" id="reg-name" placeholder="Іваненко Іван Іванович" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-email">Логін (Email або телефон)</label>
+                    <input type="text" id="reg-email" placeholder="ivan@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Створіть пароль</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-question">Секретне питання (для відновлення доступу)</label>
+                    <select id="reg-question" required>
+                        <option value="" disabled selected>Оберіть питання...</option>
+                        <option value="1">Дівоче прізвище матері</option>
+                        <option value="2">Позивний вашого першого командира</option>
+                        <option value="3">Назва вулиці, де ви виросли</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="reg-answer">Відповідь на секретне питання</label>
+                    <input type="text" id="reg-answer" placeholder="Ваша відповідь" required>
+                </div>
+                
+                <!-- Офіційна верифікація через ДІЮ -->
+                <div class="diia-auth-block" style="margin: 25px 0; text-align: center; border-top: 1px solid var(--border-color); padding-top: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 25px;">
+                    <p style="font-size: 14px; margin-bottom: 15px; color: var(--text-primary); font-weight: 500;">Відповідно до законодавства України, створення профілю вимагає підтвердження особи через державні реєстри.</p>
+                    <button type="button" id="diia-verify-btn" class="btn-primary-auth" style="background: #111; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; transition: 0.3s;">
+                        <span style="font-weight: 900; font-family: 'Outfit', sans-serif; font-size: 18px; letter-spacing: 1px;">Дія.Підпис</span> 
+                        Пройти верифікацію
+                    </button>
+                    <!-- Приховане поле, яке заповнюється бекендом після успішної верифікації -->
+                    <input type="hidden" id="diia-verified-token" required>
+                    <p id="diia-status-text" style="font-size: 13px; color: var(--danger); font-weight: 600;">⚠️ Очікування верифікації...</p>
+                </div>
+                
+                <!-- Протокол підтвердження особи та NDA -->
+                <div class="legal-protocol" style="margin: 25px 0; padding: 15px; background: rgba(220, 53, 69, 0.05); border-left: 4px solid var(--danger); border-radius: 4px;">
+                    <h4 style="margin-bottom: 10px; color: var(--danger); font-size: 14px;">Юридичний протокол</h4>
+                    <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; cursor: pointer; font-size: 13px; line-height: 1.4;">
+                        <input type="checkbox" id="reg-verify" required style="margin-top: 2px; width: 16px; height: 16px;">
+                        <span>Я підтверджую свою особу та зобов'язуюсь надати відповідні документи (УБД/Паспорт) для верифікації на вимогу спеціаліста.</span>
+                    </label>
+                    <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer; font-size: 13px; line-height: 1.4;">
+                        <input type="checkbox" id="reg-nda" required style="margin-top: 2px; width: 16px; height: 16px;">
+                        <span>Я приймаю умови <a href="#" style="text-decoration: underline;">Договору про нерозголошення (NDA)</a> та даю згоду на обробку моїх персональних даних.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary-auth">Зареєструватися</button>
+            </form>
+
+            <!-- Форма Спеціаліста -->
+            <form id="specialist-form" class="auth-form" style="text-align: center;">
+                <div style="margin-bottom: 25px; padding: 25px; background: rgba(0,0,0,0.03); border-radius: 12px; border: 1px dashed var(--border-color);">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" style="margin-bottom: 15px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <h3 style="margin-bottom: 10px; color: var(--text-primary);">Вхід для фахівців</h3>
+                    <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">Доступ до захищеного Back-office здійснюється виключно за допомогою Кваліфікованого електронного підпису (КЕП) після підписання NDA.</p>
+                </div>
+                <button type="button" id="go-to-specialist" class="btn-primary-auth" style="background: #1a1e21;">Увійти через КЕП</button>
+            </form>
+
+            <div class="auth-footer">
+                <a href="index.html" class="back-link">← Повернутися на головну</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Екран Кабінету (Дашборд) -->
+    <div id="dashboard-screen" class="screen">
+        
+        <!-- Верхня навігація -->
+        <header class="dash-header">
+            <div class="dash-logo">
+                <span class="logo-icon">🛡️</span>
+                Мій Профіль
+            </div>
+            <div class="user-info">
+                <span class="user-name" id="display-user-name">Іван Іваненко</span>
+                <button id="logout-btn" class="btn-outline-sm">Вийти</button>
+            </div>
+        </header>
+
+        <div class="dash-layout">
+            <!-- Бічна панель -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" data-target="overview">📋 Огляд заявок</a>
+                    <a href="#" class="nav-item" data-target="vault">📂 Документи (Сейф)</a>
+                    <a href="#" class="nav-item" data-target="history">💬 Історія консультацій</a>
+                    <a href="#" class="nav-item" data-target="settings">⚙️ Налаштування</a>
+                </nav>
+            </aside>
+
+            <!-- Основна робоча зона -->
+            <main class="main-content">
+                
+                <!-- Вкладка: Огляд (Трекер заявок) -->
+                <div id="view-overview" class="view-section active">
+                    <h1 class="page-title">Ваші заявки</h1>
+                    
+                    <div class="tracker-card">
+                        <div class="tracker-header">
+                            <h3>Юридична консультація (Отримання статусу УБД)</h3>
+                            <span class="status-badge processing">В роботі</span>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-step completed">
+                                <div class="step-circle">✓</div>
+                                <span>Заявка подана</span>
+                            </div>
+                            <div class="progress-line completed"></div>
+                            <div class="progress-step active">
+                                <div class="step-circle">2</div>
+                                <span>Перевірка документів</span>
+                            </div>
+                            <div class="progress-line"></div>
+                            <div class="progress-step">
+                                <div class="step-circle">3</div>
+                                <span>Консультація</span>
+                            </div>
+                            <div class="progress-line"></div>
+                            <div class="progress-step">
+                                <div class="step-circle">4</div>
+                                <span>Готово</span>
+                            </div>
+                        </div>
+
+                        <div class="tracker-details">
+                            <p><strong>Спеціаліст:</strong> Олександр (Юрист)</p>
+                            <p><strong>Коментар спеціаліста:</strong> "Очікую скани ваших документів у Сейфі для початку роботи."</p>
+                        </div>
+                        <button class="btn-primary-sm mt-15">Написати спеціалісту</button>
+                    </div>
+                </div>
+
+                <!-- Вкладка: Документи (Сейф) -->
+                <div id="view-vault" class="view-section">
+                    <h1 class="page-title">Захищений Сейф</h1>
+                    <p class="subtitle">Ваші документи зберігаються у зашифрованому вигляді. Тільки призначений спеціаліст має до них доступ.</p>
+                    
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-icon">📥</div>
+                        <h3>Завантажити документ</h3>
+                        <p>Перетягніть файл сюди або натисніть для вибору</p>
+                        <input type="file" id="file-input" hidden>
+                    </div>
+
+                    <h3 class="section-heading">Ваші завантажені файли</h3>
+                    <ul class="file-list" id="file-list">
+                        <!-- Сюди додаватимуться файли -->
+                        <li class="file-item">
+                            <div class="file-info">
+                                <span class="file-icon">📄</span>
+                                <span class="file-name">Копія_паспорта.pdf</span>
+                            </div>
+                            <span class="file-date">05.05.2026</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Інші вкладки (Заглушки) -->
+                <div id="view-history" class="view-section">
+                    <h1 class="page-title">Історія консультацій</h1>
+                    <div class="empty-state">У вас поки немає завершених консультацій.</div>
+                </div>
+                
+                <div id="view-settings" class="view-section">
+                    <h1 class="page-title">Налаштування профілю</h1>
+                    <div class="settings-card">
+                        <div class="input-group">
+                            <label>Змінити пароль</label>
+                            <input type="password" placeholder="Новий пароль">
+                        </div>
+                        <button class="btn-outline-sm">Зберегти зміни</button>
+                    </div>
+
+                    <div class="settings-card" style="margin-top: 30px; border: 1px solid #ff4d4d; background: rgba(255, 77, 77, 0.05);">
+                        <h3 style="color: #ff4d4d; margin-bottom: 15px;">Керування даними (Право на забуття)</h3>
+                        <p style="font-size: 14px; margin-bottom: 20px; color: var(--text-secondary);">Ви можете назавжди видалити свій профіль, історію консультацій та всі завантажені документи. Ця дія є незворотною.</p>
+                        <button id="delete-profile-btn" class="btn-primary-auth" style="background: #ff4d4d; border: none; font-size: 14px; padding: 12px 20px; width: auto;">Видалити мій профіль та всі дані</button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Модалка відновлення паролю -->
+    <div id="recovery-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Відновлення доступу</h2>
+            <form id="recovery-form">
+                <div class="input-group">
+                    <label>Введіть ваш логін</label>
+                    <input type="text" id="recovery-login" required>
+                </div>
+                <div id="recovery-question-block" style="display: none;">
+                    <div class="input-group">
+                        <label>Ваше секретне питання:</label>
+                        <p id="recovery-question-text" style="font-weight: 600; margin: 5px 0 10px;"></p>
+                        <input type="text" id="recovery-answer" placeholder="Відповідь" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary-auth" id="recovery-btn">Далі</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="my.js"></script>
+    <script src="accessibility.js"></script>
+</body>
+</html>

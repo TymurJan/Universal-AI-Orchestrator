@@ -91,6 +91,8 @@ body {
     border-radius: 30px;
     font-weight: 600;
     color: white !important;
+    text-decoration: none;
+    display: inline-block;
 }
 
 /* Hero Section */
@@ -152,12 +154,7 @@ body {
     transition: 0.3s;
 }
 
-/* Marketplace */
-.marketplace {
-    padding: 100px 0;
-    background-color: var(--deep-charcoal);
-}
-
+/* Common Layout Elements */
 .section-title {
     font-size: 36px;
     text-align: center;
@@ -168,6 +165,14 @@ body {
     text-align: center;
     color: #888;
     margin-bottom: 50px;
+}
+
+.specialist-tabs {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
 }
 
 .tabs {
@@ -194,6 +199,7 @@ body {
     border-color: var(--primary-green);
 }
 
+/* Specialist Cards */
 .specialist-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -276,16 +282,69 @@ body {
     color: white;
 }
 
-/* Employers */
-.employers {
-    padding: 100px 0;
-    background: #151715;
+/* Education Cards */
+.edu-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.3s;
+    border-top: 4px solid var(--primary-green);
+}
+.edu-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-green);
+    background: rgba(255,255,255,0.08);
+}
+.edu-badge {
+    align-self: flex-start;
+    padding: 5px 12px;
+    border-radius: 5px;
+    background: var(--deep-teal);
+    color: var(--primary-green);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+.edu-inst {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+.edu-card h4 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+.edu-desc {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 20px;
+    flex: 1;
+}
+.edu-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 15px;
+}
+.edu-price {
+    font-weight: 700;
+    color: var(--secondary-green);
+    font-size: 16px;
 }
 
+/* Employer List */
 .employer-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 30px;
+    width: 100%;
 }
 
 .employer-item {
@@ -314,7 +373,6 @@ body {
 @media (max-width: 768px) {
     .hero-content h2 { font-size: 40px; }
     .nav { display: none; }
-    .chat-widget { width: 90%; right: 5%; bottom: 90px; }
 }
 
 /* AI Chat Widget */
@@ -408,13 +466,6 @@ body {
     align-self: flex-end;
     border-bottom-right-radius: 2px;
 }
-.chat-disclaimer {
-    display: block;
-    font-size: 10px;
-    color: #666;
-    margin-top: 5px;
-    font-style: italic;
-}
 .chat-footer {
     padding: 15px;
     background: var(--deep-charcoal);
@@ -442,4 +493,87 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* --- Rehab Category Specific Styles --- */
+.spec-card[data-category="rehab"] {
+    border-left: 4px solid #3b82f6 !important; /* Medical Blue accent */
+}
+
+.spec-card[data-category="rehab"] .spec-tag {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+}
+
+.spec-card[data-category="rehab"] .btn-card {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+/* --- Telegram Mini App Mode --- */
+body.is-tg-app .header, 
+body.is-tg-app .footer,
+body.is-tg-app .hero {
+    display: none !important;
+}
+
+body.is-tg-app {
+    background: #1A1C1A;
+}
+
+body.is-tg-app .container {
+    padding-top: 20px;
+}
+
+body.is-tg-app .section-title {
+    font-size: 24px;
+    text-align: left;
+}
+
+body.is-tg-app .section-subtitle {
+    text-align: left;
+}
+
+/* Leaflet Map Refinements */
+#networkMap {
+    z-index: 1;
+}
+
+.leaflet-popup-content-wrapper {
+    background: white;
+    border-radius: 10px;
+}
+
+.leaflet-popup-tip {
+    background: white;
+}
+
+.leaflet-container a.btn-primary {
+    color: white !important;
+}
+
+/* Floating Telegram Button */
+.tg-floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #0088cc;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(0, 136, 204, 0.4);
+    z-index: 9999;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.tg-floating-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 136, 204, 0.6);
+}
+
+body.is-tg-app .tg-floating-btn {
+    display: none; /* Ховаємо в самому боті, щоб не дублювати */
 }

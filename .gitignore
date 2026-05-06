@@ -1,3 +1,13 @@
 .env
 *.pyc
 __pycache__/
+logs/
+.venv/
+.vscode/
+tessdata/
+talan.autobot/last_response_count.json
+service_account.json
+active_licenses.json
+bot.pid
+*.zip.*
+STABLE_*.zip*

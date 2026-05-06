@@ -7,7 +7,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Open Graph / SEO (Для правильного відображення в Telegram/Facebook) -->
+    <meta property="og:title" content="Новий Шлях — Центр реінтеграції ветеранів">
+    <meta property="og:description" content="Захищений портал підтримки ветеранів: юристи, психологи, кар'єра та освіта. Проєкт ГО «Талан ЮА».">
+    <meta property="og:image" content="https://novyshlyakh.ua/assets/og-image.jpg">
+    <meta property="og:url" content="https://novyshlyakh.ua">
+    <meta name="description" content="Координаційний центр реінтеграції ветеранів Черкащини. Юридична, психологічна та кар'єрна підтримка.">
+
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="accessibility.css">
+    <!-- Telegram Web App Script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <header class="header">
@@ -16,11 +29,16 @@
                 <span class="ngo-badge">Проєкт ГО ТАЛАН ЮА</span>
                 <h1>НОВИЙ ШЛЯХ</h1>
             </div>
-            <nav class="nav">
+            <nav class="nav" style="display: flex; align-items: center;">
                 <a href="#specialists">Спеціалісти</a>
                 <a href="#employers">Роботодавці</a>
                 <a href="#training">Навчання</a>
-                <a href="https://t.me/your_bot" class="btn-primary">Зв'язатися</a>
+                
+                <!-- Єдина кнопка входу (Single Gateway) -->
+                <a href="my.html" class="btn-primary" style="margin-left: 15px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 10px 20px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Кабінет
+                </a>
             </nav>
         </div>
     </header>
@@ -32,7 +50,7 @@
                 <h2 class="outfit-font">Твоя Безпечна Гавань <br> після повернення</h2>
                 <p>Координаційний центр реінтеграції ветеранів. <br> Юридична, психологічна та кар'єрна підтримка в одному місці.</p>
                 <div class="hero-actions">
-                    <a href="https://t.me/Novy_Shlyakh_Bot" class="btn-main">Отримати допомогу (Intake)</a>
+                    <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="btn-main">Отримати допомогу (Intake)</a>
                     <a href="#specialists" class="btn-secondary">Знайти спеціаліста</a>
                 </div>
             </div>
@@ -65,24 +83,28 @@
     <!-- БЛОК: Як це працює -->
     <section class="how-it-works" style="padding: 100px 0; background: #151715;">
         <div class="container">
-            <h3 class="section-title">Три кроки до підтримки</h3>
-            <p class="section-subtitle">Простий алгоритм взаємодії для вашої зручності</p>
+            <h3 class="section-title">Три кроки до комплексної підтримки</h3>
+            <p class="section-subtitle">Прозорий та захищений алгоритм реінтеграції</p>
             <div class="employer-list">
                 <div class="employer-item">
                     <div class="emp-logo">01</div>
-                    <h4>Анкетування</h4>
-                    <p>Коротке опитування в нашому боті для визначення ваших потреб.</p>
+                    <h4>Захищена Реєстрація</h4>
+                    <p>Створіть свій персональний кабінет за допомогою безпечної верифікації через державний сервіс Дія.Підпис.</p>
                 </div>
                 <div class="employer-item">
                     <div class="emp-logo">02</div>
-                    <h4>Верифікація</h4>
-                    <p>Координатор підбирає найкращого спеціаліста під ваш запит.</p>
+                    <h4>Оцінка Потреб</h4>
+                    <p>Сформуйте запит у захищеному просторі. Наш AI-координатор миттєво підбере найкращого профільного експерта.</p>
                 </div>
                 <div class="employer-item">
                     <div class="emp-logo">03</div>
-                    <h4>Допомога</h4>
-                    <p>Персональна консультація та супровід до вирішення питання.</p>
+                    <h4>Фаховий Супровід</h4>
+                    <p>Отримайте безкоштовну кваліфіковану юридичну, психологічну або кар'єрну допомогу з повним збереженням конфіденційності.</p>
                 </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="my.html" class="btn-primary" style="font-size: 16px; padding: 15px 35px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 25px rgba(46,139,87,0.3); transition: 0.3s;">Розпочати реєстрацію</a>
             </div>
         </div>
     </section>
@@ -96,6 +118,7 @@
                 <button class="tab-btn active" data-category="all" id="btn-all">Всі</button>
                 <button class="tab-btn" data-category="legal" id="btn-legal">Юристи</button>
                 <button class="tab-btn" data-category="psychology" id="btn-psychology">Психологи</button>
+                <button class="tab-btn" data-category="rehab" id="btn-rehab">Реабілітація та протезування</button>
                 <button class="tab-btn" data-category="career" id="btn-career">Кар'єра та Бізнес</button>
                 <button class="tab-btn" data-category="social" id="btn-social">Соціальний хаб</button>
             </div>
@@ -114,37 +137,91 @@
         </div>
     </section>
 
-    <section id="employers" class="employers">
+    <section id="training" class="training-section" style="padding: 100px 0; background: var(--deep-charcoal);">
         <div class="container">
-            <h3 class="section-title">Надавачі робочих місць</h3>
-            <p class="section-subtitle">Компанії Черкас, що пріоритетно працевлаштовують та адаптують ветеранів</p>
+            <h3 class="section-title">Освіта та Перекваліфікація</h3>
+            <p class="section-subtitle">Ми моніторимо державні та приватні програми, щоб ви могли безкоштовно здобути нову професію</p>
+            
+            <div class="specialist-tabs" id="eduTabs" style="margin-bottom: 40px; justify-content: center;">
+                <button class="tab-btn active" data-edu="all">Всі можливості</button>
+                <button class="tab-btn" data-edu="vouchers">Держваучери</button>
+                <button class="tab-btn" data-edu="it">IT-сфера</button>
+                <button class="tab-btn" data-edu="grants">Гранти на навчання</button>
+                <button class="tab-btn" data-edu="uni">ВНЗ та перепідготовка</button>
+            </div>
+
+            <div class="training-grid" id="trainingGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+                <!-- Дані завантажуються асинхронно з education.json -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px; padding: 30px; background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--primary-green);">
+                <h4 style="margin-bottom: 10px;">Не знайшли потрібного напрямку?</h4>
+                <p style="color: #ccc; margin-bottom: 20px;">Наш AI-розвідник шукає нові програми 24/7. Напишіть нам, що саме ви шукаєте.</p>
+                <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="btn-secondary">Подати запит на пошук</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="employers" class="employers" style="padding: 100px 0; background: #151715;">
+        <div class="container">
+            <h3 class="section-title">Партнери-роботодавці</h3>
+            <p class="section-subtitle">Компанії, що пріоритетно працевлаштовують та адаптують ветеранів</p>
             <div class="employer-list">
                 <div class="employer-item">
                     <div class="emp-logo">АГРО-ЛІДЕР</div>
-                    <p>Підтримка ветеранів-аграріїв та навчання.</p>
+                    <p>Підтримка ветеранів-аграріїв та менторство.</p>
                 </div>
                 <div class="employer-item">
                     <div class="emp-logo">TECH-WAVE</div>
-                    <p>ІТ-курси та стажування для захисників.</p>
+                    <p>ІТ-стажування для захисників з подальшим працевлаштуванням.</p>
                 </div>
                 <div class="employer-item">
                     <div class="emp-logo">БУД-ПЛЮС</div>
-                    <p>Менторство на будівництві об'єктів регіону.</p>
+                    <p>Адаптація на будівництві об'єктів Черкащини.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- БЛОК: Локації та Мережева Мапа -->
+    <section id="locations" style="padding: 100px 0; background: var(--glass-bg);">
+        <div class="container">
+            <h3 class="section-title">Мережа підтримки Черкащини</h3>
+            <p class="section-subtitle">Ми об'єднали перевірені локації, де ви можете отримати допомогу офлайн</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; align-items: start;">
+                <div class="location-card" style="background: #111; padding: 25px; border-radius: 25px; border: 1px solid var(--glass-border);">
+                    <div id="networkMap" style="width: 100%; height: 450px; background: #222; border-radius: 15px; overflow: hidden; border: 1px solid var(--primary-green);">
+                        <!-- Реальна карта Leaflet -->
+                    </div>
+                </div>
+
+                <div class="location-info">
+                    <div class="location-card" style="background: linear-gradient(135deg, #1a1c1a 0%, #2d4f4f 100%); padding: 40px; border-radius: 25px; border: 1px solid var(--primary-green); margin-bottom: 30px;">
+                        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
+                            <div style="font-size: 40px;">🏢</div>
+                            <div>
+                                <h4 style="font-size: 24px; color: var(--primary-green);">Цифровий Координатор</h4>
+                                <p style="color: rgba(255,255,255,0.6);">Ваш офіс у смартфоні</p>
+                            </div>
+                        </div>
+                        <p style="color: white; line-height: 1.7; margin-bottom: 30px;">Ми відмовились від одного великого офісу на користь широкої мережі фахівців. Ви обираєте найближчого до вас спеціаліста — ми гарантуємо якість його послуг.</p>
+                        <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="btn-main" style="width: 100%; text-align: center; margin: 0;">Відкрити Бот-Координатор</a>
+                    </div>
+                    
+                    <div class="location-card" style="background: #111; padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-bottom: 15px; color: var(--soft-white);">🌿 Проєкт «Ашрам»</h4>
+                        <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">Наш заміський центр відновлення зараз будується. Це буде унікальний простір для рекреації та трудотерапії.</p>
+                        <a href="https://talan.ua/ashram" style="color: var(--secondary-green); font-weight: bold; text-decoration: none;">Дізнатися більше →</a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- БЛОК: Місія Ашрам -->
-    <section id="mission" class="specialist-cta" style="margin: 100px 20px;">
-        <div class="cta-content" style="max-width: 800px; margin: 0 auto;">
-            <h3>Місія «Ашрам»</h3>
-            <p>«Новий Шлях» — це частина великої екосистеми ГО «Талан ЮА». Весь наш прибуток від IT-продуктів та внесків йде на будівництво Центру реінтеграції «Ашрам». Це місце відновлення через тишу, працю на землі та психоемоційне розвантаження для тих, хто пройшов крізь вогонь.</p>
-            <div style="margin-top: 30px;">
-                <button class="btn-primary" onclick="openCharityModal()" style="margin-right: 15px; border: none; font-size: 16px;">Стати благодійником</button>
-                <a href="https://talan.ua/ashram" class="btn-secondary" style="font-size: 14px; padding: 12px 30px;">Детальніше про проєкт</a>
-            </div>
-        </div>
+    <section id="mission" class="specialist-cta" style="margin: 100px 20px; display: none;">
+        <!-- Перенесено в локації -->
     </section>
 
     <!-- БЛОК: Локація та Партнери -->
@@ -165,8 +242,13 @@
         </div>
     </footer>
 
-    <script src="main.js"></script>
+    <!-- Плаваюча кнопка Telegram -->
+    <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="tg-floating-btn" target="_blank">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.45-.42-1.39-.89.03-.25.38-.51 1.07-.78 4.2-1.82 7-3.03 8.41-3.62 4.01-1.68 4.84-1.97 5.38-1.98.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.13-.03.19z"/></svg>
+        <span>Зв'язатися</span>
+    </a>
 
     <script src="main.js"></script>
+    <script src="accessibility.js"></script>
 </body>
 </html>

@@ -1,0 +1,255 @@
+[
+  {
+    "id": "31210f99f696",
+    "name": "ГУРТ Гранти",
+    "url": "https://gurt.org.ua/news/grants/",
+    "directions": [
+      "Розбудова ОТГ",
+      "Матеріальна база",
+      "Реінтеграція ветеранів"
+    ],
+    "filters": "Фінансування матеріальної бази, Можна ветеранські ГО. Дедлайн мінімум 2 тижні.",
+    "added": "2026-04-18T00:55:18.431338",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:27.491609"
+  },
+  {
+    "id": "3e1550e7607a",
+    "name": "Громадський Простір (Гранти)",
+    "url": "https://www.prostir.ua/category/grants/",
+    "directions": [
+      "Розбудова ОТГ",
+      "Матеріальна база",
+      "Реінтеграція ветеранів"
+    ],
+    "filters": "Фінансування матеріальної бази, Можна ветеранські ГО. Дедлайн мінімум 2 тижні.",
+    "added": "2026-04-18T00:55:19.604551",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:31.977089"
+  },
+  {
+    "id": "b77a81bffaf9",
+    "name": "ІСАР Єднання",
+    "url": "https://ednannia.ua/grants",
+    "directions": [
+      "ХАБ (інституційні)"
+    ],
+    "filters": "розвиток спроможності",
+    "added": "2026-04-18T01:32:37.806842",
+    "last_status": null
+  },
+  {
+    "id": "c82c0f282793",
+    "name": "МХП-Громаді (Гранти)",
+    "url": "https://mhp-gromadi.org/grants/",
+    "directions": [
+      "Розбудова ОТГ",
+      "Матеріальна база",
+      "Реінтеграція ветеранів"
+    ],
+    "filters": "Фінансування матеріальної бази, Можна ветеранські ГО. Дедлайн мінімум 2 тижні.",
+    "added": "2026-04-18T00:55:21.621972",
+    "last_status": null
+  },
+  {
+    "id": "6e1bf667df2c",
+    "name": "EU Funding & Tenders",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/programmes/crea",
+    "directions": [
+      "Всі категорії"
+    ],
+    "filters": "дія в Україні",
+    "added": "2026-04-18T01:32:34.739052",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:32.773538"
+  },
+  {
+    "id": "037ac1341977",
+    "name": "USAID Ukraine",
+    "url": "https://www.usaid.gov/ukraine/partner-with-us",
+    "directions": [
+      "ASHRAM",
+      "КОМБО"
+    ],
+    "filters": "соціальні, ветеранські",
+    "added": "2026-04-18T01:32:35.402457",
+    "last_status": null
+  },
+  {
+    "id": "b59935593bd9",
+    "name": "Український Ветеранський Фонд",
+    "url": "https://veteranfund.com.ua/contests/",
+    "directions": [
+      "Всі категорії"
+    ],
+    "filters": "всі активні",
+    "added": "2026-04-18T02:33:27.933357",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:39.557194"
+  },
+  {
+    "id": "ee580ef4a9e8",
+    "name": "Міжнародний фонд Відродження",
+    "url": "https://www.irf.ua/grants/contests/",
+    "directions": [
+      "Всі категорії"
+    ],
+    "filters": "розвиток ГО",
+    "added": "2026-04-18T01:32:39.554354",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:43.509175"
+  },
+  {
+    "id": "2d9275b21bd7",
+    "name": "Дія.Бізнес Гранти",
+    "url": "https://business.diia.gov.ua/cases/granti",
+    "directions": [
+      "ХАБ (соцпідприємство)"
+    ],
+    "filters": "мікрогранти, єРобота",
+    "added": "2026-04-18T02:10:34.240219",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:43.793263"
+  },
+  {
+    "id": "d93c64923654",
+    "name": "EU Funding & Tenders",
+    "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-search",
+    "directions": [
+      "Всі категорії"
+    ],
+    "filters": "дія в Україні",
+    "added": "2026-04-18T02:33:24.323050",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:44.134038"
+  },
+  {
+    "id": "c2b004102d5e",
+    "name": "USAID Ukraine",
+    "url": "https://www.usaid.gov/ukraine/partnership-opportunities",
+    "directions": [
+      "ASHRAM",
+      "КОМБО"
+    ],
+    "filters": "соціальні, ветеранські",
+    "added": "2026-04-18T02:33:24.910000",
+    "last_status": null
+  },
+  {
+    "id": "9a80db67061d",
+    "name": "ІСАР Єднання",
+    "url": "https://ednannia.ua/grants-ukr",
+    "directions": [
+      "ХАБ",
+      "СПРОМОЖНІСТЬ"
+    ],
+    "filters": "розвиток спроможності, оргрозвиток",
+    "added": "2026-04-18T02:10:29.456404",
+    "last_status": null
+  },
+  {
+    "id": "50feb717c35a",
+    "name": "Міжнародний фонд Відродження (Детально)",
+    "url": "https://www.irf.ua/grants/contests/",
+    "directions": [
+      "Всі категорії"
+    ],
+    "filters": "розвиток ГО",
+    "added": "2026-04-18T02:10:31.399386",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:48.954191"
+  },
+  {
+    "id": "50c2c3f1a776",
+    "name": "Pact Ukraine Opportunities",
+    "url": "https://pactukraine.org.ua/uk/opportunities",
+    "directions": [
+      "СПРОМОЖНІСТЬ"
+    ],
+    "filters": "партнерство, гранти",
+    "added": "2026-04-18T02:10:34.675465",
+    "last_status": null
+  },
+  {
+    "id": "c0eed509ceae",
+    "name": "Zagoriy Foundation",
+    "url": "https://zagoriy.foundation/grants/",
+    "directions": [
+      "СПРОМОЖНІСТЬ"
+    ],
+    "filters": "культура, меценатство, оргрозвиток",
+    "added": "2026-04-18T02:10:35.740866",
+    "last_status": null
+  },
+  {
+    "id": "58509c104287",
+    "name": "ІСАР Єднання",
+    "url": "https://ednannia.ua/tryvaiut-hrantovi-konkursy",
+    "directions": [
+      "ХАБ",
+      "СПРОМОЖНІСТЬ"
+    ],
+    "filters": "розвиток спроможності, оргрозвиток",
+    "added": "2026-04-18T02:33:27.363098",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:55.828604"
+  },
+  {
+    "id": "4806aa070d5f",
+    "name": "Grants.gov - US Government Grants",
+    "url": "https://www.grants.gov/",
+    "directions": [
+      "Нове Джерело"
+    ],
+    "filters": "Релевантне",
+    "added": "2026-04-28T12:42:12.284343",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:56.705450"
+  },
+  {
+    "id": "2095054cc9d6",
+    "name": "USAID - United States Agency for International Development",
+    "url": "https://www.usaid.gov/",
+    "directions": [
+      "Нове Джерело"
+    ],
+    "filters": "Релевантне",
+    "added": "2026-04-28T12:42:13.144946",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:00:57.076010"
+  },
+  {
+    "id": "e7955d99c9c8",
+    "name": "EuroAid - European Union Funding",
+    "url": "https://www.euroaid.com/",
+    "directions": [
+      "Нове Джерело"
+    ],
+    "filters": "Релевантне",
+    "added": "2026-04-28T12:42:13.883186",
+    "last_status": null
+  },
+  {
+    "id": "dbd354a004bf",
+    "name": "United Nations Development Programme (UNDP)",
+    "url": "https://www.un.org/en/sections/what-we-do/development",
+    "directions": [
+      "Нове Джерело"
+    ],
+    "filters": "Релевантне",
+    "added": "2026-04-28T12:42:14.204536",
+    "last_status": null
+  },
+  {
+    "id": "2adf1bbecfd6",
+    "name": "ГУРТ - Гранти",
+    "url": "https://www.gurt.org.ua/news/grants/",
+    "directions": [
+      "Нове Джерело"
+    ],
+    "filters": "Релевантне",
+    "added": "2026-04-28T12:42:14.937545",
+    "last_status": null,
+    "last_scan": "2026-05-06T09:01:03.367490"
+  }
+]
