@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 # Завантаження налаштувань
 load_dotenv()
 API_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
-ADMIN_ID = os.getenv("ADMIN_ID", "YOUR_TELEGRAM_ID") # Для модерації
+ADMIN_ID = os.getenv("ADMIN_ID", "YOUR_TELEGRAM_ID")
+PORTAL_URL = os.getenv("PORTAL_URL", "https://talan.ua/novy-shlyakh") # Посилання на сайт
 
 # Налаштування логування
 logging.basicConfig(level=logging.INFO)
@@ -69,7 +70,7 @@ async def veteran_menu(message: types.Message):
         [InlineKeyboardButton(text="🧠 Психолог", callback_data="find_psychology")],
         [InlineKeyboardButton(text="🦾 Реабілітація", callback_data="find_rehab")],
         [InlineKeyboardButton(text="💼 Кар'єра", callback_data="find_career")],
-        [InlineKeyboardButton(text="🌐 Перейти на Портал", url="https://novyshlyakh.ua")]
+        [InlineKeyboardButton(text="🌐 Перейти на Портал", url=PORTAL_URL)]
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=kb)
     await message.answer("Яка допомога вам потрібна зараз?", reply_markup=markup)
@@ -90,12 +91,12 @@ async def show_specialists(callback: types.CallbackQuery):
             f"👤 **{spec['name']}**\n"
             f"🎓 {spec['role']}\n"
             f"📍 {spec['address']}\n"
+            f"📞 Телефон: {spec['phone']}\n"
             f"🎁 {spec['discount']}\n\n"
             f"📝 {spec['bio']}"
         )
-        kb = [[InlineKeyboardButton(text="📞 Зателефонувати", url=f"tel:{spec['phone']}")]]
-        markup = InlineKeyboardMarkup(inline_keyboard=kb)
-        await callback.message.answer(text, reply_markup=markup, parse_mode="Markdown")
+        # Прибираємо кнопку tel:, бо Telegram її блокує в InlineKeyboard
+        await callback.message.answer(text, parse_mode="Markdown")
     
     await callback.answer()
 
