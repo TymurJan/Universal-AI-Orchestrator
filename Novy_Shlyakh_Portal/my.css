@@ -406,7 +406,7 @@ a:hover { text-decoration: underline; }
     color: var(--text-secondary);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) and (hover: none) {
     .dash-layout { flex-direction: column; }
     .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
     .progress-container { flex-direction: column; align-items: flex-start; gap: 20px; }

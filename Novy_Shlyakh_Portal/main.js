@@ -55,24 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-        document.body.classList.add('is-tg-app');
+        
+        const desktopPlatforms = ['tdesktop', 'macos', 'weba', 'webk', 'web'];
+        if (desktopPlatforms.includes(tg.platform)) {
+            document.body.classList.add('is-desktop-tg');
+        } else {
+            document.body.classList.add('is-tg-app');
+        }
         
         // Змінюємо колір хедера під тему Telegram
         tg.setHeaderColor('#1A1C1A');
     }
 
     const isUserLoggedIn = localStorage.getItem('current_veteran');
-    const cabinetBtn = document.querySelector('.nav .btn-primary');
-    
-    // Оновлення хедера при вході
-    if (isUserLoggedIn && cabinetBtn) {
-        const db = JSON.parse(localStorage.getItem('veteran_db') || '{}');
-        const user = db[isUserLoggedIn];
-        if (user) {
-            cabinetBtn.innerHTML = `🛡️ ${user.name}`;
-            cabinetBtn.href = "my.html";
-        }
-    }
 
     function renderSpecialists(filter = 'all') {
         if (!specialistGrid) return;
@@ -96,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 info.style.textAlign = "center";
                 info.style.padding = "20px";
                 info.style.color = "var(--primary-green)";
-                info.innerHTML = `💡 Це список ТОП-фахівців. <a href="my.html" style="color:white; text-decoration:underline;">Увійдіть в кабінет</a>, щоб побачити повний перелік (${specialists.length}+)`;
+                info.innerHTML = `💡 Це список ТОП-фахівців. Відкрийте <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" style="color:white; text-decoration:underline;">Telegram-бота</a>, щоб побачити повний перелік (${specialists.length}+)`;
                 specialistGrid.appendChild(info);
             }
         }
@@ -120,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             📞 Зателефонувати
                         </a>
                         <button class="btn-card" onclick="handleBooking('${spec.name}')" style="flex: 1;">
-                            ${isUserLoggedIn ? 'Записатися' : 'Увійти'}
+                            Записатися через Бот
                         </button>
                     </div>
                 </div>
@@ -131,11 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Глобальна функція обробки запису
     window.handleBooking = (specName) => {
-        if (!isUserLoggedIn) {
-            window.location.href = 'my.html';
-        } else {
-            alert(`Запит надіслано! Спеціаліст ${specName} зв'яжеться з вами у вашому особистому кабінеті.`);
-        }
+        window.location.href = 'https://t.me/Veteran_Novy_Shlyakh_Bot';
     };
 
     // Обробка кліків по табам
@@ -229,17 +220,7 @@ function openCharityModal() {
     alert('Дякуємо! Система благодійних внесків проєкту Ашрам зараз інтегрується. \nВи можете зв’язатися з нами в Telegram для прямої підтримки: @Talan_UA_Admin');
 }
 
-function openSpecialistCabinet() {
-    window.location.href = 'cabinet.html';
-}
 
-// Обробка кнопки "Кабінет спеціаліста" в навігації
-document.addEventListener('click', (e) => {
-    if (e.target.closest('.btn-cabinet')) {
-        e.preventDefault();
-        openSpecialistCabinet();
-    }
-});
 
 // --- AI Search Logic ---
 document.addEventListener('DOMContentLoaded', () => {

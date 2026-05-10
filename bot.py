@@ -564,6 +564,7 @@ def web_search(query):
                                 "grant_scan", "grant_status", "model"])
 @guard
 def handle_commands(msg: Message):
+    log.info(f"DEBUG: Command received: {msg.text} from {msg.from_user.id}")
     text = msg.text.lower()
     
     if "health" in text or "status" in text or "статус" in text:

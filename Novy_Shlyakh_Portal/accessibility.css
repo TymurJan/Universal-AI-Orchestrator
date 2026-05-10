@@ -8,19 +8,46 @@
 /* Кнопка відкриття */
 .accessibility-toggle {
     position: fixed;
-    top: 100px;
+    top: 120px; /* Moved down slightly to avoid potential header collisions */
     right: 0;
     z-index: 10001;
     background: var(--access-accent);
     color: white;
     border: none;
-    padding: 12px;
-    border-radius: 8px 0 0 8px;
+    padding: 12px 15px 12px 12px; /* Extra padding on right to ensure text isn't cut */
+    border-radius: 30px 0 0 30px; /* Rounded pill shape for better touch target */
     cursor: pointer;
-    box-shadow: -2px 2px 10px rgba(0,0,0,0.2);
+    box-shadow: -4px 0 15px rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
+}
+
+.accessibility-toggle:hover {
+    padding-right: 25px; /* Slight slide out effect */
+}
+
+@media (max-width: 600px) and (hover: none) {
+    .accessibility-toggle {
+        top: 80px;
+        right: 10px; /* Трохи ближче до краю, але з запасом */
+        padding: 0;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        border: 2px solid rgba(255,255,255,0.2); /* Додаємо рамку для видимості */
+    }
+    .accessibility-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+    .access-text-btn {
+        display: none;
+    }
 }
 
 /* Панель налаштувань */
@@ -28,7 +55,8 @@
     position: fixed;
     top: 0;
     right: -400px; /* Hidden by default */
-    width: 350px;
+    width: 100%;
+    max-width: 350px;
     height: 100vh;
     background: var(--access-panel-bg);
     color: var(--access-text);

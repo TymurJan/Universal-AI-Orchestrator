@@ -34,6 +34,27 @@ body {
     padding: 0 20px;
 }
 
+/* FORCE DESKTOP ON TG DESKTOP */
+body.is-desktop-tg {
+    width: 1200px !important;
+    margin: 0 auto !important;
+    overflow-x: auto !important;
+    min-height: 100vh;
+}
+
+body.is-desktop-tg .container {
+    max-width: 1200px !important;
+    width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+}
+
+body.is-desktop-tg .header .container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
 /* Header */
 .header {
     height: 80px;
@@ -73,6 +94,11 @@ body {
     letter-spacing: 2px;
 }
 
+.nav {
+    display: flex;
+    align-items: center;
+}
+
 .nav a {
     color: var(--soft-white);
     text-decoration: none;
@@ -83,6 +109,15 @@ body {
 
 .nav a:hover {
     color: var(--primary-green);
+}
+
+.login-btn {
+    margin-left: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
 }
 
 .btn-primary {
@@ -132,7 +167,8 @@ body {
 }
 
 .btn-main {
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
     background: var(--primary-green);
     color: white;
     text-decoration: none;
@@ -144,7 +180,8 @@ body {
 }
 
 .btn-secondary {
-    display: inline-block;
+    display: inline-flex;
+    justify-content: center;
     border: 1px solid var(--soft-white);
     color: white;
     text-decoration: none;
@@ -370,9 +407,51 @@ body {
     color: #666;
 }
 
-@media (max-width: 768px) {
-    .hero-content h2 { font-size: 40px; }
-    .nav { display: none; }
+@media (max-width: 768px) and (hover: none) {
+    .hero-content h2 { 
+        font-size: 32px; 
+    }
+    /* FORCE COMPACT DESKTOP NAV ALWAYS */
+    .nav {
+        display: flex !important;
+        gap: 5px !important;
+        margin-left: auto;
+    }
+    .nav a {
+        display: inline-block !important;
+        margin-left: 5px !important;
+        font-size: 10px !important;
+        white-space: nowrap;
+    }
+    .logo h1 {
+        font-size: 16px !important;
+    }
+    .ngo-badge {
+        font-size: 8px !important;
+    }
+    .hero-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .btn-main {
+        margin-right: 0;
+        width: 100%;
+        padding: 15px 20px;
+    }
+    .btn-secondary {
+        width: 100%;
+        padding: 15px 20px;
+    }
+    .logo h1 {
+        font-size: 20px;
+    }
+    /* Виправлення кнопки доступності на мобільних */
+    .accessibility-toggle {
+        right: 0 !important; /* Keep it on the edge but we will fix the cutting issue in accessibility.css */
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+    }
 }
 
 /* AI Chat Widget */
@@ -509,10 +588,14 @@ body {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
 }
 /* --- Telegram Mini App Mode --- */
-body.is-tg-app .header, 
-body.is-tg-app .footer,
+/* Спеціальні стилі для Telegram Mini App */
+body.is-tg-app .header {
+    display: flex; /* Показуємо хедер навіть у Telegram */
+    position: sticky;
+    top: 0;
+}
 body.is-tg-app .hero {
-    display: none !important;
+    margin-top: 0;
 }
 
 body.is-tg-app {

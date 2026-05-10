@@ -65,6 +65,6 @@ def scout_for_updates():
 if __name__ == "__main__":
     while True:
         scout_for_updates()
-        # Моніторинг раз на 24 години (для демо - раз на 60 секунд)
+        # Моніторинг раз на 24 години
         logger.info("Очікування наступного циклу моніторингу...")
-        time.sleep(60)
+        time.sleep(86400)
