@@ -36,23 +36,43 @@ body {
 
 /* FORCE DESKTOP ON TG DESKTOP */
 body.is-desktop-tg {
-    width: 1200px !important;
-    margin: 0 auto !important;
-    overflow-x: auto !important;
-    min-height: 100vh;
+    width: 100% !important;
+    min-width: 100% !important; /* Allow it to be fluid */
+    margin: 0 !important;
+    overflow-x: hidden !important;
 }
 
 body.is-desktop-tg .container {
     max-width: 1200px !important;
-    width: 1200px !important;
+    width: 95% !important; /* Responsive width */
     margin: 0 auto !important;
-    padding: 0 20px !important;
+    padding: 0 15px !important;
 }
 
 body.is-desktop-tg .header .container {
     display: flex !important;
+    flex-wrap: nowrap !important;
     justify-content: space-between !important;
     align-items: center !important;
+}
+
+body.is-desktop-tg .nav {
+    display: flex !important;
+    gap: 15px !important;
+}
+
+body.is-desktop-tg .nav a {
+    margin-left: 0 !important;
+    font-size: 13px !important;
+}
+
+body.is-desktop-tg .hero-content h2 {
+    font-size: clamp(32px, 5vw, 64px) !important;
+    line-height: 1.1;
+}
+
+body.is-desktop-tg .logo h1 {
+    font-size: 20px !important;
 }
 
 /* Header */

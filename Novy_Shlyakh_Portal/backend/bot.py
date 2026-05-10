@@ -129,7 +129,7 @@ async def cmd_start(message: types.Message):
     else:
         kb.append([KeyboardButton(text="💼 Я Спеціаліст (Реєстрація)")])
         
-    kb.append([KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v=25"))])
+    kb.append([KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v=29"))])
     
     if str(message.from_user.id).strip() == str(ADMIN_ID).strip():
         kb.append([KeyboardButton(text="🛡️ Адмін-панель")])
