@@ -1,0 +1,2 @@
+INFO:aiogram.dispatcher:Start polling
+INFO:aiogram.dispatcher:Run polling for bot @Veteran_NovyShlyakh_Bot id=8491124030 - 'Ветеранський портал "Новий Шлях"'
