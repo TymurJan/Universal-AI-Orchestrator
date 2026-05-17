@@ -57,6 +57,13 @@
       "agent_section": "auto-discovered",
       "product_function": "WebScout.cmd_scan",
       "status": "synced"
+    },
+    {
+      "id": "legal-constructor",
+      "name": "Legal: talan-legal-skill",
+      "agent_section": "declarative_json_rules",
+      "product_function": "GovernanceEngine.audit_legal_standards_compliance",
+      "status": "synced"
     }
   ]
 }

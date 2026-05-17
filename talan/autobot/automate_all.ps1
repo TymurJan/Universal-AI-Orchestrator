@@ -30,6 +30,12 @@ $ScoutScript = "$BaseDir\.agents\skills\03-web-scout\web_scout_autostart.pyw"
 $ScoutAction = New-ScheduledTaskAction -Execute "pythonw.exe" -Argument "`"$ScoutScript`""
 $ScoutTrigger = New-ScheduledTaskTrigger -AtLogOn
 
+# 5. Задача для ENV Watcher (At Logon) — синхронізує .env → E:\.env при зміні
+$EnvWatcherTaskName = "AntigravityEnvWatcher"
+$EnvWatcherScript = "$BaseDir\talan\autobot\env_watcher.pyw"
+$EnvWatcherAction = New-ScheduledTaskAction -Execute "pythonw.exe" -Argument "`"$EnvWatcherScript`""
+$EnvWatcherTrigger = New-ScheduledTaskTrigger -AtLogOn
+
 Write-Host "`n============================================================" -ForegroundColor White
 Write-Host "   КЕРУВАННЯ АВТОМАТИЗАЦІЄЮ - ГО 'ТАЛАН ЮА'" -ForegroundColor Yellow
 Write-Host "============================================================`n" -ForegroundColor White
@@ -38,7 +44,8 @@ Write-Host "Цей скрипт зареєструє наступні завда
 Write-Host "1. Автозапуск бота при вході в систему."
 Write-Host "2. Щоденний бекап проєкту о 00:00 (частинами по 20МБ)."
 Write-Host "3. Синхронізація бази знань (Knowledge Base) кожні 4 години."
-Write-Host "4. Автономний розвідник (Web Scout) при вході (щопонеділка - пошук нових джерел)."
+Write-Host "4. Автономний розвідник (Web Scout) при вході (Пн+Чт - пошук нових джерел)."
+Write-Host "5. ENV Watcher — автосинхронізація .env на резервний диск E:\ при зміні."
 Write-Host "`nВАЖЛИВО: Переконайтеся, що ви запустили запуск від Адміністратора.`n" -ForegroundColor Yellow
 
 Read-Host "Натисніть Enter, щоб продовжити або Ctrl+C для скасування"
@@ -56,6 +63,9 @@ try {
 
     Register-ScheduledTask -TaskName $ScoutTaskName -Action $ScoutAction -Trigger $ScoutTrigger -Settings $BotSettings -Principal $Principal -Force -ErrorAction Stop
     Write-Host "[OK] Задача для Web Scout (AntigravityWebScout) створена. При вході." -ForegroundColor Green
+
+    Register-ScheduledTask -TaskName $EnvWatcherTaskName -Action $EnvWatcherAction -Trigger $EnvWatcherTrigger -Settings $BotSettings -Principal $Principal -Force -ErrorAction Stop
+    Write-Host "[OK] Задача для ENV Watcher (AntigravityEnvWatcher) створена. При вході." -ForegroundColor Green
 
     Write-Host "`n[ФІНАЛ] Усі системи успішно автоматизовано!" -ForegroundColor Cyan
 } catch {

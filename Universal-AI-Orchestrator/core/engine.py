@@ -213,6 +213,54 @@ class GovernanceEngine:
                 })
         return findings
 
+    def audit_legal_standards_compliance(self) -> List[Dict[str, Any]]:
+        """Scan legal standards JSON files and document generation configs for ДСТУ 4163:2020 compliance and Donor Immunity."""
+        import json
+        findings = []
+        
+        for root, _, files in os.walk(self.project_path):
+            if ".git" in root or ".orchestrator" in root:
+                continue
+            for file in files:
+                if file.endswith(".json") and ("legal" in file.lower() or "standards" in file.lower()):
+                    file_path = Path(root) / file
+                    try:
+                        data = json.loads(file_path.read_text(encoding="utf-8"))
+                        geom = data.get("document_geometry", {}).get("margins_mm", {})
+                        if geom and (geom.get("left") != 30 or geom.get("right") != 10):
+                            findings.append({
+                                "type": "Legal Compliance",
+                                "severity": "HIGH",
+                                "item": "ДСТУ 4163:2020 Margin Violation",
+                                "file": str(file_path),
+                                "line": 0,
+                                "desc": f"Legal config has non-standard margins: {geom}. Required: left=30mm, right=10mm."
+                            })
+                        typo = data.get("typography", {})
+                        if typo and typo.get("primary_font") != "Times New Roman":
+                            findings.append({
+                                "type": "Legal Compliance",
+                                "severity": "MEDIUM",
+                                "item": "ДСТУ 4163:2020 Font Violation",
+                                "file": str(file_path),
+                                "line": 0,
+                                "desc": f"Legal config uses font '{typo.get('primary_font')}'. Required: Times New Roman."
+                            })
+                        immunity = data.get("layout_rules", {}).get("donor_template_immunity", {})
+                        if not immunity or not immunity.get("rule_active"):
+                            findings.append({
+                                "type": "Donor Compliance",
+                                "severity": "CRITICAL",
+                                "item": "Missing Donor Template Immunity",
+                                "file": str(file_path),
+                                "line": 0,
+                                "desc": "Legal config lacks active 'donor_template_immunity' protection. Risk of donor form corruption!"
+                            })
+                    except Exception as e:
+                        log.error(f"Could not parse legal json {file_path}: {e}")
+
+        return findings
+
     def perform_complete_audit(self):
         """Runs all real audit modules and returns a consolidated report."""
         console.print("[bold cyan]🛡️ Universal AI Orchestrator: Starting Deep Scan...[/bold cyan]")
@@ -223,6 +271,7 @@ class GovernanceEngine:
         all_findings.extend(self.audit_logic_collisions())
         all_findings.extend(self.audit_ui_accessibility())
         all_findings.extend(self.audit_skill_conflicts())
+        all_findings.extend(self.audit_legal_standards_compliance())
         
         self.findings = all_findings
         

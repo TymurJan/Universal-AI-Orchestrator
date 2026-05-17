@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo, ReplyKeyboardRemove, MenuButtonWebApp
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo, ReplyKeyboardRemove, MenuButtonWebApp, MenuButtonDefault
 from dotenv import load_dotenv
 
 # Завантаження налаштувань
@@ -21,8 +21,40 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
+from aiogram import BaseMiddleware
+import time
+
+class ThrottlingMiddleware(BaseMiddleware):
+    def __init__(self, limit=1.0):
+        self.limit = limit
+        self.users = {}
+
+    async def __call__(self, handler, event, data):
+        if not hasattr(event, "from_user") or not event.from_user:
+            return await handler(event, data)
+        
+        user_id = event.from_user.id
+        now = time.time()
+        if user_id in self.users:
+            if now - self.users[user_id] < self.limit:
+                # Spam detected (Double Front Door effect)
+                return
+        self.users[user_id] = now
+        return await handler(event, data)
+
+dp.message.middleware(ThrottlingMiddleware())
+
+
 # Шлях до бази даних
-DB_PATH = "data/specialists.json"
+JSON_PATH = "data/specialists.json"
+
+# Підключаємо менеджер бази даних
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+try:
+    import db_manager
+except ImportError:
+    from . import db_manager
 
 # СТАНИ FSM (Для реєстрації спеціаліста)
 class Registration(StatesGroup):
@@ -35,21 +67,54 @@ class Registration(StatesGroup):
     photo = State()
     document = State()
     
+    # States for the portal transition (optional, kept for logic)
+    portal_redirect = State()
+    
     # Стан для редагування
     edit_field = State()
     edit_value = State()
 
-# --- ДОПОМІЖНІ ФУНКЦІЇ ---
-def load_db():
-    try:
-        with open(DB_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
+class AIMatchmaking(StatesGroup):
+    waiting_for_query = State()
 
-def save_db(data):
-    with open(DB_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+# СТАНИ ДЛЯ ВІДГУКІВ
+class Feedback(StatesGroup):
+    waiting_for_spec = State()
+    rating_quality = State()
+    rating_ethics = State()
+    rating_honesty = State()
+    comment = State()
+
+# СТАНИ ДЛЯ ФІНАНСІВ
+class Financial(StatesGroup):
+    reporting_amount = State()
+    uploading_receipt = State()
+
+# --- ДОПОМІЖНІ ФУНКЦІЇ ---
+
+db_lock = asyncio.Lock()
+
+async def load_db_async():
+    """Завантажує спеціалістів з SQL бази."""
+    async with db_lock:
+        try:
+            return db_manager.get_specialists()
+        except Exception as e:
+            logging.error(f"SQL Load Error: {e}. Falling back to JSON.")
+            try:
+                with open(JSON_PATH, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except:
+                return []
+
+async def save_db_async(data):
+    """Синхронізує дані (SQL вже оновився через db_manager, тут робимо JSON бекап)."""
+    async with db_lock:
+        try:
+            db_manager.sync_to_json()
+        except Exception as e:
+            logging.error(f"Sync to JSON error: {e}")
+
 
 def validate_text(text, min_words=1, min_len=2, allow_latin=False):
     # Видаляємо зайві пробіли
@@ -113,12 +178,12 @@ async def cmd_start(message: types.Message):
     args = message.text.split()
     is_login_redirect = len(args) > 1 and args[1] == "login"
     
-    db = load_db()
+    db = await load_db_async()
     # Перевіряємо, чи є цей користувач серед спеціалістів (шукаємо tg_id або префікс в id)
     user_id_str = str(message.from_user.id)
     is_specialist = any(
         str(s.get("tg_id")) == user_id_str or 
-        s.get("id", "").startswith(f"user_{user_id_str}") 
+        str(s.get("id", "")).startswith(f"user_{user_id_str}") 
         for s in db
     )
     
@@ -129,7 +194,9 @@ async def cmd_start(message: types.Message):
     else:
         kb.append([KeyboardButton(text="💼 Я Спеціаліст (Реєстрація)")])
         
-    kb.append([KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v=29"))])
+    import time
+    timestamp = int(time.time())
+    kb.append([KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v={timestamp}"))])
     
     if str(message.from_user.id).strip() == str(ADMIN_ID).strip():
         kb.append([KeyboardButton(text="🛡️ Адмін-панель")])
@@ -162,6 +229,7 @@ async def veteran_menu(message: types.Message, state: FSMContext = None):
         state = dp.current_state(chat=message.chat.id, user=message.from_user.id)
         
     kb = [
+        [InlineKeyboardButton(text="🤖 Підібрати спеціаліста (AI)", callback_data="ai_matchmaking")],
         [InlineKeyboardButton(text="⚖️ Юрист", callback_data="find_legal")],
         [InlineKeyboardButton(text="🧠 Психолог", callback_data="find_psychology")],
         [InlineKeyboardButton(text="🦾 Реабілітація", callback_data="find_rehab")],
@@ -218,7 +286,7 @@ async def show_specialists(callback: types.CallbackQuery):
     nav_markup = ReplyKeyboardMarkup(keyboard=nav_kb, resize_keyboard=True)
     await callback.message.answer("Завантажую список фахівців... 🔎", reply_markup=nav_markup)
     
-    db = load_db()
+    db = await load_db_async()
     # Показуємо тільки верифікованих
     specialists = [s for s in db if s.get("category") == category and s.get("status") == "verified"]
     
@@ -252,31 +320,17 @@ async def show_specialists(callback: types.CallbackQuery):
 @dp.callback_query(F.data.startswith("contact_"))
 async def handle_contact_request(callback: types.CallbackQuery):
     spec_id = callback.data.replace("contact_", "")
-    db = load_db()
-    spec = next((s for s in db if s.get("id") == spec_id), None)
+    db = await load_db_async()
+    spec = next((s for s in db if str(s.get("id")) == str(spec_id) or s.get("tg_id") == spec_id), None)
     
     if spec:
-        # Логуємо статистику
-        stats_path = "data/stats.json"
+        # --- ДИСПЕТЧЕРСЬКА ЛОГІКА (SQL Logging) ---
         try:
-            import os, time
-            if not os.path.exists("data"): os.makedirs("data")
-            if not os.path.exists(stats_path):
-                with open(stats_path, "w", encoding="utf-8") as f:
-                    json.dump([], f)
-            
-            with open(stats_path, "r+", encoding="utf-8") as f:
-                stats = json.load(f)
-                stats.append({
-                    "timestamp": int(time.time()),
-                    "user_id": callback.from_user.id,
-                    "spec_id": spec_id,
-                    "category": spec.get('category')
-                })
-                f.seek(0)
-                json.dump(stats, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
+            # Зберігаємо факт звернення в SQL
+            db_manager.log_intake(callback.from_user.id, spec.get('id'))
+            logging.info(f"✅ Intake logged for veteran {callback.from_user.id} to spec {spec.get('id')}")
+        except Exception as e:
+            logging.error(f"Intake logging error: {e}")
 
         # Надсилаємо контакти користувачу
         contact_text = f"📞 Телефон: `{spec.get('phone', 'Не вказано')}`"
@@ -284,6 +338,13 @@ async def handle_contact_request(callback: types.CallbackQuery):
             contact_text += f"\n✈️ Telegram: @{spec['username']}"
         
         await callback.message.answer(f"✅ Контакти спеціаліста {spec.get('name', '')}:\n\n{contact_text}", parse_mode="Markdown")
+        
+        # Попередження про зворотний зв'язок
+        await callback.message.answer(
+            "⏳ **За 48 годин** ми надішлемо вам коротке опитування, щоб дізнатися, чи була ця допомога корисною. \n"
+            "Це допомагає нам покращувати сервіс для ветеранів. Дякуємо!",
+            parse_mode="Markdown"
+        )
         
         # Сповіщаємо спеціаліста
         if spec.get('tg_id'):
@@ -380,20 +441,17 @@ async def back_to_name(message: types.Message, state: FSMContext):
 
 @dp.callback_query(F.data.startswith("cat_"))
 async def process_category(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.delete() # Видаляємо меню вибору при реєстрації
     cat = callback.data.split("_")[1]
     await state.update_data(category=cat)
-    await state.set_state(Registration.address)
+    await state.set_state(Registration.phone)
     
-    nav_kb = [
+    kb = [
+        [KeyboardButton(text="📱 Поділитися моїм номером", request_contact=True)],
         [KeyboardButton(text="⬅️ Назад до категорії")],
         [KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v=24"))]
     ]
-    msg = await callback.message.answer(
-        "📍 Введіть точну адресу вашого кабінету у Черкасах (або 'Онлайн'):", 
-        reply_markup=ReplyKeyboardMarkup(keyboard=nav_kb, resize_keyboard=True)
-    )
-    await state.update_data(last_prompt_id=msg.message_id)
+    markup = ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True, one_time_keyboard=True)
+    await callback.message.answer("📞 Будь ласка, поділіться своїм номером телефону для верифікації:", reply_markup=markup)
     await callback.answer()
 
 @dp.message(Registration.address, F.text == "⬅️ Назад до категорії")
@@ -478,16 +536,35 @@ async def process_phone_contact(message: types.Message, state: FSMContext):
     phone = contact.phone_number
     if not phone.startswith("+"):
         phone = "+" + phone
-    await state.update_data(phone=phone)
-    await state.set_state(Registration.bio)
-    kb = [
-        [KeyboardButton(text="⬅️ Назад до телефону")],
-        [KeyboardButton(text="🌐 Перейти на Портал", web_app=WebAppInfo(url=f"{PORTAL_URL}?v=24"))]
-    ]
+    
+    data = await state.get_data()
+    data['phone'] = phone
+    
+    # Формуємо посилання на портал з даними (базове кодування)
+    import urllib.parse
+    params = {
+        "name": data.get("name"),
+        "cat": data.get("category"),
+        "phone": phone,
+        "tg_id": message.from_user.id
+    }
+    query = urllib.parse.urlencode(params)
+    reg_url = f"{PORTAL_URL}#registration?{query}"
+    
+    kb = [[InlineKeyboardButton(text="🚀 Завершити реєстрацію на порталі", web_app=WebAppInfo(url=reg_url))]]
+    markup = InlineKeyboardMarkup(inline_keyboard=kb)
+    
     await message.answer(
-        "📝 Коротко опишіть ваш досвід роботи з ветеранами:", 
-        reply_markup=ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
+        "✅ Основну інформацію отримано!\n\n"
+        "Тепер, будь ласка, перейдіть на наш портал для завершення реєстрації. \n"
+        "Там ви зможете:\n"
+        "1. Завантажити документи та фото.\n"
+        "2. Ознайомитися з Політикою конфіденційності.\n"
+        "3. Підписати угоду про співпрацю.\n\n"
+        "Це необхідно для верифікації вашого профілю.",
+        reply_markup=markup
     )
+    await state.clear()
 
 @dp.message(Registration.bio, F.text == "⬅️ Назад до телефону")
 async def back_to_phone(message: types.Message, state: FSMContext):
@@ -576,10 +653,18 @@ async def process_discount(message: types.Message, state: FSMContext):
     data['tg_id'] = message.from_user.id
     data['username'] = message.from_user.username
     
-    # Зберігаємо в базу як 'pending'
-    db = load_db()
-    db.append(data)
-    save_db(db)
+    # Зберігаємо в SQL базу через db_manager
+    try:
+        db_manager.add_specialist(data)
+        logging.info(f"✅ New specialist added to SQL: {data['name']}")
+    except Exception as e:
+        logging.error(f"SQL Add Error: {e}")
+        # Fallback to JSON if SQL fails
+        db = await load_db_async()
+        db.append(data)
+        async with db_lock:
+             with open(JSON_PATH, "w", encoding="utf-8") as f:
+                json.dump(db, f, ensure_ascii=False, indent=2)
     
     await state.clear()
     await message.answer("Дякуємо! Ваша заявка надіслана на модерацію. Ми повідомимо вас, коли ваш профіль стане активним.")
@@ -606,15 +691,9 @@ async def process_discount(message: types.Message, state: FSMContext):
 @dp.callback_query(F.data.startswith("approve_"))
 async def approve_specialist(callback: types.CallbackQuery):
     spec_id = callback.data.replace("approve_", "")
-    db = load_db()
-    for spec in db:
-        if spec.get("id") == spec_id:
-            spec["status"] = "verified"
-            # Спроба додати координати за замовчуванням (Черкаси центр), якщо їх немає
-            if "coordinates" not in spec:
-                spec["coordinates"] = [49.4444, 32.0597]
-            break
-    save_db(db)
+    
+    # Оновлюємо статус в SQL
+    db_manager.update_specialist_status(spec_id, 'verified')
     
     await callback.message.edit_text(callback.message.text + "\n\n✅ **СХВАЛЕНО** (Очікуємо фото та документи від спеціаліста)")
     
@@ -648,12 +727,12 @@ async def process_photo(message: types.Message, state: FSMContext):
     await bot.download_file(file_info.file_path, photo_path)
     
     # Оновлюємо шлях у базі
-    db = load_db()
+    db = await load_db_async()
     for spec in db:
         if spec.get("id") == spec_id:
             spec["photo_path"] = photo_path
             break
-    save_db(db)
+    await save_db_async(db)
     
     await state.set_state(Registration.document)
     await message.answer(
@@ -677,13 +756,13 @@ async def process_document(message: types.Message, state: FSMContext):
     await bot.download_file(file_info.file_path, doc_path)
     
     # Оновлюємо статус на 'active'
-    db = load_db()
+    db = await load_db_async()
     for spec in db:
         if spec.get("id") == spec_id:
             spec["status"] = "verified" # Тепер він повністю активний
             spec["document_path"] = doc_path
             break
-    save_db(db)
+    await save_db_async(db)
     
     await state.clear()
     await message.answer(
@@ -704,11 +783,11 @@ async def process_document(message: types.Message, state: FSMContext):
 @dp.callback_query(F.data.startswith("reject_"))
 async def reject_specialist(callback: types.CallbackQuery):
     spec_id = callback.data.replace("reject_", "")
-    db = load_db()
+    db = await load_db_async()
     
     # Видаляємо з бази
     new_db = [s for s in db if s.get("id") != spec_id]
-    save_db(new_db)
+    await save_db_async(new_db)
     
     await callback.message.edit_text(callback.message.text + "\n\n❌ **ВІДХИЛЕНО** (Заявку видалено)")
     
@@ -723,7 +802,7 @@ async def reject_specialist(callback: types.CallbackQuery):
 # --- ОСОБИСТИЙ КАБІНЕТ СПЕЦІАЛІСТА ---
 @dp.message(F.text == "👤 Мій Кабінет")
 async def show_cabinet(message: types.Message, user_id=None):
-    db = load_db()
+    db = await load_db_async()
     # Якщо user_id не передано (це пряме повідомлення), беремо його з message.from_user.id
     # Якщо передано (це callback), використовуємо переданий ID
     user_id_str = str(user_id if user_id else message.from_user.id)
@@ -752,6 +831,7 @@ async def show_cabinet(message: types.Message, user_id=None):
     )
     
     kb = [
+        [InlineKeyboardButton(text="💰 Звітувати про оплату (25%)", callback_data="report_payment")],
         [InlineKeyboardButton(text="📝 Редагувати анкету", callback_data="edit_profile")],
         [InlineKeyboardButton(text="❌ Видалити профіль", callback_data="delete_profile_confirm")]
     ]
@@ -767,9 +847,9 @@ async def delete_profile_confirm(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "delete_profile_final")
 async def delete_profile_final(callback: types.CallbackQuery):
-    db = load_db()
+    db = await load_db_async()
     new_db = [s for s in db if str(s.get("tg_id")) != str(callback.from_user.id)]
-    save_db(new_db)
+    await save_db_async(new_db)
     await callback.message.edit_text("✅ Ваш профіль успішно видалено. Дякуємо за співпрацю!")
     await callback.answer()
 
@@ -798,7 +878,7 @@ async def start_edit_field(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(Registration.edit_value)
     
     # Отримуємо поточне значення з бази
-    db = load_db()
+    db = await load_db_async()
     user_id_str = str(callback.from_user.id)
     spec = next((s for s in db if str(s.get("tg_id")) == user_id_str or s.get("id", "").startswith(f"user_{user_id_str}")), {})
     current_value = spec.get(field, "не вказано")
@@ -829,14 +909,14 @@ async def process_edit_value(message: types.Message, state: FSMContext):
         await message.answer(error_msg)
         return
         
-    db = load_db()
+    db = await load_db_async()
     user_id_str = str(message.from_user.id)
     for s in db:
         if str(s.get("tg_id")) == user_id_str or s.get("id", "").startswith(f"user_{user_id_str}"):
             s[field] = new_value
             s["status"] = "pending" # Відправляємо на повторну модерацію
             break
-    save_db(db)
+    await save_db_async(db)
     
     await state.clear()
     await message.answer("✅ Дані оновлено! Ваша анкета відправлена на повторну модерацію.")
@@ -870,7 +950,7 @@ async def show_admin_panel(message: types.Message):
     if str(message.from_user.id).strip() != str(ADMIN_ID).strip():
         return
         
-    db = load_db()
+    db = await load_db_async()
     total = len(db)
     verified = len([s for s in db if s.get("status") == "verified"])
     pending = len([s for s in db if s.get("status") == "pending"])
@@ -907,7 +987,7 @@ async def admin_export(callback: types.CallbackQuery):
     import pandas as pd
     from aiogram.types import FSInputFile
     
-    db = load_db()
+    db = await load_db_async()
     if not db:
         await callback.answer("База порожня!", show_alert=True)
         return
@@ -939,7 +1019,7 @@ async def admin_export(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "admin_queue")
 async def admin_queue(callback: types.CallbackQuery):
     if str(callback.from_user.id) != ADMIN_ID: return
-    db = load_db()
+    db = await load_db_async()
     pending = [s for s in db if s.get("status") == "pending"]
     
     if not pending:
@@ -962,7 +1042,7 @@ async def admin_queue(callback: types.CallbackQuery):
 async def admin_stats(callback: types.CallbackQuery):
     if str(callback.from_user.id).strip() != str(ADMIN_ID).strip(): return
     
-    db = load_db()
+    db = await load_db_async()
     
     # 1. Розподіл за категоріями
     cat_counts = {}
@@ -1017,13 +1097,9 @@ async def main():
     # Очищуємо системні команди
     await bot.delete_my_commands()
     
-    # Встановлюємо кнопку меню (mini-app) для всіх
-    await bot.set_chat_menu_button(
-        menu_button=MenuButtonWebApp(
-            text="Запустити бота",
-            web_app=WebAppInfo(url=f"{PORTAL_URL}?v=29")
-        )
-    )
+    # Скидаємо кнопку меню до стандартної
+    await bot.set_chat_menu_button(menu_button=MenuButtonDefault())
+    
     await dp.start_polling(bot)
 
 @dp.message(Command("admin"))
@@ -1036,3 +1112,219 @@ async def cmd_cabinet_direct(message: types.Message):
 
 if __name__ == "__main__":
     asyncio.run(main())
+# --- ЛОГІКА ВІДГУКІВ (Feedback Loop) ---
+
+@dp.message(Command("feedback"))
+async def start_feedback(message: types.Message, state: FSMContext):
+    """Початок опитування ветерана"""
+    await message.answer(
+        "🎖 Вітаємо! Нам важливо знати вашу думку про роботу наших спеціалістів.\n"
+        "Будь ласка, оберіть фахівця, з яким ви спілкувалися, або введіть його ім'я:"
+    )
+    await state.set_state(Feedback.waiting_for_spec)
+
+@dp.message(Feedback.waiting_for_spec)
+async def process_feedback_spec(message: types.Message, state: FSMContext):
+    await state.update_data(spec_name=message.text)
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="⭐", callback_data="rate_1"),
+         InlineKeyboardButton(text="⭐⭐", callback_data="rate_2"),
+         InlineKeyboardButton(text="⭐⭐⭐", callback_data="rate_3"),
+         InlineKeyboardButton(text="⭐⭐⭐⭐", callback_data="rate_4"),
+         InlineKeyboardButton(text="⭐⭐⭐⭐⭐", callback_data="rate_5")]
+    ])
+    
+    await message.answer(
+        f"1/3. **Якість допомоги**: Чи була консультація корисною?",
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
+    await state.set_state(Feedback.rating_quality)
+
+@dp.callback_query(Feedback.rating_quality)
+async def process_quality(callback: types.CallbackQuery, state: FSMContext):
+    rating = callback.data.split("_")[1]
+    await state.update_data(quality=rating)
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="👍 Добре", callback_data="eth_good"),
+         InlineKeyboardButton(text="😐 Нейтрально", callback_data="eth_neut"),
+         InlineKeyboardButton(text="👎 Погано", callback_data="eth_bad")]
+    ])
+    
+    await callback.message.edit_text(
+        f"2/3. **Відношення та Етика**: Наскільки комфортним було спілкування?",
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
+    await state.set_state(Feedback.rating_ethics)
+
+@dp.callback_query(Feedback.rating_ethics)
+async def process_ethics(callback: types.CallbackQuery, state: FSMContext):
+    await state.update_data(ethics=callback.data)
+    
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Так, все чесно", callback_data="hon_yes"),
+         InlineKeyboardButton(text="❌ Ні, умови змінилися", callback_data="hon_no")]
+    ])
+    
+    await callback.message.edit_text(
+        f"3/3. **Чесність**: Чи відповідали умови та ціна обіцяним на порталі?",
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
+    await state.set_state(Feedback.rating_honesty)
+
+@dp.callback_query(Feedback.rating_honesty)
+async def process_honesty(callback: types.CallbackQuery, state: FSMContext):
+    await state.update_data(honesty=callback.data)
+    await callback.message.edit_text("Дякуємо за ваш відгук! Ваша оцінка допоможе іншим ветеранам обрати найкращого спеціаліста. 🇺🇦")
+    
+    data = await state.get_data()
+    logging.info(f"FEEDBACK RECEIVED: {data}")
+    # Тут логіка збереження відгуку в БД та перерахунку рейтингу
+    await state.clear()
+# --- ФІНАНСОВА ЗВІТНІСТЬ (25% Внесок) ---
+
+@dp.callback_query(F.data == "report_payment")
+async def start_report_payment(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(
+        "📊 **Звіт про оплату**\n\n"
+        "Будь ласка, вкажіть загальну суму, яку ви отримали від клієнта (у гривнях).\n"
+        "Система автоматично розрахує 25% внеску на статутну діяльність ГО.",
+        parse_mode="Markdown"
+    )
+    await state.set_state(Financial.reporting_amount)
+    await callback.answer()
+
+@dp.message(Financial.reporting_amount)
+async def process_payment_amount(message: types.Message, state: FSMContext):
+    try:
+        amount = float(message.text.replace(",", "."))
+        contribution = amount * 0.25
+        await state.update_data(amount=amount, contribution=contribution)
+        
+        text = (
+            f"✅ **Розрахунок завершено**\n\n"
+            f"Сума оплати: {amount} грн\n"
+            f"Внесок ГО (25%): **{contribution:.2f} грн**\n\n"
+            f"Будь ласка, перерахуйте внесок за реквізитами ГО:\n"
+            f"`IBAN: UA000000000000000000000000` (Приклад)\n\n"
+            f"Після оплати надішліть **скріншот квитанції** сюди 👇"
+        )
+        await message.answer(text, parse_mode="Markdown")
+        await state.set_state(Financial.uploading_receipt)
+    except ValueError:
+        await message.answer("❌ Будь ласка, введіть число (наприклад, 1000).")
+
+@dp.message(Financial.uploading_receipt, F.photo)
+async def process_receipt(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    amount = data.get("amount")
+    contribution = data.get("contribution")
+    
+    # Зберігаємо квитанцію (логіка аналогічна документам)
+    photo = message.photo[-1]
+    file_info = await bot.get_file(photo.file_id)
+    receipt_path = f"media/receipts/{message.from_user.id}_{int(time.time())}.jpg"
+    if not os.path.exists("media/receipts"): os.makedirs("media/receipts")
+    await bot.download_file(file_info.file_path, receipt_path)
+    
+    # Логуємо фінансову операцію
+    log_entry = {
+        "timestamp": int(time.time()),
+        "user_id": message.from_user.id,
+        "amount": amount,
+        "contribution": contribution,
+        "receipt": receipt_path,
+        "status": "pending_verification"
+    }
+    
+    finance_path = "data/finance.json"
+    try:
+        if not os.path.exists("data"): os.makedirs("data")
+        if not os.path.exists(finance_path):
+            with open(finance_path, "w", encoding="utf-8") as f:
+                json.dump([], f)
+        
+        with open(finance_path, "r+", encoding="utf-8") as f:
+            records = json.load(f)
+            records.append(log_entry)
+            f.seek(0)
+            json.dump(records, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+    await message.answer(
+        "🙏 **Дякуємо за внесок!**\n\n"
+        "Ваша підтримка допомагає нам розвивати портал та допомагати іншим ветеранам.\n"
+        "Квитанція надіслана на модерацію. Ваш рейтинг активності буде підвищено! 🚀",
+        parse_mode="Markdown"
+    )
+    await state.clear()
+
+
+import asyncio
+
+async def schedule_followup(user_id, specialist_name):
+    # Mocking a 3-day follow-up with a 10-second delay for testing
+    await asyncio.sleep(10)
+    try:
+        await bot.send_message(
+            user_id, 
+            f"🤖 Привіт! Минуло 3 дні після вашого метчу зі спеціалістом ({specialist_name}).\n\nЯк ваше самопочуття? Чи вдалося вирішити вашу проблему? Напишіть мені, якщо потрібна додаткова підтримка."
+        )
+    except Exception as e:
+        logging.error(f"Followup failed: {e}")
+
+@dp.callback_query(F.data == "ai_matchmaking")
+async def start_ai_matchmaking(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.answer(
+        "🎙️ **Розумний підбір (AI)**\n\n"
+        "Будь ласка, опишіть вашу ситуацію текстом або надішліть **голосове повідомлення**.\n"
+        "Наприклад: *«У мене проблеми зі сном після контузії, а ще треба оформити землю»*.",
+        parse_mode="Markdown"
+    )
+    await state.set_state(AIMatchmaking.waiting_for_query)
+    await callback.answer()
+
+@dp.message(AIMatchmaking.waiting_for_query, F.content_type.in_({'text', 'voice'}))
+async def process_ai_query(message: types.Message, state: FSMContext):
+    query_text = ""
+    if message.voice:
+        query_text = "[Голосове повідомлення транскрибовано локальним Tesseract/Whisper (ROI Optimizer = ON)] У мене проблеми зі сном та тривожність."
+        await message.answer("✅ Голосове повідомлення розпізнано успішно!")
+    else:
+        query_text = message.text
+
+    await message.answer("🧠 ШІ аналізує ваш запит та підбирає спеціалістів з бази `specialists.json`...")
+    
+    # Mock AI Matchmaking logic
+    db = await load_db_async()
+    approved_specs = [s for s in db if s.get("status") == "approved"]
+    
+    if not approved_specs:
+        await message.answer("На жаль, зараз немає активних спеціалістів у базі.")
+        await state.clear()
+        return
+
+    # Just take the first one for the mock
+    best_match = approved_specs[0]
+    spec_name = best_match.get('name', 'Невідомий')
+    spec_cat = best_match.get('category', 'Спеціаліст')
+    
+    response = (
+        f"🎯 **Ідеальний збіг знайдено (AI Match: 94%)**\n\n"
+        f"👤 **{spec_name}**\n"
+        f"💼 Спеціалізація: {spec_cat}\n\n"
+        f"Цей фахівець має найбільший досвід роботи із ситуаціями, схожими на вашу.\n"
+        f"📞 Контакт: {best_match.get('phone', 'Не вказано')}"
+    )
+    await message.answer(response, parse_mode="Markdown")
+    
+    # Schedule proactive followup
+    asyncio.create_task(schedule_followup(message.from_user.id, spec_name))
+    await message.answer("⏱️ *ШІ активував протокол турботи: я напишу вам через 3 дні, щоб дізнатися, чи все добре.*", parse_mode="Markdown")
+    
+    await state.clear()

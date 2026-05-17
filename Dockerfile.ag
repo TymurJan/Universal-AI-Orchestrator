@@ -1,0 +1,43 @@
+# ============================================================
+# AG — Antigravity Manager (Повний Мозок Агента)
+# Включає ВСЮ екосистему: скіли, душу, протоколи, проекти.
+# Платформо-незалежний контейнер.
+# ============================================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Системні залежності
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python залежності
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ── КОД БОТА ──
+COPY bot.py .
+COPY talan/ ./talan/
+COPY gemini/ ./gemini/
+
+# ── РОЗУМ АГЕНТА (Штучна Душа) ──
+COPY .agents/skills/ ./.agents/skills/
+COPY .agents/workflows/ ./.agents/workflows/
+
+# ── ПРОТОКОЛИ ТА ДОКУМЕНТИ ──
+COPY Black_Swan_Protocol/ ./Black_Swan_Protocol/
+COPY Ashram/ ./Ashram/
+
+# ── НАВІГАЦІЯ ──
+COPY PROJECTS.md .
+COPY ECOSYSTEM_ARCHITECTURE.md .
+
+# ── OCR DATA ──
+COPY tessdata/ ./tessdata/
+
+# Створення директорій (дані монтуються через volumes)
+RUN mkdir -p logs data Knowledge_Base _DROPZONE/IN _DROPZONE/OUT
+
+CMD ["python", "bot.py"]

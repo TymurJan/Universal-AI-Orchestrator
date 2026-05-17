@@ -1,32 +1,32 @@
 [
   {
+    "id": "user_531215718",
     "name": "Шаповал Тимур",
     "role": "Кар'єрний консультант",
     "category": "career",
     "address": "Шевченка 34",
     "phone": "+380636568999",
     "bio": "Я працюю в цій сфері більше 15 років і маю більше 30 успішних кейсів",
-    "discount": "30%",
     "status": "verified",
-    "id": "user_531215718",
     "coordinates": [
       49.4444,
       32.0597
-    ]
+    ],
+    "rating": 5.0
   },
   {
-    "last_prompt_id": 310,
+    "id": "user_531215718_1778172334",
     "name": "Ваап ллдд",
+    "role": "legal",
     "category": "legal",
     "address": "Впрр445",
     "phone": "+380636568999",
     "bio": "Аароллдддллорпропроо",
-    "discount": "30%",
     "status": "verified",
-    "id": "user_531215718_1778172334",
     "coordinates": [
       49.4444,
       32.0597
-    ]
+    ],
+    "rating": 5.0
   }
 ]

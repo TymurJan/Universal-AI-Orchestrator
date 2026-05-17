@@ -610,12 +610,18 @@ body.is-desktop-tg .logo h1 {
 /* --- Telegram Mini App Mode --- */
 /* Спеціальні стилі для Telegram Mini App */
 body.is-tg-app .header {
-    display: flex; /* Показуємо хедер навіть у Telegram */
-    position: sticky;
+    display: flex;
+    position: fixed;
     top: 0;
+    width: 100%;
+    background: rgba(26, 28, 26, 0.85); /* Трохи щільніше для читабельності меню */
+    backdrop-filter: blur(10px);
+    z-index: 2000; /* Вище за все */
 }
+
+body.is-tg-app main, 
 body.is-tg-app .hero {
-    margin-top: 0;
+    padding-top: 100px !important; /* Відступ, щоб контент не ховався під хедер */
 }
 
 body.is-tg-app {
@@ -623,7 +629,7 @@ body.is-tg-app {
 }
 
 body.is-tg-app .container {
-    padding-top: 20px;
+    padding-top: 0 !important; /* Прибираємо відступ зовсім */
 }
 
 body.is-tg-app .section-title {
@@ -679,4 +685,190 @@ body.is-tg-app .section-subtitle {
 
 body.is-tg-app .tg-floating-btn {
     display: none; /* Ховаємо в самому боті, щоб не дублювати */
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .header {
+        height: auto;
+        padding: 10px 0;
+    }
+    .header .container {
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+    }
+    .nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .nav a {
+        margin-left: 0;
+        margin: 5px 10px;
+        font-size: 13px;
+    }
+    .hero-content h2 {
+        font-size: 32px !important; /* Трохи менше для вузьких екранів */
+    }
+    .btn-main, .btn-secondary {
+        padding: 12px 25px;
+        margin-bottom: 10px;
+        width: 100%; /* Кнопки на всю ширину на мобілці */
+        margin-right: 0;
+    }
+    /* ПРИМУСОВО переносимо око вниз на мобілці */
+    .accessibility-toggle {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 15px !important;
+        width: 50px !important;
+        height: 50px !important;
+        z-index: 9999 !important;
+    }
+}
+
+/* --- MODALS & REGISTRATION FORM --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #151715;
+    border: 1px solid var(--primary-green);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+.registration-form-container h3 {
+    font-size: 28px;
+    color: var(--soft-white);
+    margin-bottom: 10px;
+}
+
+.modal-subtitle {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.reg-form .form-group {
+    margin-bottom: 20px;
+}
+
+.reg-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--sage-green);
+}
+
+.reg-form input[type="text"],
+.reg-form textarea,
+.reg-form input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.reg-form input:focus, .reg-form textarea:focus {
+    border-color: var(--primary-green);
+    background: rgba(255,255,255,0.08);
+}
+
+.legal-consents {
+    margin: 25px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.consent-checkbox {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #ccc;
+}
+
+.consent-checkbox input {
+    margin-top: 3px;
+    accent-color: var(--primary-green);
+}
+
+.consent-checkbox a {
+    color: var(--primary-green);
+    text-decoration: underline;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+.close-modal:hover {
+    opacity: 1;
+}
+
+/* Legal Text Styles */
+.legal-text-container {
+    max-width: 800px;
+}
+
+.legal-content {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.legal-content h4 {
+    color: var(--primary-green);
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.legal-content p, .legal-content li {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 30px 20px;
+    }
 }

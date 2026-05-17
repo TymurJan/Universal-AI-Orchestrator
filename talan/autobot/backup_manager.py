@@ -90,23 +90,43 @@ def create_project_zip(output_path):
     log.info(f"✅ Archive created: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
 
 def sync_env_to_external():
-    """Syncs .env to external drive E:."""
-    env_source = BASE_DIR / ".env"
-    env_dest = EXTERNAL_SYNC_PATH / ".env"
+    """Finds and syncs ALL .env files in the project to external drive E:."""
+    log.info("🔍 Searching for all .env files for external sync...")
     
-    if not env_source.exists():
-        log.error("❌ .env file not found for sync!")
-        return
-        
+    count = 0
     try:
         if not EXTERNAL_SYNC_PATH.exists():
             EXTERNAL_SYNC_PATH.mkdir(parents=True, exist_ok=True)
             
-        shutil.copy2(env_source, env_dest)
-        log.info(f"🔄 .env successfully synced to {env_dest}")
+        env_backup_root = EXTERNAL_SYNC_PATH / "ENV_BACKUP"
+        env_backup_root.mkdir(exist_ok=True)
+
+        for root, dirs, files in os.walk(BASE_DIR):
+            # Skip hidden and excluded dirs
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in EXCLUDE_DIRS]
+            
+            if ".env" in files:
+                source = Path(root) / ".env"
+                # Create a relative subpath for destination
+                rel_path = source.relative_to(BASE_DIR).parent
+                if str(rel_path) == ".":
+                    dest_folder = env_backup_root / "ROOT"
+                else:
+                    # Replace separators for safety
+                    safe_folder = str(rel_path).replace(os.sep, "_")
+                    dest_folder = env_backup_root / safe_folder
+                
+                dest_folder.mkdir(parents=True, exist_ok=True)
+                dest_file = dest_folder / ".env"
+                
+                shutil.copy2(source, dest_file)
+                log.info(f"🔄 Synced: {source.relative_to(BASE_DIR)} -> {dest_file}")
+                count += 1
+        
+        log.info(f"✅ Total .env files synced to E: {count}")
         return True
     except Exception as e:
-        log.error(f"❌ .env sync error: {e}")
+        log.error(f"❌ Error during multi-.env sync: {e}")
         return False
 
 def upload_via_gateway(file_path, gateway_url, max_retries=5):
@@ -258,6 +278,21 @@ def split_file(file_path, chunk_size_mb=20):
     log.info(f"✅ File split into {len(parts)} parts.")
     return parts
 
+def cleanup_old_chunks():
+    """Removes any leftover .zip.XXX files from the base directory."""
+    log.info("🧹 Searching for leftover backup chunks...")
+    count = 0
+    for file in BASE_DIR.glob("*.zip.[0-9][0-9][0-9]"):
+        try:
+            file.unlink()
+            count += 1
+        except Exception as e:
+            log.warning(f"⚠️ Could not delete leftover chunk {file.name}: {e}")
+    if count > 0:
+        log.info(f"✨ Cleaned up {count} leftover chunks.")
+    else:
+        log.info("✅ No leftover chunks found.")
+
 def update_status(process_name, status, details=None):
     """Updates status in central JSON file."""
     data = {}
@@ -279,9 +314,16 @@ def update_status(process_name, status, details=None):
         log.error(f"❌ Failed to update status.json: {e}")
 
 def run_backup():
+    # --- Permanent Stop Check ---
+    STOP_FLAG = Path(__file__).resolve().parent / "BACKUP_STOPPED.txt"
+    if STOP_FLAG.exists():
+        log.warning("🛑 BACKUP STOPPED FOREVER (as requested by USER). Exiting.")
+        return
+
     log.info("=" * 60)
     log.info(f"🏁 SMART SYNC SESSION STARTED: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
+    cleanup_old_chunks() # Ensure clean state before starting
     is_stable = check_stability()
     sync_env_to_external()
     
@@ -296,37 +338,47 @@ def run_backup():
         
         success = False
         
-        # 1. Try SMART Sync (Service Account)
-        if SERVICE_ACCOUNT_PATH.exists():
-            log.info("💎 Attempting SMART DRIVE SYNC (Update Mode)...")
-            file_id = upload_to_drive_smart(tmp_zip, GDRIVE_CORE_FOLDER_ID)
-            if file_id:
-                log.info("🌟 Smart sync completed successfully via Service Account.")
-                update_status("backup", "success", f"In-place update ID: {file_id}")
-                success = True
-            else:
-                log.warning("⚠️ Smart sync failed (likely quota issue). Trying Gateway fallback...")
+        # --- CLOUD SYNC SECTION (Optional) ---
+        # User requested to skip Google Drive sync AFTER host deployment.
+        # Keeping it TRUE for now for safety. Set to False in .env after deployment.
+        SYNC_TO_CLOUD = os.getenv("SYNC_TO_CLOUD", "True").lower() == "true"
+        
+        if not SYNC_TO_CLOUD:
+            log.info("☁️ Cloud sync is DISABLED by configuration. Local backup only.")
+            update_status("backup", "success", "Local sync to E: completed.")
+            success = True
+        else:
+            # 1. Try SMART Sync (Service Account)
+            if SERVICE_ACCOUNT_PATH.exists():
+                log.info("💎 Attempting SMART DRIVE SYNC (Update Mode)...")
+                file_id = upload_to_drive_smart(tmp_zip, GDRIVE_CORE_FOLDER_ID)
+                if file_id:
+                    log.info("🌟 Smart sync completed successfully via Service Account.")
+                    update_status("backup", "success", f"In-place update ID: {file_id}")
+                    success = True
+                else:
+                    log.warning("⚠️ Smart sync failed (likely quota issue). Trying Gateway fallback...")
 
-        # 2. Fallback to Gateway (if Smart Sync failed or no Service Account)
-        if not success and BACKUP_GATEWAY_URL:
-            log.info("🚀 Using Gateway fallback upload...")
-            if file_size_mb > 20:
-                parts = split_file(tmp_zip, 20)
-                success_count = 0
-                for part in parts:
-                    if upload_via_gateway(part, BACKUP_GATEWAY_URL):
-                        success_count += 1
-                    if part != tmp_zip: part.unlink()
-                
-                if success_count == len(parts):
-                    log.info("✅ Gateway segmented upload successful.")
-                    update_status("backup", "warning", "Sync via Gateway (may create copies)")
-                    success = True
-            else:
-                if upload_via_gateway(tmp_zip, BACKUP_GATEWAY_URL):
-                    log.info("✅ Gateway upload successful.")
-                    update_status("backup", "warning", "Sync via Gateway (may create copies)")
-                    success = True
+            # 2. Fallback to Gateway (if Smart Sync failed or no Service Account)
+            if not success and BACKUP_GATEWAY_URL:
+                log.info("🚀 Using Gateway fallback upload...")
+                if file_size_mb > 20:
+                    parts = split_file(tmp_zip, 20)
+                    success_count = 0
+                    for part in parts:
+                        if upload_via_gateway(part, BACKUP_GATEWAY_URL):
+                            success_count += 1
+                        if part != tmp_zip: part.unlink()
+                    
+                    if success_count == len(parts):
+                        log.info("✅ Gateway segmented upload successful.")
+                        update_status("backup", "warning", "Sync via Gateway (may create copies)")
+                        success = True
+                else:
+                    if upload_via_gateway(tmp_zip, BACKUP_GATEWAY_URL):
+                        log.info("✅ Gateway upload successful.")
+                        update_status("backup", "warning", "Sync via Gateway (may create copies)")
+                        success = True
         
         if not success:
             log.error("❌ All cloud upload methods failed!")

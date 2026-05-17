@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "skill_metadata": {
+    "name": "talan-legal-skill",
+    "version": "2.0.0",
+    "description": "Жорсткий конфігураційний файл стандартів ДСТУ 4163:2020 для автоматичної верстки офіційних документів ГО «Талан ЮА».",
+    "paradigm": "declarative_json_rules",
+    "universal_scope": "ANY_OFFICIAL_DOCUMENT"
+  },
+  "organization_constants": {
+    "name": "ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА»",
+    "edrpou": "45119390",
+    "banking_details": "р/р UA893052990000026001050211999 у АТ СЕНС БАНК, МФО 305299",
+    "legal_address": "м. Черкаси, вул. Смілянська, 44, оф. 212",
+    "phone": "+38 (063) 656-89-99",
+    "email": "ngo.talan.ua@gmail.com",
+    "kved_main": "94.99"
+  },
+  "document_geometry": {
+    "paper_size": "A4",
+    "margins_mm": {
+      "left": 30,
+      "right": 10,
+      "top": 20,
+      "bottom": 20
+    },
+    "strict_enforcement": true
+  },
+  "typography": {
+    "primary_font": "Times New Roman",
+    "base_font_size_pt": 11,
+    "line_spacing": 1.15,
+    "paragraph_space_after_pt": 6,
+    "text_color_rgb": [0, 0, 0],
+    "allow_font_override": false
+  },
+  "layout_rules": {
+    "prevent_orphan_signatures": {
+      "rule_active": true,
+      "enforcement_property": "keep_with_next",
+      "required_value": true,
+      "min_paragraphs_attached": 1,
+      "critical_warning": "Категорично заборонено залишати блок підписів на порожній сторінці. Передостанній та останній абзаци тексту ПОВИННІ мати keep_with_next=true."
+    },
+    "signature_block_styling": {
+      "header_text": "Підписи сторін:",
+      "header_bold": false,
+      "header_alignment": "CENTER",
+      "side_1_alignment": "LEFT",
+      "side_2_alignment": "RIGHT",
+      "signers_last_name_all_caps": true,
+      "table_alignment": "CENTER"
+    },
+    "official_letterhead": {
+      "required_for": ["external_letters", "appeals", "orders", "own_grant_concept_notes"],
+      "not_required_for": ["internal_acts", "technical_drafts", "donor_provided_templates"],
+      "org_title_size_pt": 14,
+      "org_title_bold": false,
+      "org_title_space_after_pt": 8,
+      "details_size_pt": 8,
+      "details_space_after_pt": 8,
+      "contacts_size_pt": 8,
+      "contacts_space_after_pt": 16,
+      "forbid_org_name_duplication_in_body": true
+    },
+    "donor_template_immunity": {
+      "rule_active": true,
+      "applies_to": ["irex_application_form", "usaid_templates", "donor_budget_xlsx", "official_donor_blanks"],
+      "enforcement": "STRICT_NO_MODIFY",
+      "prohibited_actions": ["change_margins", "change_fonts", "change_table_structure", "modify_donor_logos", "alter_question_wording"],
+      "allowed_actions": ["fill_text_fields", "populate_table_cells", "insert_partner_names"],
+      "critical_warning": "ТАБУ: Категорично заборонено застосовувати ДСТУ 4163:2020 або змінювати геометрію офіційних бланків, наданих грантодавцями. Це веде до дискваліфікації!"
+    }
+  },
+  "runtime_flags": {
+    "fail_on_margin_mismatch": true,
+    "fail_on_orphan_signature": true,
+    "fail_on_lowercase_lastname": true
+  }
+}

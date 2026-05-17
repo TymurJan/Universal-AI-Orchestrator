@@ -1,0 +1,24 @@
+# ============================================================
+# NS — Новий Шлях (Ветеранський бот)
+# Платформо-незалежний контейнер
+# ============================================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Системні залежності
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python залежності
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Код бота
+COPY bot.py .
+
+# Створення необхідних директорій
+RUN mkdir -p data
+
+CMD ["python", "bot.py"]

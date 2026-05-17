@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новий Шлях — Координаційний центр реінтеграції ветеранів</title>
+    <title>Ветеранський портал "Новий Шлях" (v42) — Координаційний центр реінтеграції ветеранів</title>
+    <style>
+        /* Примусові стилі для обходу кешу CSS на мобільних */
+        @media (max-width: 768px) {
+            body.is-tg-app .header {
+    display: flex;
+    position: relative; /* Дозволяємо хедеру скролитися разом зі сторінкою */
+    width: 100%;
+    background: transparent; /* Робимо його прозорим, бо він тепер не "літає" */
+    backdrop-filter: none;
+    z-index: 10;
+    border-bottom: none; /* Прибираємо лінію */
+}
+
+body.is-tg-app main, 
+body.is-tg-app .hero {
+    padding-top: 20px !important; /* Повертаємо нормальний відступ, бо хедер більше не fixed */
+}
+            .accessibility-toggle {
+                top: auto !important;
+                bottom: 30px !important;
+                right: 20px !important;
+                width: 55px !important;
+                height: 55px !important;
+                z-index: 9999 !important;
+                display: flex !important;
+                visibility: visible !important;
+                border-radius: 50% !important; /* Робимо ідеальне коло */
+                padding: 0 !important; /* Прибираємо зайві відступи */
+                justify-content: center !important; /* Центруємо іконку */
+            }
+        }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
@@ -14,8 +46,8 @@
     <meta property="og:url" content="https://novyshlyakh.ua">
     <meta name="description" content="Координаційний центр реінтеграції ветеранів Черкащини. Юридична, психологічна та кар'єрна підтримка.">
 
-    <link rel="stylesheet" href="style.css?v=30">
-    <link rel="stylesheet" href="accessibility.css?v=30">
+    <link rel="stylesheet" href="style.css?v=42">
+    <link rel="stylesheet" href="accessibility.css?v=42">
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -37,10 +69,15 @@
                 }
 
                 if (isDesktop) {
+                    if (tg && tg.requestFullscreen) {
+                        tg.requestFullscreen();
+                    }
                     document.documentElement.classList.add('is-desktop-tg');
                     document.body.classList.add('is-desktop-tg');
                     var vp = document.querySelector('meta[name="viewport"]');
-                    if (vp) vp.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                    if (vp) {
+                        vp.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                    }
                 }
             }
             window.addEventListener('DOMContentLoaded', detectPlatform);
@@ -178,14 +215,14 @@
                 <button class="tab-btn" data-edu="uni">ВНЗ та перепідготовка</button>
             </div>
 
-            <div class="training-grid" id="trainingGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+            <div class="training-grid" id="trainingGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr)); gap: 30px;">
                 <!-- Дані завантажуються асинхронно з education.json -->
             </div>
             
             <div style="text-align: center; margin-top: 50px; padding: 30px; background: var(--glass-bg); border-radius: 20px; border: 1px solid var(--primary-green);">
                 <h4 style="margin-bottom: 10px;">Не знайшли потрібного напрямку?</h4>
                 <p style="color: #ccc; margin-bottom: 20px;">Наш AI-розвідник шукає нові програми 24/7. Напишіть нам, що саме ви шукаєте.</p>
-                <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="btn-secondary">Подати запит на пошук</a>
+                <a href="https://t.me/Veteran_NovyShlyakh_Bot" class="btn-secondary">Подати запит на пошук</a>
             </div>
         </div>
     </section>
@@ -217,7 +254,7 @@
             <h3 class="section-title">Мережа підтримки Черкащини</h3>
             <p class="section-subtitle">Ми об'єднали перевірені локації, де ви можете отримати допомогу офлайн</p>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; align-items: start;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 40px; align-items: start;">
                 <div class="location-card" style="background: #111; padding: 25px; border-radius: 25px; border: 1px solid var(--glass-border);">
                     <div id="networkMap" style="width: 100%; height: 450px; background: #222; border-radius: 15px; overflow: hidden; border: 1px solid var(--primary-green);">
                         <!-- Реальна карта Leaflet -->
@@ -234,7 +271,7 @@
                             </div>
                         </div>
                         <p style="color: white; line-height: 1.7; margin-bottom: 30px;">Ми відмовились від одного великого офісу на користь широкої мережі фахівців. Ви обираєте найближчого до вас спеціаліста — ми гарантуємо якість його послуг.</p>
-                        <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" class="btn-main" style="width: 100%; text-align: center; margin: 0;">Відкрити Бот-Координатор</a>
+                        <a href="https://t.me/Veteran_NovyShlyakh_Bot" class="btn-main" style="width: 100%; text-align: center; margin: 0;">Відкрити Бот-Координатор</a>
                     </div>
                     
                     <div class="location-card" style="background: #111; padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border);">
@@ -267,18 +304,106 @@
                 </div>
             </div>
             <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">&copy; 2026 Новий Шлях | Всі права захищені. Проєкт ГО «Талан ЮА»</p>
+            <div style="text-align: center; margin-top: 20px; opacity: 0.3; font-size: 10px;">Версія: 42</div>
         </div>
     </footer>
+
+    <!-- НОВА МОДАЛКА РЕЄСТРАЦІЇ СПЕЦІАЛІСТА -->
+    <div id="registration-modal" class="modal-overlay">
+        <div class="modal-content registration-form-container">
+            <button class="close-modal" id="closeRegModal">&times;</button>
+            <h3 class="outfit-font">Завершення реєстрації спеціаліста</h3>
+            <p class="modal-subtitle">Будь ласка, заповніть додаткові дані та підтвердіть згоду з правилами порталу.</p>
+            
+            <form id="specRegistrationForm" class="reg-form">
+                <div class="form-group">
+                    <label>📍 Адреса кабінету (або "Онлайн")</label>
+                    <input type="text" id="regAddress" placeholder="м. Черкаси, вул. ..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Про професійний досвід (Біо)</label>
+                    <textarea id="regBio" rows="4" placeholder="Розкажіть про ваш досвід роботи з ветеранами..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📸 Фото для профілю (PNG/JPG)</label>
+                    <input type="file" id="regPhoto" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📄 Диплом або Ліцензія (PDF)</label>
+                    <input type="file" id="regDoc" accept="application/pdf" required>
+                </div>
+
+                <div class="legal-consents">
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="consentPrivacy" required>
+                        <span>Я даю згоду на обробку персональних даних відповідно до <a href="#" id="linkPrivacy">Політики конфіденційності</a></span>
+                    </label>
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="consentAgreement" required>
+                        <span>Я приймаю умови <a href="#" id="linkAgreement">Угоди про співпрацю</a> (включаючи внесок на статутну діяльність)</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Надіслати на верифікацію</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- МОДАЛКИ ДЛЯ ТЕКСТІВ (Legal) -->
+    <div id="legal-privacy-modal" class="modal-overlay legal-modal">
+        <div class="modal-content legal-text-container">
+            <button class="close-modal" id="closePrivacyModal">&times;</button>
+            <div id="privacyContent" class="legal-content">
+                <h4>Політика конфіденційності</h4>
+                <p><strong>ГО «ТАЛАН ЮА» / Проєкт «Новий Шлях»</strong></p>
+                <h5>1. Загальні положення</h5>
+                <p>Ця Політика конфіденційності описує, як ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА» збирає, використовує та захищає персональні дані користувачів порталу «Новий Шлях». Ми дотримуємося вимог Закону України «Про захист персональних даних» та принципів GDPR.</p>
+                <h5>2. Які дані ми збираємо</h5>
+                <ul>
+                    <li><strong>Для спеціалістів:</strong> ПІБ, номер телефону, спеціалізація, адреса кабінету, опис досвіду, фото профілю, копії документів про освіту (PDF).</li>
+                    <li><strong>Для ветеранів:</strong> Ми не зберігаємо персональні дані ветеранів на Порталі без їхньої прямої згоди.</li>
+                </ul>
+                <h5>3. Мета обробки даних</h5>
+                <p>Верифікація кваліфікації спеціаліста та забезпечення зв’язку з отримувачами допомоги.</p>
+                <h5>4. Ваші права</h5>
+                <p>Ви маєте право на доступ до своїх даних, їх зміну або видалення (Право на забуття).</p>
+                <p>Email для зв'язку: <strong>ngo.talan.ua@gmail.com</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="legal-agreement-modal" class="modal-overlay legal-modal">
+        <div class="modal-content legal-text-container">
+            <button class="close-modal" id="closeAgreementModal">&times;</button>
+            <div id="agreementContent" class="legal-content">
+                <h4>Угода про співпрацю</h4>
+                <p><strong>Проєкт підтримки ветеранів «Новий Шлях»</strong></p>
+                <h5>1. Предмет угоди</h5>
+                <p>Спеціаліст погоджується розмістити свою анкету на порталі для надання послуг ветеранам та їхнім родинам.</p>
+                <h5>2. Фінансові умови та Статутна діяльність</h5>
+                <ul>
+                    <li>Спеціаліст погоджується нарахувати адміністративний внесок на статутну діяльність ГО від суми платних послуг, отриманих через Портал.</li>
+                    <li>Кошти спрямовуються на технічне обслуговування порталу та соціальні проєкти Організації.</li>
+                </ul>
+                <h5>3. Верифікація та Припинення</h5>
+                <p>Спеціаліст погоджується надати документи для перевірки. У разі видалення профілю угода припиняється негайно.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
-    <script src="main.js?v=30"></script>
-    <script src="accessibility.js?v=30"></script>
+    <script src="main.js?v=42"></script>
+    <script src="accessibility.js?v=42"></script>
     <script>
         const webapp = window.Telegram ? window.Telegram.WebApp : null;
         if (webapp) {
             webapp.ready();
             webapp.expand();
             window.handleLogin = function() {
-                webapp.openTelegramLink("https://t.me/Veteran_Novy_Shlyakh_Bot?start=login");
+                webapp.openTelegramLink("https://t.me/Veteran_NovyShlyakh_Bot?start=login");
                 webapp.close();
             };
         }

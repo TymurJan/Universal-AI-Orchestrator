@@ -1,0 +1,76 @@
+# ============================================================
+# ГО "Талан ЮА" — Єдина точка запуску ВСІЄЇ екосистеми
+# 
+# Працює на БУДЬ-ЯКОМУ хостингу: Google Cloud, AWS, Hetzner,
+# DigitalOcean, Linux VPS, Mac, Windows (з Docker Desktop)
+# 
+# Запуск:   docker compose up -d
+# Зупинка:  docker compose down
+# Логи:     docker compose logs -f
+# Перезбірка: docker compose up -d --build
+# ============================================================
+
+services:
+  # ──────────────────────────────────────────────
+  # AG — Antigravity Manager (Внутрішній бот + Штучна Душа)
+  # ──────────────────────────────────────────────
+  ag-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.ag
+    container_name: talan-ag-bot
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      # Розум (live-update без перезбірки, read-only)
+      - ./.agents/skills:/app/.agents/skills:ro
+      - ./.agents/workflows:/app/.agents/workflows:ro
+      - ./Black_Swan_Protocol:/app/Black_Swan_Protocol:ro
+      - ./Ashram:/app/Ashram:ro
+      - ./gemini:/app/gemini:ro
+      # Дані (персистентні, read-write)
+      - ./Knowledge_Base:/app/Knowledge_Base
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./_DROPZONE:/app/_DROPZONE
+      # Зовнішні інструменти
+      - ./_EXTERNAL_TOOLS:/app/_EXTERNAL_TOOLS:ro
+      # Документи (авто, бухгалтерія)
+      - ./_VEHICLES:/app/_VEHICLES:ro
+      - ./Doc_DropBox:/app/Doc_DropBox
+    networks:
+      - talan-network
+
+  # ──────────────────────────────────────────────
+  # NS — Новий Шлях (Ветеранський бот)
+  # ──────────────────────────────────────────────
+  ns-bot:
+    build:
+      context: ./Novy_Shlyakh_Portal/backend
+      dockerfile: Dockerfile.ns
+    container_name: talan-ns-bot
+    restart: unless-stopped
+    env_file: ./Novy_Shlyakh_Portal/backend/.env
+    volumes:
+      - ./Novy_Shlyakh_Portal/backend/data:/app/data
+    networks:
+      - talan-network
+
+  # ──────────────────────────────────────────────
+  # UO — Universal Orchestrator (Лендінг B2B, статика)
+  # Усі 396 файлів: HTML, CSS, JS, assets, images
+  # ──────────────────────────────────────────────
+  uo-landing:
+    image: nginx:alpine
+    container_name: talan-uo-landing
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./Universal-AI-Orchestrator:/usr/share/nginx/html:ro
+    networks:
+      - talan-network
+
+networks:
+  talan-network:
+    driver: bridge

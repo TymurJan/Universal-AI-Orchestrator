@@ -1,0 +1,10 @@
+# Не включати у Docker-контейнер
+__pycache__/
+*.pyc
+.git/
+.gemini/
+*.log
+node_modules/
+.env.local
+*.tmp
+*.bak

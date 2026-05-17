@@ -1,0 +1,4 @@
+# NS — Новий Шлях: Python залежності
+aiogram>=3.4.0
+python-dotenv>=1.0.0
+aiofiles>=23.0.0

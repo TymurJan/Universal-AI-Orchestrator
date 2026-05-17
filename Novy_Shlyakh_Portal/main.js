@@ -58,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const desktopPlatforms = ['tdesktop', 'macos', 'weba', 'webk', 'web'];
         if (desktopPlatforms.includes(tg.platform)) {
+            if (tg.requestFullscreen) {
+                tg.requestFullscreen();
+            }
             document.body.classList.add('is-desktop-tg');
         } else {
             document.body.classList.add('is-tg-app');
@@ -91,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 info.style.textAlign = "center";
                 info.style.padding = "20px";
                 info.style.color = "var(--primary-green)";
-                info.innerHTML = `💡 Це список ТОП-фахівців. Відкрийте <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" style="color:white; text-decoration:underline;">Telegram-бота</a>, щоб побачити повний перелік (${specialists.length}+)`;
+                info.innerHTML = `💡 Це список ТОП-фахівців. Відкрийте <a href="https://t.me/Veteran_NovyShlyakh_Bot" style="color:white; text-decoration:underline;">Telegram-бота</a>, щоб побачити повний перелік (${specialists.length}+)`;
                 specialistGrid.appendChild(info);
             }
         }
@@ -126,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Глобальна функція обробки запису
     window.handleBooking = (specName) => {
-        window.location.href = 'https://t.me/Veteran_Novy_Shlyakh_Bot';
+        window.location.href = 'https://t.me/Veteran_NovyShlyakh_Bot';
     };
 
     // Обробка кліків по табам
@@ -142,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnJoin) {
         btnJoin.addEventListener('click', () => {
             alert('Дякуємо за ваш інтерес! Форма реєстрації для спеціалістів буде відкрита найближчим часом. Будь ласка, залиште заявку в нашому Telegram-боті.');
-            window.location.href = "https://t.me/Veteran_Novy_Shlyakh_Bot";
+            window.location.href = "https://t.me/Veteran_NovyShlyakh_Bot";
         });
     }
 
@@ -247,9 +250,121 @@ document.addEventListener('DOMContentLoaded', () => {
             responseArea.innerHTML = `
                 <div style="border-left: 3px solid var(--primary-green); padding-left: 15px; margin-bottom: 15px;">
                     <p style="color: #ccc; font-style: italic; margin-bottom: 10px;">Ваш запит: "${text}"</p>
-                    <p style="color: white; line-height: 1.6;">Наразі мій серверний RAG-модуль знаходиться в стадії розгортання, тому я не маю доступу до законодавчої бази. <br><br> Будь ласка, скористайтеся <a href="https://t.me/Veteran_Novy_Shlyakh_Bot" style="color: var(--primary-green); font-weight: bold; text-decoration: none;">нашим Telegram-ботом</a> для отримання допомоги просто зараз.</p>
+                    <p style="color: white; line-height: 1.6;">Наразі мій серверний RAG-модуль знаходиться в стадії розгортання, тому я не маю доступу до законодавчої бази. <br><br> Будь ласка, скористайтеся <a href="https://t.me/Veteran_NovyShlyakh_Bot" style="color: var(--primary-green); font-weight: bold; text-decoration: none;">нашим Telegram-ботом</a> для отримання допомоги просто зараз.</p>
                 </div>
             `;
         }, 1500);
     }
 });
+
+    // --- ЛОГІКА РЕЄСТРАЦІЇ СПЕЦІАЛІСТА (Крок 2) ---
+    const regModal = document.getElementById('registration-modal');
+    const closeRegBtn = document.getElementById('closeRegModal');
+    const regForm = document.getElementById('specRegistrationForm');
+    
+    const privacyModal = document.getElementById('legal-privacy-modal');
+    const agreementModal = document.getElementById('legal-agreement-modal');
+    const linkPrivacy = document.getElementById('linkPrivacy');
+    const linkAgreement = document.getElementById('linkAgreement');
+    
+    // Функція відкриття/закриття модалок
+    function toggleModal(modal, show = true) {
+        if (show) modal.classList.add('active');
+        else modal.classList.remove('active');
+    }
+
+    // Перевірка URL на наявність хешу #registration
+    function checkRegistrationHash() {
+        if (window.location.hash === '#registration') {
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            const cat = params.get('cat');
+            const phone = params.get('phone');
+            
+            if (name || cat || phone) {
+                toggleModal(regModal, true);
+                // Тут можна було б заповнити поля, якби вони були у формі (адреса та біо - нові)
+                console.log("Реєстрація для:", { name, cat, phone });
+            }
+        }
+    }
+
+    // Події для модалок
+    if (closeRegBtn) closeRegBtn.onclick = () => toggleModal(regModal, false);
+    if (linkPrivacy) linkPrivacy.onclick = (e) => { e.preventDefault(); toggleModal(privacyModal, true); };
+    if (linkAgreement) linkAgreement.onclick = (e) => { e.preventDefault(); toggleModal(agreementModal, true); };
+    
+    document.getElementById('closePrivacyModal').onclick = () => toggleModal(privacyModal, false);
+    document.getElementById('closeAgreementModal').onclick = () => toggleModal(agreementModal, false);
+
+    // Обробка форми
+    if (regForm) {
+        regForm.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = {
+                address: document.getElementById('regAddress').value,
+                bio: document.getElementById('regBio').value,
+                photo: document.getElementById('regPhoto').files[0],
+                doc: document.getElementById('regDoc').files[0],
+                consents: {
+                    privacy: document.getElementById('consentPrivacy').checked,
+                    agreement: document.getElementById('consentAgreement').checked
+                }
+            };
+            
+            console.log("Дані реєстрації відправлено:", formData);
+            alert('Дякуємо! Ваші документи та дані надіслані на модерацію. Ми зв’яжемося з вами через Telegram-бот.');
+            toggleModal(regModal, false);
+            window.location.hash = ''; // Очищуємо хеш
+        };
+    }
+
+    // Виклик перевірки при завантаженні
+    checkRegistrationHash();
+
+
+    // --- ОБНОВЛЕНА ЛОГІКА ВІДПРАВКИ ФОРМИ ---
+    if (regForm) {
+        regForm.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            // Перевірка згоди
+            if (!document.getElementById('consentPrivacy').checked || !document.getElementById('consentAgreement').checked) {
+                alert('Будь ласка, погодьтеся з Політикою конфіденційності та Угодою.');
+                return;
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const formData = new FormData();
+            
+            formData.append('name', params.get('name') || 'Не вказано');
+            formData.append('category', params.get('cat') || 'other');
+            formData.append('phone', params.get('phone') || '');
+            formData.append('tg_id', params.get('tg_id') || '');
+            formData.append('address', document.getElementById('regAddress').value);
+            formData.append('bio', document.getElementById('regBio').value);
+            formData.append('photo', document.getElementById('regPhoto').files[0]);
+            formData.append('document', document.getElementById('regDoc').files[0]);
+
+            try {
+                const response = await fetch('/api/register-specialist', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert('Дякуємо! Ваша заявка надіслана на модерацію. Ми зв’яжемося з вами через Telegram-бот.');
+                    toggleModal(regModal, false);
+                    window.location.href = 'index.html'; // Редирект на головну
+                } else {
+                    alert('Помилка: ' + result.detail);
+                }
+            } catch (error) {
+                console.error("Помилка відправки:", error);
+                alert('Виникла помилка при з’єднанні з сервером. Спробуйте пізніше.');
+            }
+        };
+    }
+

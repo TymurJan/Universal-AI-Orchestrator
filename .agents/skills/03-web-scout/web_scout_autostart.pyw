@@ -45,15 +45,15 @@ if __name__ == "__main__":
     if already_ran_today(FLAG_FILE):
         sys.exit(0)
 
-    # ЛОГІКА DISCOVERY: Щопонеділка шукаємо нові сайти через LLM
-    is_monday = date.today().weekday() == 0
-    if is_monday and not already_ran_today(DISCOVERY_FLAG):
-        discovery_query = "найкращі офіційні джерела грантів 2026 для ветеранів, реабілітації ПТСР та соціального підприємництва в Україні"
+    # ЛОГІКА DISCOVERY: Щопонеділка та щочетверга шукаємо нові сайти через LLM
+    is_discovery_day = date.today().weekday() in [0, 3] # 0 = Понеділок, 3 = Четвер
+    if is_discovery_day and not already_ran_today(DISCOVERY_FLAG):
+        discovery_query = "ветеранські портали, гранти для ветеранів 2026 Україна, програми реінтеграції, підтримка ГО для ветеранів, психологічна допомога ветеранам"
         try:
             subprocess.run(
-                [sys.executable, str(SCRIPT), "discover", "--query", discovery_query],
+                [sys.executable, str(SCRIPT), "discover", "--query", discovery_query, "--directions", "Гранти для ветеранів"],
                 cwd=str(PROJECT_ROOT),
-                timeout=120
+                timeout=180
             )
             mark_done(DISCOVERY_FLAG)
         except Exception:

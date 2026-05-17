@@ -4,3 +4,8 @@ INFO:root:DEBUG: /start command received from 531215718
 INFO:aiogram.event:Update id=686491450 is handled. Duration 187 ms by bot id=8491124030
 INFO:root:DEBUG: /start command received from 531215718
 INFO:aiogram.event:Update id=686491451 is handled. Duration 74 ms by bot id=8491124030
+INFO:aiogram.event:Update id=686491452 is handled. Duration 129 ms by bot id=8491124030
+INFO:root:DEBUG: /start command received from 531215718
+INFO:aiogram.event:Update id=686491453 is handled. Duration 195 ms by bot id=8491124030
+INFO:root:DEBUG: /start command received from 531215718
+INFO:aiogram.event:Update id=686491454 is handled. Duration 238 ms by bot id=8491124030
