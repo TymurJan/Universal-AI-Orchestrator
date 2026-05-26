@@ -1302,7 +1302,7 @@ async def process_ai_query(message: types.Message, state: FSMContext):
     
     # Mock AI Matchmaking logic
     db = await load_db_async()
-    approved_specs = [s for s in db if s.get("status") == "approved"]
+    approved_specs = [s for s in db if s.get("status") == "verified"]
     
     if not approved_specs:
         await message.answer("На жаль, зараз немає активних спеціалістів у базі.")

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "D:\ГО Талан UA\Talan UA Antigravity manager\bot.py", line 21, in <module>
+    import telebot
+ModuleNotFoundError: No module named 'telebot'

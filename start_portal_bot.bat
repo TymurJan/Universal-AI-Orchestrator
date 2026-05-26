@@ -1,3 +1,5 @@
-cd /d "d:\ГО Талан UA\Talan UA Antigravity manager\Novy_Shlyakh_Portal\backend"
-"d:\ГО Талан UA\Talan UA Antigravity manager\.venv\Scripts\python.exe" bot.py
+@echo off
+chcp 65001 >nul
+cd /d "%~dp0Novy_Shlyakh_Portal\backend"
+"..\..\.venv\Scripts\python.exe" bot.py
 pause

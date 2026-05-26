@@ -338,6 +338,356 @@ def safe_send(chat_id, text):
     except Exception:
         bot.send_message(chat_id, text, parse_mode=None)
 
+def generate_docx_document(doc_type, partner_name, partner_director, partner_details, document_details):
+    import docx
+    from docx.shared import Mm, Pt, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+
+    doc = docx.Document()
+    
+    # 1. Margins (DSTU 4163:2020)
+    for section in doc.sections:
+        section.top_margin = Mm(20)
+        section.bottom_margin = Mm(20)
+        section.left_margin = Mm(30)
+        section.right_margin = Mm(10)
+        
+    # 2. Typography
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Times New Roman'
+    font.size = Pt(11)
+    font.color.rgb = RGBColor(0x00, 0x00, 0x00)
+    style.paragraph_format.line_spacing = 1.15
+    style.paragraph_format.space_after = Pt(6)
+
+    # Talan Letterhead
+    p_org = doc.add_paragraph()
+    p_org.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_org = p_org.add_run("ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА»")
+    run_org.font.size = Pt(14)
+    run_org.font.bold = False
+    p_org.paragraph_format.space_after = Pt(8)
+    p_org.paragraph_format.line_spacing = 1.0
+    
+    p_req = doc.add_paragraph()
+    p_req.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_req = p_req.add_run("ЄДРПОУ: 45119390 | р/р UA49305299000002600103160858113 у АТ КБ «ПРИВАТБАНК», МФО 305299")
+    run_req.font.size = Pt(8)
+    p_req.paragraph_format.space_after = Pt(8)
+    p_req.paragraph_format.line_spacing = 1.0
+    
+    p_addr = doc.add_paragraph()
+    p_addr.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run_addr = p_addr.add_run("Юридична адреса: 18005, м. Черкаси, вул. Волкова, буд. 95, кв. 26 | Тел: +38 (063) 656-89-99 | ngo.talan.ua@gmail.com")
+    run_addr.font.size = Pt(8)
+    p_addr.paragraph_format.space_after = Pt(16)
+    p_addr.paragraph_format.line_spacing = 1.0
+
+    if doc_type == "act_of_transfer":
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_before = Pt(12)
+        p_title.paragraph_format.space_after = Pt(6)
+        run_title = p_title.add_run("АКТ ПРИЙМАННЯ-ПЕРЕДАЧІ БЛАГОДІЙНОЇ ДОПОМОГИ")
+        run_title.font.bold = True
+        run_title.font.size = Pt(12)
+
+        p_meta = doc.add_paragraph()
+        p_meta.paragraph_format.space_after = Pt(12)
+        run_date = p_meta.add_run("«___» ____________ 2026 року")
+        p_meta.add_run("\t" * 6)
+        run_place = p_meta.add_run("м. Черкаси")
+        run_date.font.italic = True
+        run_place.font.italic = True
+
+        p_preamble = doc.add_paragraph()
+        p_preamble.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_preamble.paragraph_format.space_after = Pt(8)
+        p_preamble.add_run("ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА»").bold = True
+        p_preamble.add_run(" (код ЄДРПОУ: 45119390, юридична адреса: 18005, м. Черкаси, вул. Волкова, буд. 95, кв. 26), в особі Голови правління ")
+        p_preamble.add_run("Шаповала Тимура Юрійовича").bold = True
+        p_preamble.add_run(", що діє на підставі Статуту (надалі за текстом — «Передавач» або «Сторона 1»), з однієї сторони, та\n")
+        
+        p_preamble.add_run(partner_name).bold = True
+        p_preamble.add_run(f" (в особі {partner_director}, що діє на підставі Статуту/Довіреності, надалі за текстом — «Отримувач» або «Сторона 2»), з другої сторони, ")
+        p_preamble.add_run("разом іменовані як «Сторони», а кожна окремо як «Сторона», склали цей Акт приймання-передачі про наступне:")
+
+        p_p1 = doc.add_paragraph()
+        p_p1.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p1.paragraph_format.space_after = Pt(6)
+        p_p1.add_run("1. ").bold = True
+        p_p1.add_run("Передавач передає, а Отримувач приймає у власність як благодійну допомогу наступне майно (товари):")
+
+        widths = [Mm(10), Mm(80), Mm(15), Mm(20), Mm(22), Mm(23)]
+        table = doc.add_table(rows=0, cols=6, style='Table Grid')
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = False
+
+        def add_row(t, row_data, is_hdr=False):
+            row = t.add_row()
+            for idx, cell_val in enumerate(row_data):
+                cell = row.cells[idx]
+                cell.text = str(cell_val)
+                cell.width = widths[idx]
+                p_c = cell.paragraphs[0]
+                p_c.paragraph_format.space_before = Pt(2)
+                p_c.paragraph_format.space_after = Pt(2)
+                p_c.paragraph_format.line_spacing = 1.0
+                if is_hdr:
+                    p_c.runs[0].font.bold = True
+                    p_c.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                else:
+                    if idx in [0, 2, 3, 4, 5]:
+                        p_c.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    else:
+                        p_c.alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+        add_row(table, ["№\nз/п", "Найменування майна (товару)", "Од.\nвим.", "Кіль-\nкість", "Вартість за\nод., грн", "Загальна\nвартість, грн"], True)
+
+        items = []
+        import re
+        raw_items = re.split(r'[\n;,\.]+', document_details)
+        for r_item in raw_items:
+            r_item = r_item.strip()
+            if r_item:
+                items.append(r_item)
+
+        if not items:
+            items = ["Благодійна допомога (згідно з запитом)"]
+
+        for i, item in enumerate(items, 1):
+            qty_match = re.search(r'(\d+)\s*(.*)', item)
+            if qty_match:
+                qty = qty_match.group(1)
+                name = qty_match.group(2).strip()
+            else:
+                qty = "1"
+                name = item
+            add_row(table, [str(i), name, "шт.", qty, "—", "—"])
+
+        row_total = table.add_row()
+        row_total.cells[0].merge(row_total.cells[4])
+        row_total.cells[0].text = "ЗАГАЛЬНА ВАРТІСТЬ (БЕЗ ПДВ):"
+        p_tot = row_total.cells[0].paragraphs[0]
+        p_tot.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p_tot.paragraph_format.space_before = Pt(2)
+        p_tot.paragraph_format.space_after = Pt(2)
+        p_tot.runs[0].font.bold = True
+        
+        row_total.cells[5].text = "—"
+        p_sum = row_total.cells[5].paragraphs[0]
+        p_sum.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_sum.paragraph_format.space_before = Pt(2)
+        p_sum.paragraph_format.space_after = Pt(2)
+
+        row_total.cells[0].width = sum(widths[:5])
+        row_total.cells[5].width = widths[5]
+
+        doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+        p_p2 = doc.add_paragraph()
+        p_p2.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p2.paragraph_format.space_after = Pt(4)
+        p_p2.add_run("2. ").bold = True
+        p_p2.add_run("Передана благодійна допомога надається Отримувачу для використання виключно в статутній некомерційній діяльності, спрямованій на досягнення цілей, передбачених статутом Отримувача та чинним законодавством України.")
+
+        p_p3 = doc.add_paragraph()
+        p_p3.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p3.paragraph_format.space_after = Pt(4)
+        p_p3.paragraph_format.keep_with_next = True
+        p_p3.add_run("3. ").bold = True
+        p_p3.add_run("Отримувач підтверджує, що майно передано у належному стані, комплектне, видимих дефектів та пошкоджень не виявлено. Сторони підтверджують факт повного передавання майна та заявляють, що не мають одна до одної жодних претензій.")
+
+        p_p4 = doc.add_paragraph()
+        p_p4.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p4.paragraph_format.space_after = Pt(12)
+        p_p4.paragraph_format.keep_with_next = True
+        p_p4.add_run("4. ").bold = True
+        p_p4.add_run("Цей Акт складений українською мовою у двох оригінальних примірниках, які мають однакову юридичну силу, по одному примірнику для кожної із Сторін.")
+
+    elif doc_type == "service_contract":
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_before = Pt(12)
+        p_title.paragraph_format.space_after = Pt(6)
+        run_title = p_title.add_run("ДОГОВІР ПРО НАДАННЯ ПОСЛУГ")
+        run_title.font.bold = True
+        run_title.font.size = Pt(12)
+
+        p_meta = doc.add_paragraph()
+        p_meta.paragraph_format.space_after = Pt(12)
+        run_date = p_meta.add_run("«___» ____________ 2026 року")
+        p_meta.add_run("\t" * 6)
+        run_place = p_meta.add_run("м. Черкаси")
+        run_date.font.italic = True
+        run_place.font.italic = True
+
+        p_preamble = doc.add_paragraph()
+        p_preamble.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_preamble.paragraph_format.space_after = Pt(8)
+        p_preamble.add_run("ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА»").bold = True
+        p_preamble.add_run(" (код ЄДРПОУ: 45119390, юридична адреса: 18005, м. Черкаси, вул. Волкова, буд. 95, кв. 26), в особі Голови правління ")
+        p_preamble.add_run("Шаповала Тимура Юрійовича").bold = True
+        p_preamble.add_run(", що діє на підставі Статуту (надалі за текстом — «Замовник» або «Сторона 1»), з однієї сторони, та\n")
+        
+        p_preamble.add_run(partner_name).bold = True
+        p_preamble.add_run(f" (в особі {partner_director}, що діє на підставі {partner_details}, надалі за текстом — «Виконавець» або «Сторона 2»), з другої сторони, ")
+        p_preamble.add_run("разом іменовані як «Сторони», а кожна окремо як «Сторона», склали цей Договір про наступне:")
+
+        p_s1 = doc.add_paragraph()
+        p_s1.paragraph_format.space_before = Pt(6)
+        p_s1.paragraph_format.space_after = Pt(4)
+        p_s1.add_run("1. ПРЕДМЕТ ДОГОВОРУ").bold = True
+        
+        p_p1 = doc.add_paragraph()
+        p_p1.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p1.paragraph_format.space_after = Pt(4)
+        p_p1.add_run("1.1. ").bold = True
+        p_p1.add_run("Виконавець зобов'язується надати Замовнику послуги, а саме: ")
+        p_p1.add_run(document_details)
+        p_p1.add_run(" (надалі — «Послуги»), а Замовник зобов'язується прийняти й оплатити належним чином надані Послуги.")
+
+        p_p2 = doc.add_paragraph()
+        p_p2.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p2.paragraph_format.space_after = Pt(4)
+        p_p2.add_run("1.2. ").bold = True
+        p_p2.add_run("Послуги надаються Виконавцем особисто в строк до «___» ____________ 2026 року.")
+
+        p_s2 = doc.add_paragraph()
+        p_s2.paragraph_format.space_before = Pt(6)
+        p_s2.paragraph_format.space_after = Pt(4)
+        p_s2.add_run("2. ПРАВА ТА ОБОВ'ЯЗКИ СТОРІН").bold = True
+
+        p_p3 = doc.add_paragraph()
+        p_p3.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p3.paragraph_format.space_after = Pt(4)
+        p_p3.add_run("2.1. ").bold = True
+        p_p3.add_run("Виконавець зобов'язаний надати Послуги якісно, вчасно та у відповідності до умов цього Договору.")
+
+        p_p4 = doc.add_paragraph()
+        p_p4.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p4.paragraph_format.space_after = Pt(4)
+        p_p4.add_run("2.2. ").bold = True
+        p_p4.add_run("Замовник зобов'язаний своєчасно оплатити Послуги Виконавця після підписання Акту приймання-передачі наданих послуг.")
+
+        p_s3 = doc.add_paragraph()
+        p_s3.paragraph_format.space_before = Pt(6)
+        p_s3.paragraph_format.space_after = Pt(4)
+        p_s3.add_run("3. ВАРТІСТЬ ПОСЛУГ ТА ПОРЯДОК РОЗРАХУНКІВ").bold = True
+
+        p_p5 = doc.add_paragraph()
+        p_p5.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p5.paragraph_format.space_after = Pt(4)
+        p_p5.add_run("3.1. ").bold = True
+        p_p5.add_run("Загальна вартість послуг за цим Договором становить ___________________________ грн. (_______________________________________________) без ПДВ.")
+
+        p_p6 = doc.add_paragraph()
+        p_p6.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p6.paragraph_format.space_after = Pt(4)
+        p_p6.paragraph_format.keep_with_next = True
+        p_p6.add_run("3.2. ").bold = True
+        p_p6.add_run("Розрахунки здійснюються у безготівковій формі шляхом перерахування грошових коштів на рахунок Виконавця, зазначений у цьому Договорі.")
+
+        p_s4 = doc.add_paragraph()
+        p_s4.paragraph_format.space_before = Pt(6)
+        p_s4.paragraph_format.space_after = Pt(4)
+        p_s4.paragraph_format.keep_with_next = True
+        p_s4.add_run("4. ІНШІ УМОВИ").bold = True
+
+        p_p7 = doc.add_paragraph()
+        p_p7.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p7.paragraph_format.space_after = Pt(4)
+        p_p7.paragraph_format.keep_with_next = True
+        p_p7.add_run("4.1. ").bold = True
+        p_p7.add_run("Цей Договір набирає чинності з моменту його підписання обома Сторонами і діє до повного виконання Сторонами своїх зобов'язань.")
+
+        p_p8 = doc.add_paragraph()
+        p_p8.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        p_p8.paragraph_format.space_after = Pt(12)
+        p_p8.paragraph_format.keep_with_next = True
+        p_p8.add_run("4.2. ").bold = True
+        p_p8.add_run("Усі зміни та доповнення до цього Договору оформлюються додатковими угодами Сторін.")
+
+    p_sig_head = doc.add_paragraph()
+    p_sig_head.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_sig_head.paragraph_format.space_before = Pt(18)
+    p_sig_head.paragraph_format.space_after = Pt(12)
+    p_sig_head.paragraph_format.keep_with_next = True
+    run_sig_head = p_sig_head.add_run("Підписи сторін:")
+    run_sig_head.font.bold = False
+
+    sig_table = doc.add_table(rows=3, cols=2)
+    sig_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    sig_table.autofit = False
+    sig_table.columns[0].width = Mm(85)
+    sig_table.columns[1].width = Mm(85)
+
+    def format_uppercase_lastname(name_str):
+        name_str = name_str.strip()
+        parts = name_str.split()
+        if len(parts) >= 2:
+            parts[-1] = parts[-1].upper()
+            return " ".join(parts)
+        return name_str.upper()
+
+    formatted_partner_signer = format_uppercase_lastname(partner_director)
+
+    cell_l0 = sig_table.cell(0, 0)
+    cell_l0.text = "ЗАМОВНИК:\nГолова правління\nГО «ТАЛАН ЮА»" if doc_type == "service_contract" else "ПЕРЕДАВАЧ:\nГолова правління\nГО «ТАЛАН ЮА»"
+    cell_l0.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+    cell_l0.paragraphs[0].runs[0].font.bold = True
+    cell_l0.paragraphs[0].paragraph_format.space_before = Pt(2)
+    cell_l0.paragraphs[0].paragraph_format.space_after = Pt(2)
+    cell_l0.paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    cell_r0 = sig_table.cell(0, 1)
+    cell_r0.text = f"ВИКОНАВЕЦЬ:\n{partner_director}\n{partner_name}" if doc_type == "service_contract" else f"ОТРИМУВАЧ:\n{partner_director}\n{partner_name}"
+    cell_r0.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    cell_r0.paragraphs[0].runs[0].font.bold = True
+    cell_r0.paragraphs[0].paragraph_format.space_before = Pt(2)
+    cell_r0.paragraphs[0].paragraph_format.space_after = Pt(2)
+    cell_r0.paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    cell_l1 = sig_table.cell(1, 0)
+    cell_l1.text = "ЄДРПОУ 45119390\nАдреса: 18005, м. Черкаси, вул. Волкова, буд. 95, кв. 26\nIBAN: UA49305299000002600103160858113"
+    cell_l1.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+    cell_l1.paragraphs[0].runs[0].font.size = Pt(9)
+    cell_l1.paragraphs[0].paragraph_format.space_before = Pt(2)
+    cell_l1.paragraphs[0].paragraph_format.space_after = Pt(2)
+    cell_l1.paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    cell_r1 = sig_table.cell(1, 1)
+    cell_r1.text = f"{partner_details}"
+    cell_r1.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    cell_r1.paragraphs[0].runs[0].font.size = Pt(9)
+    cell_r1.paragraphs[0].paragraph_format.space_before = Pt(2)
+    cell_r1.paragraphs[0].paragraph_format.space_after = Pt(2)
+    cell_r1.paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    cell_l2 = sig_table.cell(2, 0)
+    cell_l2.text = "\n_________________ / Тимур ШАПОВАЛ /\nМ.П."
+    cell_l2.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+    cell_l2.paragraphs[0].paragraph_format.space_before = Pt(2)
+    cell_l2.paragraphs[0].paragraph_format.space_after = Pt(2)
+    cell_l2.paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    cell_r2 = sig_table.cell(2, 1)
+    cell_r2.text = f"\n_________________ / {formatted_partner_signer} /\nМ.П."
+    sig_table.cell(2, 1).paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    sig_table.cell(2, 1).paragraphs[0].paragraph_format.space_before = Pt(2)
+    sig_table.cell(2, 1).paragraphs[0].paragraph_format.space_after = Pt(2)
+    sig_table.cell(2, 1).paragraphs[0].paragraph_format.line_spacing = 1.0
+
+    out_dir = BASE_DIR / "_DROPZONE" / "OUT"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    
+    doc_name = f"{doc_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+    file_path = out_dir / doc_name
+    doc.save(str(file_path))
+    return str(file_path)
+
 # --- Knowledge Base: Менеджер файлів ---
 kb_manager = NotebookManager(kb_path=KB_PATH, protocol_path=PROTOCOL_PATH)
 
@@ -438,7 +788,12 @@ def generate_audio_summary(text, voice="nova"):
         if not summary:
             return None
         
-        response = ai_provider.client.audio.speech.create(
+        gpt_provider = ai_orchestrator.providers.get("gpt")
+        if not gpt_provider or not gpt_provider.ready:
+            log.error("GPT provider is not ready for TTS")
+            return None
+
+        response = gpt_provider.client.audio.speech.create(
             model="tts-1",
             voice=voice,
             input=summary,
@@ -716,7 +1071,7 @@ def handle_quiz(msg: Message):
     safe_send(msg.chat.id, f"🧠 Генерую квіз по документу: `{target.stem}`...")
     
     content = read_kb_file(target, max_chars=8000)
-    quiz = ask_gpt_oneshot(
+    quiz = ask_ai_oneshot(
         "Ти — викладач. Створи квіз з 5 питань з 4 варіантами відповідей (A, B, C, D) "
         "на основі наданого тексту. Формат:\n\n"
         "❓ 1. [питання]\n"
@@ -755,7 +1110,7 @@ def handle_flashcards(msg: Message):
     safe_send(msg.chat.id, f"📇 Генерую флешкартки по документу: `{target.stem}`...")
     
     content = read_kb_file(target, max_chars=8000)
-    cards = ask_gpt_oneshot(
+    cards = ask_ai_oneshot(
         "Ти — викладач. Створи 10 флешкарток (питання-відповідь) на основі тексту. "
         "Формат кожної картки:\n\n"
         "📌 **Картка 1**\n"
@@ -807,7 +1162,7 @@ def handle_save(msg: Message):
     raw_text = parts[1].strip()
     
     # Форматуємо запис через GPT
-    formatted = ask_gpt_oneshot(
+    formatted = ask_ai_oneshot(
         "Ти — редактор. Очисти та відформатуй наступний текст як структурований запис "
         "для бази знань NGO. Додай маркери та чітку структуру. Не додавай вигаданої інформації. "
         "Відповідай українською.",
@@ -1027,6 +1382,47 @@ TOOLS_SCHEMA = [
                 "required": ["keyword", "action"]
             }
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_ngo_requisites",
+            "description": "Повертає офіційні юридичні та банківські реквізити ГО «ТАЛАН ЮА» (ЄДРПОУ, директор, IBAN ПриватБанк)."
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_legal_document",
+            "description": "Генерує офіційний юридичний документ у форматі .docx (Акт приймання-передачі або Договір про надання послуг) за ДСТУ 4163:2020.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "document_type": {
+                        "type": "string",
+                        "enum": ["act_of_transfer", "service_contract"],
+                        "description": "Тип документа для генерації: 'act_of_transfer' (Акт приймання-передачі благодійної допомоги/майна) або 'service_contract' (Договір про надання послуг)"
+                    },
+                    "partner_name": {
+                        "type": "string",
+                        "description": "Повна назва організації-партнера або ПІБ фізичної особи (наприклад, ГО «Нове Життя»)"
+                    },
+                    "partner_director": {
+                        "type": "string",
+                        "description": "Посада та ПІБ керівника партнера в родовому або називному відмінку (наприклад, директора Петра Петренка)"
+                    },
+                    "partner_details": {
+                        "type": "string",
+                        "description": "Реквізити партнера (код ЄДРПОУ, юридична адреса, банківські реквізити якщо відомі)"
+                    },
+                    "document_details": {
+                        "type": "string",
+                        "description": "Детальний вміст: опис майна або наданих послуг для заповнення таблиці/суті документа (наприклад, 1 генератор, 2 ноутбуки Lenovo)"
+                    }
+                },
+                "required": ["document_type", "partner_name", "partner_director", "partner_details", "document_details"]
+            }
+        }
     }
 ]
 
@@ -1125,7 +1521,94 @@ def execute_tool(tool_name, arguments_json, chat_id):
         # Webhook Stub for Multi-Tenancy B2B
         return f"Успіх: Дію {action_type} успішно виконано в CRM клієнта. Дані: {payload}"
 
+    elif tool_name == "get_ngo_requisites":
+        requisites = (
+            "📋 **Офіційні реквізити ГО «ТАЛАН ЮА»**:\n\n"
+            "• **Повна назва:** ГРОМАДСЬКА ОРГАНІЗАЦІЯ «ТАЛАН ЮА»\n"
+            "• **Скорочена назва:** ГО «ТАЛАН ЮА»\n"
+            "• **Код ЄДРПОУ:** `45119390`\n"
+            "• **Керівник:** Шаповал Тимур Юрійович\n"
+            "• **Адреса реєстрації:** 18005, м. Черкаси, вул. Волкова, буд. 95, кв. 26\n\n"
+            "💳 **Банківські реквізити (ПриватБанк)**:\n"
+            "• **Рахунок (IBAN):** `UA49305299000002600103160858113`\n"
+            "• **Установа банку:** АТ КБ «ПРИВАТБАНК»\n"
+            "• **Призначення платежу:** Благодійний внесок / Статутна діяльність\n\n"
+            "📞 **Офіційні контакти**:\n"
+            "• **Телефон:** +380636568999\n"
+            "• **Email:** ngo.talan.ua@gmail.com"
+        )
+        safe_send(chat_id, requisites)
+        return requisites
+
+    elif tool_name == "generate_legal_document":
+        doc_type = args.get("document_type")
+        partner_name = args.get("partner_name", "")
+        partner_director = args.get("partner_director", "")
+        partner_details = args.get("partner_details", "")
+        document_details = args.get("document_details", "")
+
+        safe_send(chat_id, "⏳ **Почав генерацію документа за стандартами ДСТУ...**")
+        
+        try:
+            file_path = generate_docx_document(
+                doc_type=doc_type,
+                partner_name=partner_name,
+                partner_director=partner_director,
+                partner_details=partner_details,
+                document_details=document_details
+            )
+            
+            with open(file_path, "rb") as doc_file:
+                bot.send_document(chat_id, doc_file, caption="📄 Ваші документи успішно згенеровано згідно з ДСТУ 4163:2020.")
+            
+            return f"Успіх: Документ типу {doc_type} для {partner_name} успішно згенеровано та надіслано користувачеві."
+        except Exception as e:
+            log.error(f"Error in generate_legal_document tool: {e}")
+            safe_send(chat_id, f"❌ Не вдалося згенерувати документ: {e}")
+            return f"Помилка при генерації документа: {e}"
+
     return f"Невідомий інструмент: {tool_name}"
+
+@bot.message_handler(content_types=['voice'])
+@guard
+def handle_voice(msg: Message):
+    if not AI_READY:
+        safe_send(msg.chat.id, "⚠️ ШІ-мозок не налаштований. Перевір API ключі.")
+        return
+        
+    safe_send(msg.chat.id, "🎤 **Розпізнаю голосове повідомлення...**")
+    
+    try:
+        file_info = bot.get_file(msg.voice.file_id)
+        data = bot.download_file(file_info.file_path)
+        
+        audio_file = io.BytesIO(data)
+        audio_file.name = "voice.ogg"
+        
+        gpt_provider = ai_orchestrator.providers.get("gpt")
+        if not gpt_provider or not gpt_provider.ready or not gpt_provider.client:
+            safe_send(msg.chat.id, "❌ Голосове введення підтримується тільки через OpenAI Provider.")
+            return
+
+        transcription = gpt_provider.client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+        
+        transcribed_text = transcription.text.strip()
+        
+        if not transcribed_text:
+            safe_send(msg.chat.id, "⚠️ Не вдалося розпізнати слова у голосовому повідомленні. Спробуй сказати чіткіше.")
+            return
+            
+        safe_send(msg.chat.id, f"🎤 **Розпізнано голос:**\n«_{transcribed_text}_»")
+        
+        msg.text = transcribed_text
+        handle_text(msg)
+        
+    except Exception as e:
+        log.error(f"Voice Transcription Error: {e}")
+        safe_send(msg.chat.id, "❌ Не вдалося розпізнати або обробити голосове повідомлення.")
 
 @bot.message_handler(content_types=['text'])
 @guard

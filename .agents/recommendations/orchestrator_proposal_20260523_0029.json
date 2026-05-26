@@ -1,0 +1,14 @@
+[
+    {
+        "topic": "architecture",
+        "severity": "medium",
+        "recommendation": "Виявлено 19 скілів. Рекомендується об'єднати споріднені модулі для зменшення накладних витрат (Token Overhead).",
+        "detected_at": "2026-05-23 00:29"
+    },
+    {
+        "topic": "stability",
+        "severity": "high",
+        "recommendation": "Виявлено критичні помилки. Conflict Guard підозрює суперечність між MCP-інструментами та системними правами.",
+        "detected_at": "2026-05-23 00:29"
+    }
+]
