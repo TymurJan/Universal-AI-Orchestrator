@@ -12,7 +12,22 @@
       49.4444,
       32.0597
     ],
-    "rating": 5.0
+    "rating": 5.0,
+    "doc_diia_enc": null,
+    "doc_diploma_enc": null,
+    "doc_license_enc": null,
+    "doc_fop_enc": null,
+    "photo_path": null,
+    "document_path": null,
+    "court_cases": 0,
+    "team_work": 0,
+    "avg_service_price": null,
+    "tariff_stage": "stage_1",
+    "tariff_plan": "grant_standard",
+    "tariff_fixed_fee": 0.0,
+    "tariff_commission_pct": 0.0,
+    "contract_signed_date": null,
+    "contract_end_date": null
   },
   {
     "id": "user_531215718_1778172334",
@@ -27,6 +42,21 @@
       49.4444,
       32.0597
     ],
-    "rating": 5.0
+    "rating": 5.0,
+    "doc_diia_enc": null,
+    "doc_diploma_enc": null,
+    "doc_license_enc": null,
+    "doc_fop_enc": null,
+    "photo_path": null,
+    "document_path": null,
+    "court_cases": 0,
+    "team_work": 0,
+    "avg_service_price": null,
+    "tariff_stage": "stage_1",
+    "tariff_plan": "grant_standard",
+    "tariff_fixed_fee": 0.0,
+    "tariff_commission_pct": 0.0,
+    "contract_signed_date": null,
+    "contract_end_date": null
   }
 ]

@@ -6,6 +6,7 @@ This script analyzes project structure, detects conflicts, and proposes optimiza
 import os
 import sys
 import logging
+import re
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
@@ -39,7 +40,7 @@ class MetaOptimizer:
 
     def scan_project_structure(self):
         """Сканує структуру проєкту: скіли, промти, конфігурації."""
-        log.info("🔍 Запускаю Deep Scan структури проєкту...")
+        log.info("🔍 Запускаю Deep Scan структури проєкту.")
         report = {
             "skills": self._scan_skills(),
             "prompts": self._scan_prompts(),
@@ -77,30 +78,57 @@ class MetaOptimizer:
             configs.append({"name": ".env", "path": str(env_file)})
         return configs
 
-    def analyze_interactions(self):
-        log.info("🔍 Аналіз локальних логів та структури...")
-        
-        # 1. Читаємо логи
-        logs_to_analyze = [
-            BASE_DIR / "logs" / "bot_log.txt",
-            BASE_DIR / "logs" / "backup_log.txt",
-            BASE_DIR / "logs" / "meta_optimizer_log.txt"
-        ]
-        
-        log_content = ""
-        for log_file in logs_to_analyze:
-            if log_file.exists():
+    def _read_log_tail(self, file_path, num_lines=500, max_bytes=102400):
+        """Зчитує кінець лог-файлу для швидкого та економного аналізу."""
+        if not file_path.exists():
+            return ""
+        try:
+            file_size = file_path.stat().st_size
+            if file_size == 0:
+                return ""
+            
+            with open(file_path, 'rb') as f:
+                if file_size > max_bytes:
+                    f.seek(-max_bytes, os.SEEK_END)
+                    chunk = f.read(max_bytes)
+                else:
+                    chunk = f.read()
+                
                 try:
-                    log_content += log_file.read_text(encoding="utf-8") + "\n"
-                except: pass
+                    text = chunk.decode('utf-8', errors='ignore')
+                except Exception:
+                    text = chunk.decode('cp1251', errors='ignore')
+                
+                lines = text.splitlines()
+                return "\n".join(lines[-num_lines:])
+        except Exception as e:
+            log.error(f"❌ Помилка читання логу {file_path.name}: {e}")
+            return ""
+
+    def analyze_interactions(self):
+        log.info("🔍 Аналіз локальних логів та структури.")
+        
+        # 1. Читаємо хвости логів
+        logs_to_analyze = {
+            "bot_log.txt": BASE_DIR / "logs" / "bot_log.txt",
+            "backup_log.txt": BASE_DIR / "logs" / "backup_log.txt",
+            "meta_optimizer_log.txt": BASE_DIR / "logs" / "meta_optimizer_log.txt"
+        }
+        
+        log_contents_map = {}
+        for name, log_file in logs_to_analyze.items():
+            if log_file.exists():
+                log_contents_map[name] = self._read_log_tail(log_file, num_lines=500)
+            else:
+                log_contents_map[name] = ""
 
         # 2. Скануємо структуру
         structure = self.scan_project_structure()
         
         # 3. Визначаємо потенціали
-        return self._find_orchestration_opportunities(log_content, structure)
+        return self._find_orchestration_opportunities(log_contents_map, structure)
 
-    def _find_orchestration_opportunities(self, log_content, structure):
+    def _find_orchestration_opportunities(self, log_contents_map, structure):
         """Шукає можливості для оркестрації та виявляє конфлікти."""
         potentials = []
         
@@ -120,11 +148,66 @@ class MetaOptimizer:
             potentials.extend(conflicts)
 
         # 3. Аналіз стабільності MCP та логів
-        if "error" in log_content.lower():
+        critical_issues = []
+        transient_issues_count = 0
+        
+        # Ігноровані мережеві патерни (транзитні помилки Telegram API та запитів)
+        ignore_keywords = [
+            "api.telegram.org",
+            "getupdates",
+            "nameresolutionerror",
+            "getaddrinfo failed",
+            "connectionreseterror",
+            "connection aborted",
+            "forcibly closed",
+            "remote host",
+            "polling exception",
+            "telebot",
+            "max retries exceeded",
+            "read timed out",
+            "connectionerror",
+            "reraise",
+            "requests.exceptions",
+            "exception_info",
+            "polling_thread",
+            "raise_exceptions",
+            "another exception occurred",
+            "handling of the above exception"
+        ]
+        
+        for file_name, content in log_contents_map.items():
+            for line in content.splitlines():
+                line_lower = line.lower()
+                if "[error]" in line_lower or "[critical]" in line_lower:
+                    is_transient = any(kw in line_lower for kw in ignore_keywords)
+                    if is_transient:
+                        transient_issues_count += 1
+                    else:
+                        critical_issues.append((file_name, line.strip()))
+                        
+        if critical_issues:
+            # Збираємо останні 3 унікальні помилки для деталізації
+            unique_errors = list(dict.fromkeys([err[1] for err in critical_issues]))[-3:]
+            details = "\n└ ".join(unique_errors)
+            
+            # Визначаємо, чи є помилки прав доступу або MCP
+            has_permission_issue = any(any(pk in err.lower() for pk in ["permission", "access denied", "mcp", "rights"]) for err in unique_errors)
+            
+            recommendation = "Виявлено критичні системні помилки в логах:\n└ " + details
+            if has_permission_issue:
+                recommendation += "\n\nConflict Guard підозрює суперечність між MCP-інструментами та системними правами."
+            
             potentials.append({
                 "topic": "stability",
                 "severity": "high",
-                "recommendation": "Виявлено критичні помилки. Conflict Guard підозрює суперечність між MCP-інструментами та системними правами.",
+                "recommendation": recommendation,
+                "detected_at": datetime.now().strftime("%Y-%m-%d %H:%M")
+            })
+        elif transient_issues_count > 20:
+            potentials.append({
+                "topic": "network_stability",
+                "severity": "low",
+                "recommendation": f"Виявлено {transient_issues_count} тимчасових мережевих помилок Telegram API. Перевірте стабільність інтернет-з'єднання хоста.",
                 "detected_at": datetime.now().strftime("%Y-%m-%d %H:%M")
             })
 
@@ -132,11 +215,8 @@ class MetaOptimizer:
 
     def _detect_rule_conflicts(self, prompts):
         """Conflict Guard: Логіка виявлення суперечливих інструкцій."""
-        # У майбутньому тут працюватиме LLM для аналізу змісту.
-        # Зараз: пошук 'Hard Conflicts' (наприклад, декілька профілів душі)
         conflicts = []
         if len(prompts) > 1:
-            # Якщо знайдено більше одного системного профілю
             conflicts.append({
                 "topic": "prompt_conflict",
                 "severity": "high",

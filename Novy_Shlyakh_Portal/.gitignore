@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+backend/data/*.db
+*.db
+
+# Environment variables / secrets
+.env
+backend/.env
+
+# Local logs
+*.log
+portal_bot_log.txt
+portal_bot_error.txt
+uploads/

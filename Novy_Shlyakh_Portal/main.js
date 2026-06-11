@@ -144,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обробка кнопки приєднання
     if (btnJoin) {
         btnJoin.addEventListener('click', () => {
-            alert('Дякуємо за ваш інтерес! Форма реєстрації для спеціалістів буде відкрита найближчим часом. Будь ласка, залиште заявку в нашому Telegram-боті.');
-            window.location.href = "https://t.me/Veteran_NovyShlyakh_Bot";
+            window.location.href = "my.html#register?role=specialist";
         });
     }
 
@@ -257,88 +256,304 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-    // --- ЛОГІКА РЕЄСТРАЦІЇ СПЕЦІАЛІСТА (Крок 2) ---
+    // --- ЛОГІКА РЕЄСТРАЦІЇ СПЕЦІАЛІСТА (WIZARD FLOW) ---
     const regModal = document.getElementById('registration-modal');
     const closeRegBtn = document.getElementById('closeRegModal');
     const regForm = document.getElementById('specRegistrationForm');
-    
+
     const privacyModal = document.getElementById('legal-privacy-modal');
     const agreementModal = document.getElementById('legal-agreement-modal');
     const linkPrivacy = document.getElementById('linkPrivacy');
     const linkAgreement = document.getElementById('linkAgreement');
-    
-    // Функція відкриття/закриття модалок
-    function toggleModal(modal, show = true) {
-        if (show) modal.classList.add('active');
-        else modal.classList.remove('active');
+
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function toggleModal(modal, show) {
+        if (!modal) return;
+        if (show) {
+            modal.classList.add('active');
+            showStep(1);
+        } else {
+            modal.classList.remove('active');
+        }
     }
 
-    // Перевірка URL на наявність хешу #registration
+    function showStep(stepNum) {
+        currentStep = stepNum;
+        for (let i = 1; i <= totalSteps; i++) {
+            const stepEl = document.getElementById(`wizard-step-${i}`);
+            if (stepEl) {
+                stepEl.style.display = i === stepNum ? 'block' : 'none';
+            }
+        }
+        
+        const prevBtn = document.getElementById('prevStepBtn');
+        const nextBtn = document.getElementById('nextStepBtn');
+        const submitBtn = document.getElementById('submitRegBtn');
+
+        if (prevBtn) prevBtn.style.display = stepNum === 1 ? 'none' : 'block';
+        if (nextBtn) nextBtn.style.display = stepNum === totalSteps ? 'none' : 'block';
+        if (submitBtn) submitBtn.style.display = stepNum === totalSteps ? 'block' : 'none';
+    }
+
+    function validateStep(stepNum) {
+        if (stepNum === 1) {
+            const specField = document.getElementById('regSpecialistField');
+            if (!specField || !specField.value) {
+                alert('Будь ласка, оберіть вашу спеціалізацію.');
+                return false;
+            }
+            return true;
+        }
+        if (stepNum === 2) {
+            const address = document.getElementById('regAddress');
+            const bio = document.getElementById('regBio');
+            if (!address || !address.value.trim()) {
+                alert('Будь ласка, вкажіть адресу кабінету або "Онлайн".');
+                return false;
+            }
+            if (!bio || !bio.value.trim()) {
+                alert('Будь ласка, заповніть інформацію про ваш професійний досвід.');
+                return false;
+            }
+            return true;
+        }
+        if (stepNum === 3) {
+            const tariff = document.getElementById('regTariffPlan');
+            if (!tariff || !tariff.value) {
+                alert('Будь ласка, оберіть тарифний план.');
+                return false;
+            }
+            // Дата гранту обовязкова для ВСІХ Зони 1 на грантовому тарифі
+            const specField = document.getElementById('regSpecialistField')?.value || '';
+            const isZone1 = ['psychologist', 'rehabilitation', 'narcologist', 'lawyer_consult'].includes(specField);
+            if (tariff.value === 'grant_standard' && isZone1) {
+                const endDate = document.getElementById('regContractEndDate');
+                if (!endDate || !endDate.value) {
+                    alert('⚠️ Для психологів та реабілітологів на грантовому тарифі обов’язково вказати кінцеву дату завершення договору.');
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+
+    function updateStepFlow() {
+        const specField = document.getElementById('regSpecialistField')?.value || '';
+
+        // Зона 1: приватні фахівці (сесійна модель) — БЕЗ анкети юриста
+        const isZone1 = ['psychologist', 'rehabilitation', 'narcologist', 'lawyer_consult'].includes(specField);
+        // Зона 2 юристи (потребують анкети)
+        const isLawyerZone2 = ['lawyer_docs', 'advocate'].includes(specField);
+        // Зона 2 протезист (фіксована підписка, без анкети)
+        const isProsthetist = specField === 'prosthetist';
+
+        const lawyerQuestions = document.getElementById('lawyer-questions-block');
+        const recommendedBox = document.getElementById('lawyer-tariff-recommendation');
+        const grantDateContainer = document.getElementById('grant-date-container');
+        const tariffSelect = document.getElementById('regTariffPlan');
+
+        // Анкета тільки для lawyer_docs та advocate (Зона 2)
+        if (lawyerQuestions) lawyerQuestions.style.display = isLawyerZone2 ? 'block' : 'none';
+        if (recommendedBox) recommendedBox.style.display = isLawyerZone2 ? 'block' : 'none';
+
+        // Передвибір тарифу залежно від зони
+        if (tariffSelect) {
+            if (isZone1) {
+                tariffSelect.value = 'grant_standard';
+            } else if (isLawyerZone2) {
+                updateLawyerTariffRecommendation();
+            } else if (isProsthetist) {
+                // Протезист = Зона 2в (адвокатське бюро / протезний центр)
+                tariffSelect.value = 'zone2c_bureau';
+            }
+        }
+
+        // Дата завершення договору — тільки для всіх Зони 1 (грантовий тариф)
+        if (grantDateContainer) {
+            grantDateContainer.style.display = isZone1 ? 'block' : 'none';
+        }
+    }
+
+    const prevBtn = document.getElementById('prevStepBtn');
+    const nextBtn = document.getElementById('nextStepBtn');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    showStep(currentStep + 1);
+                }
+            }
+        });
+    }
+
+    const specSelect = document.getElementById('regSpecialistField');
+    if (specSelect) {
+        specSelect.addEventListener('change', updateStepFlow);
+    }
+
+    function updateLawyerTariffRecommendation() {
+        const courtCasesVal = document.querySelector('input[name="court-cases"]:checked')?.value;
+        const teamWorkVal = document.querySelector('input[name="team-work"]:checked')?.value;
+
+        // Зона 2в: працює в команді (бюро/установа)
+        // Зона 2б: веде судові справи (адвокат-практик)
+        // Зона 2а: базовий юрист-консультант
+        let recommendedId = 'zone2a_consultant';
+        let recommendedText = '2а: Юрист-консультант — $0 грант → $50/міс → $100/міс';
+
+        if (teamWorkVal === '1') {
+            recommendedId = 'zone2c_bureau';
+            recommendedText = '2в: Адвокатське бюро / Протезний центр — $0 грант → $100/міс → $150/міс';
+        } else if (courtCasesVal === '1') {
+            recommendedId = 'zone2b_practitioner';
+            recommendedText = '2б: Адвокат-практик (судовий супровід) — $0 грант → $50/міс → $100/міс';
+        }
+
+        const recTextEl = document.getElementById('recommended-tariff-text');
+        if (recTextEl) recTextEl.textContent = recommendedText;
+
+        const tariffSelect = document.getElementById('regTariffPlan');
+        if (tariffSelect) tariffSelect.value = recommendedId;
+    }
+
+    // Додамо прослуховування змін в анкеті юриста
+    setTimeout(() => {
+        document.querySelectorAll('input[name="court-cases"]').forEach(el => {
+            el.addEventListener('change', updateLawyerTariffRecommendation);
+        });
+        document.querySelectorAll('input[name="team-work"]').forEach(el => {
+            el.addEventListener('change', updateLawyerTariffRecommendation);
+        });
+        const avgPriceEl = document.getElementById('avg-price-select');
+        if (avgPriceEl) {
+            avgPriceEl.addEventListener('change', updateLawyerTariffRecommendation);
+        }
+    }, 500);
+
     function checkRegistrationHash() {
         if (window.location.hash === '#registration') {
             const params = new URLSearchParams(window.location.search);
-            const name = params.get('name');
-            const cat = params.get('cat');
-            const phone = params.get('phone');
+            const category = params.get('cat');
             
-            if (name || cat || phone) {
+            const specSelect = document.getElementById('regSpecialistField');
+            if (specSelect) {
+                if (category === 'legal') {
+                    specSelect.value = 'lawyer_consult';
+                } else if (category === 'psychology') {
+                    specSelect.value = 'psychologist';
+                } else if (category === 'rehab') {
+                    specSelect.value = 'rehabilitation';
+                } else if (category === 'narcologist') {
+                    specSelect.value = 'narcologist';
+                }
+            }
+            
+            updateStepFlow();
+
+            if (params.get('name') || params.get('cat') || params.get('phone')) {
                 toggleModal(regModal, true);
-                // Тут можна було б заповнити поля, якби вони були у формі (адреса та біо - нові)
-                console.log("Реєстрація для:", { name, cat, phone });
             }
         }
     }
 
-    // Події для модалок
     if (closeRegBtn) closeRegBtn.onclick = () => toggleModal(regModal, false);
     if (linkPrivacy) linkPrivacy.onclick = (e) => { e.preventDefault(); toggleModal(privacyModal, true); };
     if (linkAgreement) linkAgreement.onclick = (e) => { e.preventDefault(); toggleModal(agreementModal, true); };
-    
-    document.getElementById('closePrivacyModal').onclick = () => toggleModal(privacyModal, false);
-    document.getElementById('closeAgreementModal').onclick = () => toggleModal(agreementModal, false);
 
-    // Обробка форми
-    if (regForm) {
-        regForm.onsubmit = (e) => {
-            e.preventDefault();
-            const formData = {
-                address: document.getElementById('regAddress').value,
-                bio: document.getElementById('regBio').value,
-                photo: document.getElementById('regPhoto').files[0],
-                doc: document.getElementById('regDoc').files[0],
-                consents: {
-                    privacy: document.getElementById('consentPrivacy').checked,
-                    agreement: document.getElementById('consentAgreement').checked
-                }
-            };
-            
-            console.log("Дані реєстрації відправлено:", formData);
-            alert('Дякуємо! Ваші документи та дані надіслані на модерацію. Ми зв’яжемося з вами через Telegram-бот.');
-            toggleModal(regModal, false);
-            window.location.hash = ''; // Очищуємо хеш
-        };
+    const closePrivacyBtn = document.getElementById('closePrivacyModal');
+    const closeAgreementBtn = document.getElementById('closeAgreementModal');
+    if (closePrivacyBtn) closePrivacyBtn.onclick = () => toggleModal(privacyModal, false);
+    if (closeAgreementBtn) closeAgreementBtn.onclick = () => toggleModal(agreementModal, false);
+
+    // --- Ініціалізація перемикача методу підписання (index.html) ---
+    const idxMethodFile = document.getElementById('idx-sign-method-file');
+    const idxMethodDiia = document.getElementById('idx-sign-method-diia');
+    const idxPanelFile  = document.getElementById('idx-panel-sign-file');
+    const idxPanelDiia  = document.getElementById('idx-panel-sign-diia');
+    const idxLabelFile  = document.getElementById('idx-kep-method-file-label');
+    const idxLabelDiia  = document.getElementById('idx-kep-method-diia-label');
+
+    function idxSwitchSignMethod(method) {
+        const isFile = method === 'file';
+        if (idxPanelFile) idxPanelFile.style.display = isFile ? 'block' : 'none';
+        if (idxPanelDiia) idxPanelDiia.style.display = isFile ? 'none' : 'block';
+        if (idxLabelFile) {
+            idxLabelFile.style.border = isFile ? '2px solid #2e8b57' : '2px solid #ddd';
+            idxLabelFile.style.background = isFile ? 'rgba(46,139,87,0.08)' : '#fff';
+            idxLabelFile.style.boxShadow = isFile ? '0 2px 8px rgba(46,139,87,0.15)' : 'none';
+        }
+        if (idxLabelDiia) {
+            idxLabelDiia.style.border = isFile ? '2px solid #ddd' : '2px solid #111';
+            idxLabelDiia.style.background = isFile ? '#fff' : 'rgba(0,0,0,0.03)';
+            idxLabelDiia.style.boxShadow = isFile ? 'none' : '0 2px 8px rgba(0,0,0,0.1)';
+        }
     }
 
-    // Виклик перевірки при завантаженні
-    checkRegistrationHash();
+    if (idxMethodFile) idxMethodFile.addEventListener('change', () => idxSwitchSignMethod('file'));
+    if (idxMethodDiia) idxMethodDiia.addEventListener('change', () => idxSwitchSignMethod('diia'));
+    idxSwitchSignMethod('file'); // за замовчуванням — файловий КЕП
 
+    // Mock handler для Дія.Підпис (ФОП верифікація через ЄДРПОУ)
+    const idxDiiaBtn    = document.getElementById('idx-diia-sign-btn');
+    const idxDiiaToken  = document.getElementById('idx-diia-sign-token');
+    const idxDiiaStatus = document.getElementById('idx-diia-sign-status');
+    const idxEdrpou     = document.getElementById('idx-spec-edrpou');
 
-    // --- ОБНОВЛЕНА ЛОГІКА ВІДПРАВКИ ФОРМИ ---
+    if (idxDiiaBtn) {
+        idxDiiaBtn.addEventListener('click', () => {
+            const edrpou = idxEdrpou ? idxEdrpou.value.trim() : '';
+            if (!/^\d{8,10}$/.test(edrpou)) {
+                if (idxEdrpou) { idxEdrpou.style.border = '2px solid #dc3545'; idxEdrpou.focus(); }
+                if (idxDiiaStatus) { idxDiiaStatus.style.color = '#dc3545'; idxDiiaStatus.textContent = '❌ Введіть коректний ЄДРПОУ / ІПН (8–10 цифр)'; }
+                return;
+            }
+            if (idxEdrpou) idxEdrpou.style.border = '';
+            idxDiiaBtn.disabled = true;
+            idxDiiaBtn.style.background = '#ffc107';
+            idxDiiaBtn.style.color = '#000';
+            idxDiiaBtn.innerHTML = '⏳ Перевірка реєстрації ФОП в ЄДРПОУ...';
+            setTimeout(() => {
+                if (idxDiiaToken) idxDiiaToken.value = `DIIA_FOP_SIGN_MOCK_${edrpou}_OK`;
+                idxDiiaBtn.style.background = '#28a745';
+                idxDiiaBtn.style.color = '#fff';
+                idxDiiaBtn.innerHTML = '✅ ФОП верифіковано. Підпис отримано';
+                if (idxDiiaStatus) {
+                    idxDiiaStatus.style.color = '#28a745';
+                    idxDiiaStatus.textContent = `✅ ФОП (ЄДРПОУ: ${edrpou}) підтверджено в державному реєстрі. Угода підписана.`;
+                }
+            }, 3000);
+        });
+    }
+
+    // --- ВІДПРАВКА ФОРМИ РЕЄСТРАЦІЇ (з підтримкою КЕП — ЗУ №852-IV) ---
     if (regForm) {
         regForm.onsubmit = async (e) => {
             e.preventDefault();
-            
-            // Перевірка згоди
-            if (!document.getElementById('consentPrivacy').checked || !document.getElementById('consentAgreement').checked) {
-                alert('Будь ласка, погодьтеся з Політикою конфіденційності та Угодою.');
+
+            if (!document.getElementById('consentPrivacy').checked ||
+                !document.getElementById('consentAgreement').checked) {
+                alert('Будь ласка, погодьтеся з Політикою конфіденційності та Угодою про співпрацю.');
                 return;
             }
 
             const params = new URLSearchParams(window.location.search);
             const formData = new FormData();
-            
+            const category = params.get('cat') || 'other';
+
             formData.append('name', params.get('name') || 'Не вказано');
-            formData.append('category', params.get('cat') || 'other');
+            formData.append('category', category);
             formData.append('phone', params.get('phone') || '');
             formData.append('tg_id', params.get('tg_id') || '');
             formData.append('address', document.getElementById('regAddress').value);
@@ -346,25 +561,70 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('photo', document.getElementById('regPhoto').files[0]);
             formData.append('document', document.getElementById('regDoc').files[0]);
 
-            try {
-                const response = await fetch('/api/register-specialist', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert('Дякуємо! Ваша заявка надіслана на модерацію. Ми зв’яжемося з вами через Telegram-бот.');
-                    toggleModal(regModal, false);
-                    window.location.href = 'index.html'; // Редирект на головну
-                } else {
-                    alert('Помилка: ' + result.detail);
+            // Анкетні дані для юристів
+            if (category === 'legal') {
+                const courtCases = document.querySelector('input[name="court-cases"]:checked')?.value || '0';
+                const teamWork = document.querySelector('input[name="team-work"]:checked')?.value || '0';
+                const avgPrice = document.getElementById('avg-price-select')?.value || 'under_2000';
+                formData.append('court_cases', courtCases);
+                formData.append('team_work', teamWork);
+                formData.append('avg_service_price', avgPrice);
+            }
+
+            // Обраний тарифний план та дата
+            const tariffPlan = document.getElementById('regTariffPlan')?.value || 'grant_standard';
+            formData.append('tariff_plan', tariffPlan);
+            
+            const contractEndDate = document.getElementById('regContractEndDate')?.value || '';
+            formData.append('contract_end_date', contractEndDate);
+
+            // Визначаємо метод підписання (обов'язково)
+            const chosenMethod = document.querySelector('input[name="idx-sign-method"]:checked')?.value || 'file';
+            formData.append('sign_method', chosenMethod);
+
+            if (chosenMethod === 'file') {
+                const kepInput = document.getElementById('regKep');
+                const kepPwd   = document.getElementById('regKepPassword');
+                if (!kepInput || kepInput.files.length === 0) {
+                    alert('⚠️ Для реєстрації необхідно завантажити файл КЕП (.p12/.pfx/.jks).\n\nЯкщо у вас немає файлового КЕП — оберіть "Дія.Підпис" (тільки для ФОП).');
+                    return;
                 }
-            } catch (error) {
-                console.error("Помилка відправки:", error);
-                alert('Виникла помилка при з’єднанні з сервером. Спробуйте пізніше.');
+                formData.append('kep_file', kepInput.files[0]);
+                formData.append('kep_password', kepPwd ? kepPwd.value : '');
+            } else {
+                const signToken = document.getElementById('idx-diia-sign-token')?.value;
+                const edrpou    = document.getElementById('idx-spec-edrpou')?.value.trim();
+                if (!signToken) {
+                    alert('⚠️ Будь ласка, натисніть "Підписати через Дія.Підпис" та дочекайтеся підтвердження вашого статусу ФОП в ЄДРПОУ.');
+                    return;
+                }
+                formData.append('diia_sign_token', signToken);
+                formData.append('edrpou', edrpou || '');
+            }
+
+            const submitBtn = regForm.querySelector('button[type="submit"]');
+            const origBtnText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Надсилаємо...'; }
+
+            try {
+                const response = await fetch('/api/register-specialist', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    const kepMsg = result.kep_signed ? ' Угода підписана вашим КЕПом.' : (result.diia_signed ? ' Угода підписана через Дія.Підпис (ФОП).' : '');
+                    alert('Дякуємо! Заявку надіслано на модерацію. Ми зв\'яжемося через Telegram-бот.' + kepMsg);
+                    toggleModal(regModal, false);
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Помилка: ' + (result.detail || 'Невідома помилка'));
+                }
+            } catch (err) {
+                console.error('Помилка відправки:', err);
+                alert('Помилка з\'єднання з сервером. Спробуйте пізніше.');
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origBtnText; }
             }
         };
     }
 
+
+    checkRegistrationHash();

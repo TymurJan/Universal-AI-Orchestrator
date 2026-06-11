@@ -46,8 +46,8 @@ body.is-tg-app .hero {
     <meta property="og:url" content="https://novyshlyakh.ua">
     <meta name="description" content="Координаційний центр реінтеграції ветеранів Черкащини. Юридична, психологічна та кар'єрна підтримка.">
 
-    <link rel="stylesheet" href="style.css?v=42">
-    <link rel="stylesheet" href="accessibility.css?v=42">
+    <link rel="stylesheet" href="style.css?v=43">
+    <link rel="stylesheet" href="accessibility.css?v=43">
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -169,7 +169,7 @@ body.is-tg-app .hero {
             </div>
             
             <div style="text-align: center; margin-top: 50px;">
-                <a href="my.html" class="btn-primary" style="font-size: 16px; padding: 15px 35px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 25px rgba(46,139,87,0.3); transition: 0.3s;">Розпочати реєстрацію</a>
+                <a href="my.html#register" class="btn-primary" style="font-size: 16px; padding: 15px 35px; border-radius: 50px; font-weight: 600; box-shadow: 0 10px 25px rgba(46,139,87,0.3); transition: 0.3s;">Розпочати реєстрацію</a>
             </div>
         </div>
     </section>
@@ -304,7 +304,7 @@ body.is-tg-app .hero {
                 </div>
             </div>
             <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">&copy; 2026 Новий Шлях | Всі права захищені. Проєкт ГО «Талан ЮА»</p>
-            <div style="text-align: center; margin-top: 20px; opacity: 0.3; font-size: 10px;">Версія: 42</div>
+            <div style="text-align: center; margin-top: 20px; opacity: 0.3; font-size: 10px;">Версія: 43</div>
         </div>
     </footer>
 
@@ -316,38 +316,197 @@ body.is-tg-app .hero {
             <p class="modal-subtitle">Будь ласка, заповніть додаткові дані та підтвердіть згоду з правилами порталу.</p>
             
             <form id="specRegistrationForm" class="reg-form">
-                <div class="form-group">
-                    <label>📍 Адреса кабінету (або "Онлайн")</label>
-                    <input type="text" id="regAddress" placeholder="м. Черкаси, вул. ..." required>
+                <!-- Крок 1: Спеціалізація та роль -->
+                <div id="wizard-step-1" class="wizard-step">
+                    <h5 style="margin-bottom: 15px; font-weight: 700; color: #2e8b57; border-bottom: 2px solid rgba(46,139,87,0.15); padding-bottom: 8px;">Крок 1: Ваша спеціалізація</h5>
+                    <div class="form-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 6px;">Спеціалізація:</label>
+                        <select id="regSpecialistField" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(46,139,87,0.25); font-size: 14px; margin-bottom: 12px;" required>
+                            <option value="" disabled selected>Оберіть напрям...</option>
+                            <option value="psychologist">🧠 Психолог / психотерапевт</option>
+                            <option value="rehabilitation">🦾 Реабілітолог / кінезіолог</option>
+                            <option value="narcologist">💊 Нарколог / психіатр</option>
+                            <option value="lawyer_consult">⚖️ Юрист (разові консультації)</option>
+                            <option value="lawyer_docs">⚖️ Юрист (збір документів, підготовка справ)</option>
+                            <option value="advocate">⚖️ Адвокат (судовий супровід)</option>
+                            <option value="prosthetist">🦾 Протезист / ортопедичні послуги</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>📝 Про професійний досвід (Біо)</label>
-                    <textarea id="regBio" rows="4" placeholder="Розкажіть про ваш досвід роботи з ветеранами..." required></textarea>
+                <!-- Крок 2: Основна інформація & Анкета -->
+                <div id="wizard-step-2" class="wizard-step" style="display: none;">
+                    <h5 style="margin-bottom: 15px; font-weight: 700; color: #2e8b57; border-bottom: 2px solid rgba(46,139,87,0.15); padding-bottom: 8px;">Крок 2: Професійний опис</h5>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 6px;">📍 Адреса кабінету (або "Онлайн")</label>
+                        <input type="text" id="regAddress" placeholder="м. Черкаси, вул. ..." required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 6px;">📝 Про професійний досвід (Біо)</label>
+                        <textarea id="regBio" rows="4" placeholder="Розкажіть про ваш досвід роботи з ветеранами..." required></textarea>
+                    </div>
+
+                    <!-- Спеціальний блок запитань для юристів (Self-selection) -->
+                    <div id="lawyer-questions-block" class="form-group" style="display: none; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid #ddd; border-radius: 12px; margin-bottom: 20px;">
+                        <h6 style="margin-bottom: 12px; font-weight: 700; color: #111;">📋 Анкетування для вибору тарифу юриста</h6>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 13px; font-weight: 600;">1. Чи ведете ви справи в суді?</label>
+                            <div style="display: flex; gap: 15px; margin-top: 4px;">
+                                <label style="font-size: 13px; cursor: pointer;"><input type="radio" name="court-cases" value="1" style="width: auto; margin-right: 5px;"> Так</label>
+                                <label style="font-size: 13px; cursor: pointer;"><input type="radio" name="court-cases" value="0" checked style="width: auto; margin-right: 5px;"> Ні</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 13px; font-weight: 600;">2. Чи працюєте ви в команді з іншими юристами/адвокатами?</label>
+                            <div style="display: flex; gap: 15px; margin-top: 4px;">
+                                <label style="font-size: 13px; cursor: pointer;"><input type="radio" name="team-work" value="1" style="width: auto; margin-right: 5px;"> Так</label>
+                                <label style="font-size: 13px; cursor: pointer;"><input type="radio" name="team-work" value="0" checked style="width: auto; margin-right: 5px;"> Ні</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 13px; font-weight: 600;">3. Яка середня вартість вашої послуги (або супроводу)?</label>
+                            <select id="avg-price-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 13px;">
+                                <option value="under_2000">до 2 000 грн</option>
+                                <option value="between_2000_10000">2 000 - 10 000 грн</option>
+                                <option value="over_10000">понад 10 000 грн</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>📸 Фото для профілю (PNG/JPG)</label>
-                    <input type="file" id="regPhoto" accept="image/*" required>
+                <!-- Крок 3: Рекомендований тариф -->
+                <div id="wizard-step-3" class="wizard-step" style="display: none;">
+                    <h5 style="margin-bottom: 15px; font-weight: 700; color: #2e8b57; border-bottom: 2px solid rgba(46,139,87,0.15); padding-bottom: 8px;">Крок 3: Умови та тариф співпраці</h5>
+                    
+                    <div id="lawyer-tariff-recommendation" style="display: none; margin-bottom: 15px; padding: 12px; background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 8px; font-size: 13px; color: #0050b3; line-height: 1.4;">
+                        💡 <strong>Рекомендований тариф на основі відповідей:</strong><br>
+                        <span id="recommended-tariff-text" style="font-weight: 700;">Гнучкий (10% комісія)</span>
+                    </div>
+
+                    <div class="form-group" style="padding: 15px; background: rgba(46,139,87,0.03); border: 1px solid rgba(46,139,87,0.15); border-radius: 12px; margin-bottom: 20px;">
+                        <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Узгоджений тарифний план:</label>
+                        <select id="regTariffPlan" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(46,139,87,0.25); font-size: 14px; margin-bottom: 12px;" required>
+                            <optgroup label="Зона 1 — Приватні фахівці (сесійна модель)">
+                                <option value="grant_standard" selected>🎁 Грантовий — $0 / 0% комісії (перші 12 місяців)</option>
+                                <option value="zone1_stable">📊 Стабільний — $30/міс перехідний, $50/міс постійний + 5% комісія</option>
+                                <option value="zone1_flexible">🔄 Гнучкий — $0 фіксовано + 10%/15% комісія (з місяця 13+)</option>
+                            </optgroup>
+                            <optgroup label="Зона 2 — Юристи, адвокати, протезисти (фіксована підписка)">
+                                <option value="zone2a_consultant">2а: Юрист-консультант — $0 грант → $50/міс → $100/міс</option>
+                                <option value="zone2b_practitioner">2б: Адвокат-практик (судовий супровід) — $0 грант → $50/міс → $100/міс</option>
+                                <option value="zone2c_bureau">2в: Адвокатське бюро / Протезний центр — $0 грант → $100/міс → $150/міс</option>
+                            </optgroup>
+                            <optgroup label="Зона 3 — Реабілітаційні центри, клініки, центри">
+                                <option value="zone3_bureau">Зона 3: Установа / Центр — $0 грант → $100/міс → $150/міс</option>
+                            </optgroup>
+                            <optgroup label="Зона 4 — Громадські організації та благодійні фонди">
+                                <option value="zone4_ngo">Зона 4: Безкоштовний профіль ГО/БФ (після верифікації Радою)</option>
+                            </optgroup>
+                            <optgroup label="Зона 5 — Державні структури, ОМС, ЦНАП, соцслужби">
+                                <option value="zone5_state">Зона 5: Інформаційний профіль ($0, за рішенням Ради)</option>
+                            </optgroup>
+                        </select>
+
+                        <div id="grant-date-container" style="display: none;">
+                            <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">
+                                📅 Кінцева дата договору (за наявності гранту)
+                            </label>
+                            <input type="date" id="regContractEndDate" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(46,139,87,0.25); font-size: 14px;">
+                            <p style="font-size: 11px; color: #5f6b75; margin-top: 4px; line-height: 1.3;">
+                                Для Зони 1 (психологи, реабілітологи, нарколог, юрист-консультант) на грантовому тарифі — вкажіть дату завершення гранту (обов'язково).
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>📄 Диплом або Ліцензія (PDF)</label>
-                    <input type="file" id="regDoc" accept="application/pdf" required>
+                <!-- Крок 4: Документи та Підпис КЕП -->
+                <div id="wizard-step-4" class="wizard-step" style="display: none;">
+                    <h5 style="margin-bottom: 15px; font-weight: 700; color: #2e8b57; border-bottom: 2px solid rgba(46,139,87,0.15); padding-bottom: 8px;">Крок 4: Завантаження та КЕП</h5>
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 6px;">📸 Фото для профілю (PNG/JPG)</label>
+                        <input type="file" id="regPhoto" accept="image/*" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 6px;">📄 Диплом або Ліцензія (PDF)</label>
+                        <input type="file" id="regDoc" accept="application/pdf" required>
+                    </div>
+
+                    <!-- Підписання угоди: вибір методу -->
+                    <div class="form-group" style="margin-bottom: 20px; padding: 18px; border: 1px solid rgba(46,139,87,0.25); border-radius: 12px; background: rgba(46,139,87,0.03);">
+                        <label style="font-weight: 600; font-size: 14px; color: #2e8b57; display: block; margin-bottom: 6px;">
+                            🔐 Підписання Угоди про співпрацю
+                            <span style="background: rgba(46,139,87,0.15); color: #2e8b57; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px;">Обов'язково</span>
+                        </label>
+                        <p style="font-size: 12px; color: #5f6b75; margin: 0 0 12px; font-weight: 500;">Оберіть один метод підписання угоди:</p>
+
+                        <!-- Картки вибору методу -->
+                        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                            <label id="idx-kep-method-file-label" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; border: 2px solid #2e8b57; border-radius: 12px; cursor: pointer; background: rgba(46,139,87,0.08); text-align: center; transition: 0.2s; box-shadow: 0 2px 8px rgba(46,139,87,0.15);">
+                                <input type="radio" name="idx-sign-method" id="idx-sign-method-file" value="file" checked style="display:none;">
+                                <span style="font-size: 28px;">💾</span>
+                                <span style="font-weight: 700; font-size: 13px; color: #2e8b57;">Файловий КЕП</span>
+                                <span style="font-size: 11px; color: #5f6b75; line-height: 1.4;">Для всіх спеціалістів<br><code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:10px;">.p12 / .pfx / .jks</code></span>
+                            </label>
+                            <label id="idx-kep-method-diia-label" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; background: #fff;">
+                                <input type="radio" name="idx-sign-method" id="idx-sign-method-diia" value="diia" style="display:none;">
+                                <span style="font-size: 28px;">📱</span>
+                                <span style="font-weight: 700; font-size: 13px; color: #111;">Дія.Підпис</span>
+                                <span style="font-size: 11px; color: #5f6b75; line-height: 1.4;">Тільки для <strong>ФОП</strong><br>(підтвердження через ЄДРПОУ)</span>
+                            </label>
+                        </div>
+
+                        <!-- Панель: Файловий КЕП -->
+                        <div id="idx-panel-sign-file">
+                            <p style="font-size: 12px; color: #5f6b75; margin: 0 0 8px;">
+                                Завантажте файл КЕП. Угода підписується локально — пароль не зберігається. Юридична сила відповідно до <strong>ЗУ №852-IV</strong>.
+                            </p>
+                            <input type="file" id="regKep" accept=".p12,.pfx,.jks" style="margin-bottom: 8px; width: 100%;">
+                            <input type="password" id="regKepPassword" placeholder="Пароль від КЕП-файлу (не зберігається)" autocomplete="off" style="width: 100%;">
+                        </div>
+
+                        <!-- Панель: Дія.Підпис (тільки для ФОП) -->
+                        <div id="idx-panel-sign-diia" style="display: none;">
+                            <div style="background: #fffbe6; border: 1px solid #ffe58f; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                                <p style="font-size: 12px; color: #7a5c00; margin: 0; line-height: 1.5;">
+                                    <strong>📋 Тільки для офіційно зареєстрованих ФОП</strong><br>
+                                    Дія.Підпис підтверджує вашу реєстрацію в <strong>ЄДРПОУ</strong>. Для фізичних осіб без статусу ФОП цей метод недоступний.
+                                </p>
+                            </div>
+                            <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">ЄДРПОУ / ІПН ФОП</label>
+                            <input type="text" id="idx-spec-edrpou" placeholder="12345678" maxlength="10" style="width: 100%; margin-bottom: 10px;" pattern="[0-9]{8,10}">
+                            <button type="button" id="idx-diia-sign-btn" class="btn-primary" style="background: #111; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; width: 100%; padding: 12px;">
+                                <span style="font-weight: 900; font-family: 'Outfit', sans-serif; font-size: 16px; letter-spacing: 1px;">Дія</span>
+                                Підписати через Дія.Підпис
+                            </button>
+                            <input type="hidden" id="idx-diia-sign-token">
+                            <p id="idx-diia-sign-status" style="font-size: 12px; color: #dc3545; margin-top: 8px; font-weight: 600;">⚠️ Підпис ще не отримано</p>
+                        </div>
+                    </div>
+
+                    <div class="legal-consents">
+                        <label class="consent-checkbox">
+                            <input type="checkbox" id="consentPrivacy" required>
+                            <span>Я даю згоду на обробку персональних даних відповідно до <a href="#" id="linkPrivacy">Політики конфіденційності</a></span>
+                        </label>
+                        <label class="consent-checkbox">
+                            <input type="checkbox" id="consentAgreement" required>
+                            <span>Я приймаю умови <a href="#" id="linkAgreement">Угоди про співпрацю</a> (включаючи внесок на статутну діяльність)</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="legal-consents">
-                    <label class="consent-checkbox">
-                        <input type="checkbox" id="consentPrivacy" required>
-                        <span>Я даю згоду на обробку персональних даних відповідно до <a href="#" id="linkPrivacy">Політики конфіденційності</a></span>
-                    </label>
-                    <label class="consent-checkbox">
-                        <input type="checkbox" id="consentAgreement" required>
-                        <span>Я приймаю умови <a href="#" id="linkAgreement">Угоди про співпрацю</a> (включаючи внесок на статутну діяльність)</span>
-                    </label>
+                <!-- Кнопки Навігації Майстра -->
+                <div style="display: flex; justify-content: space-between; margin-top: 20px; gap: 15px;">
+                    <button type="button" id="prevStepBtn" class="btn-secondary" style="display: none; flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; border: 1px solid #ddd; background: #eee; cursor: pointer;">Назад</button>
+                    <button type="button" id="nextStepBtn" class="btn-primary" style="flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">Далі</button>
+                    <button type="submit" id="submitRegBtn" class="btn-primary" style="display: none; flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; background: #2e8b57; color: white; border: none; cursor: pointer;">Надіслати</button>
                 </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Надіслати на верифікацію</button>
             </form>
         </div>
     </div>
@@ -395,8 +554,8 @@ body.is-tg-app .hero {
     </div>
 
     <!-- Scripts -->
-    <script src="main.js?v=42"></script>
-    <script src="accessibility.js?v=42"></script>
+    <script src="main.js?v=43"></script>
+    <script src="accessibility.js?v=43"></script>
     <script>
         const webapp = window.Telegram ? window.Telegram.WebApp : null;
         if (webapp) {

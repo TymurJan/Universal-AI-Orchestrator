@@ -37,6 +37,11 @@ def get_specialists(status=None, category=None):
     
     return [dict(row) for row in rows]
 
+try:
+    import crypto_utils
+except ImportError:
+    import backend.crypto_utils as crypto_utils
+
 def add_specialist(data):
     """Додає нового спеціаліста (або оновлює існуючого за tg_id)."""
     conn = get_db_connection()
@@ -48,19 +53,49 @@ def add_specialist(data):
         coords = f"{coords[0]}, {coords[1]}"
         
     try:
+        # Автоматично шифруємо конфіденційні документи перед збереженням в БД
+        doc_diia = crypto_utils.encrypt_doc(data.get('doc_diia_enc')) if data.get('doc_diia_enc') else None
+        doc_diploma = crypto_utils.encrypt_doc(data.get('doc_diploma_enc')) if data.get('doc_diploma_enc') else None
+        doc_license = crypto_utils.encrypt_doc(data.get('doc_license_enc')) if data.get('doc_license_enc') else None
+        doc_fop = crypto_utils.encrypt_doc(data.get('doc_fop_enc')) if data.get('doc_fop_enc') else None
+
         cursor.execute('''
-            INSERT INTO specialists (name, category, role, phone, address, coordinates, bio, status, tg_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO specialists (
+                name, category, role, phone, address, coordinates, bio, status, tg_id,
+                doc_diia_enc, doc_diploma_enc, doc_license_enc, doc_fop_enc,
+                photo_path, document_path, consent_doc_path, consent_at,
+                court_cases, team_work, avg_service_price,
+                tariff_stage, tariff_plan, tariff_fixed_fee, tariff_commission_pct,
+                contract_signed_date, contract_end_date
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             data.get('name'),
             data.get('category'),
             data.get('role') or data.get('category'),
-            data.get('phone'),
+            data.get('phone'), # Публічний контакт (не шифрується)
             data.get('address'),
             coords,
             data.get('bio'),
             data.get('status', 'pending'),
-            data.get('tg_id')
+            data.get('tg_id'),
+            doc_diia,
+            doc_diploma,
+            doc_license,
+            doc_fop,
+            data.get('photo_path'),
+            data.get('document_path'),
+            data.get('consent_doc_path'),   # Шлях до consent_YYYY-MM-DD.md
+            data.get('consent_at'),          # Timestamp UTC (GDPR Art.7)
+            data.get('court_cases', 0),
+            data.get('team_work', 0),
+            data.get('avg_service_price'),
+            data.get('tariff_stage', 'stage_1'),
+            data.get('tariff_plan', 'grant_standard'),
+            data.get('tariff_fixed_fee', 0.0),
+            data.get('tariff_commission_pct', 0.0),
+            data.get('contract_signed_date'),
+            data.get('contract_end_date')
         ))
         conn.commit()
         last_id = cursor.lastrowid
@@ -85,6 +120,68 @@ def update_specialist_status(spec_id, status):
     conn.commit()
     conn.close()
     sync_to_json()
+
+def update_specialist_documents(spec_id, doc_data):
+    """
+    Оновлює зашифровані документи та інші поля спеціаліста.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    fields = []
+    params = []
+    
+    # Визначаємо, які поля оновлювати і шифруємо їх за потреби
+    doc_cols = ["doc_diia_enc", "doc_diploma_enc", "doc_license_enc", "doc_fop_enc"]
+    other_cols = [
+        "photo_path", "document_path", "status", "consent_doc_path", "consent_at", "kep_signature_path",
+        "court_cases", "team_work", "avg_service_price",
+        "tariff_stage", "tariff_plan", "tariff_fixed_fee", "tariff_commission_pct",
+        "contract_signed_date", "contract_end_date"
+    ]
+    
+    for col in doc_cols:
+        if col in doc_data:
+            fields.append(f"{col} = ?")
+            val = doc_data[col]
+            if val and not val.startswith("gAAAAAB"):
+                val = crypto_utils.encrypt_doc(val)
+            params.append(val)
+            
+    for col in other_cols:
+        if col in doc_data:
+            fields.append(f"{col} = ?")
+            params.append(doc_data[col])
+            
+    if not fields:
+        conn.close()
+        return False
+        
+    # Визначаємо тип ідентифікатора
+    if isinstance(spec_id, str) and "user_" in spec_id:
+        tg_id = spec_id.replace("user_", "").split("_")[0]
+        params.append(tg_id)
+        query = f"UPDATE specialists SET {', '.join(fields)} WHERE tg_id = ?"
+    elif isinstance(spec_id, str) and spec_id.isdigit():
+        params.append(int(spec_id))
+        query = f"UPDATE specialists SET {', '.join(fields)} WHERE id = ?"
+    elif isinstance(spec_id, int):
+        params.append(spec_id)
+        query = f"UPDATE specialists SET {', '.join(fields)} WHERE id = ?"
+    else:
+        params.append(str(spec_id))
+        query = f"UPDATE specialists SET {', '.join(fields)} WHERE tg_id = ?"
+        
+    try:
+        cursor.execute(query, params)
+        conn.commit()
+        sync_to_json()
+        return True
+    except Exception as e:
+        print(f"Error updating specialist documents: {e}")
+        return False
+    finally:
+        conn.close()
 
 # --- РОБОТА З ВЕТЕРАНАМИ ТА ЛОГАМИ ---
 
@@ -128,7 +225,6 @@ def log_intake(tg_id, spec_id, status='requested'):
 def sync_to_json():
     """Експортує верифікованих спеціалістів у JSON для фронтенду та бекапу."""
     specs = get_specialists(status='verified')
-    # Форматуємо для сумісності зі старим JS
     formatted_specs = []
     for s in specs:
         coords = [49.4444, 32.0597] # Default
@@ -147,7 +243,24 @@ def sync_to_json():
             "bio": s['bio'],
             "status": s['status'],
             "coordinates": coords,
-            "rating": s['rating']
+            "rating": s['rating'],
+            "doc_diia_enc": s.get('doc_diia_enc'),
+            "doc_diploma_enc": s.get('doc_diploma_enc'),
+            "doc_license_enc": s.get('doc_license_enc'),
+            "doc_fop_enc": s.get('doc_fop_enc'),
+            "photo_path": s.get('photo_path'),
+            "document_path": s.get('document_path'),
+            
+            # Тарифні та анкетні поля для синхронізації
+            "court_cases": s.get('court_cases'),
+            "team_work": s.get('team_work'),
+            "avg_service_price": s.get('avg_service_price'),
+            "tariff_stage": s.get('tariff_stage'),
+            "tariff_plan": s.get('tariff_plan'),
+            "tariff_fixed_fee": s.get('tariff_fixed_fee'),
+            "tariff_commission_pct": s.get('tariff_commission_pct'),
+            "contract_signed_date": s.get('contract_signed_date'),
+            "contract_end_date": s.get('contract_end_date')
         })
         
     with open(JSON_BACKUP_PATH, "w", encoding="utf-8") as f:
